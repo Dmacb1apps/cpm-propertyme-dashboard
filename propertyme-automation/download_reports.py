@@ -10,15 +10,18 @@ Usage:
     python3 download_reports.py
 """
 
+import os
 import time
 from datetime import date
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-SESSION_FILE = "session.json"
-DOWNLOADS_DIR = Path("downloads")
+SCRIPT_DIR     = Path(__file__).parent
+SESSION_FILE   = SCRIPT_DIR / "session.json"
+DOWNLOADS_DIR  = SCRIPT_DIR / "downloads"
 SYSTEM_DOWNLOADS = Path.home() / "Downloads"
 BASE_URL = "https://manager.propertyme.com/#/"
+HEADLESS = os.environ.get("CI") == "true"
 
 
 def this_month_range():
@@ -187,16 +190,19 @@ def download_monthly_rent(page, start_date, end_date, iso_date, downloads_dir):
 
 
 def main():
-    if not Path(SESSION_FILE).exists():
-        print(f"No session found. Run refresh_session.py first to create {SESSION_FILE}.")
+    if not SESSION_FILE.exists():
+        print(f"No session found at {SESSION_FILE}. Run refresh_session.py first.")
         return
 
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     start_date, end_date, iso_date = this_month_range()
-    print(f"Downloading reports for {start_date} → {end_date}")
+    print(f"Session file : {SESSION_FILE}")
+    print(f"Downloads dir: {DOWNLOADS_DIR.resolve()}")
+    print(f"Headless     : {HEADLESS}")
+    print(f"Date range   : {start_date} → {end_date}")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=HEADLESS)
         context = browser.new_context(storage_state=SESSION_FILE)
         page = context.new_page()
 

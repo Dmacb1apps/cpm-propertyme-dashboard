@@ -25,16 +25,30 @@ jobs:
         run: python -m playwright install --with-deps chromium
 
       - name: Write secrets to files
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          SESSION_JSON: ${{ secrets.SESSION_JSON }}
+          PROPERTYME_EMAIL: ${{ secrets.PROPERTYME_EMAIL }}
+          PROPERTYME_PASSWORD: ${{ secrets.PROPERTYME_PASSWORD }}
         run: |
-          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > propertyme-automation/credentials.json
-          echo '${{ secrets.SESSION_JSON }}' > propertyme-automation/session.json
+          # Use Python to write JSON secrets — avoids shell quoting issues
+          # with special characters, newlines, and single quotes in JSON.
+          python3 -c "
+          import os
+          open('propertyme-automation/credentials.json', 'w').write(os.environ['GOOGLE_CREDENTIALS'])
+          open('propertyme-automation/session.json',     'w').write(os.environ['SESSION_JSON'])
+          "
           printf 'PROPERTYME_EMAIL=%s\nPROPERTYME_PASSWORD=%s\n' \
-            '${{ secrets.PROPERTYME_EMAIL }}' \
-            '${{ secrets.PROPERTYME_PASSWORD }}' \
+            "$PROPERTYME_EMAIL" "$PROPERTYME_PASSWORD" \
             > propertyme-automation/.env
 
       - name: Download PropertyMe reports
         run: python propertyme-automation/download_reports.py
+
+      - name: Verify downloaded files
+        run: |
+          echo "=== Files in propertyme-automation/downloads/ ==="
+          find propertyme-automation/downloads -name "*.pdf" -o -name "*.xlsx" 2>/dev/null || echo "(none found)"
 
       - name: Process data and push to Google Sheets
         run: python propertyme-automation/process_and_push.py

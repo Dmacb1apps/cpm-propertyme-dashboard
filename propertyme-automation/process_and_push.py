@@ -36,10 +36,11 @@ COMPLEX_MAP = {
     "15": "Vue Taigum",
 }
 
-DOWNLOADS_DIR = Path("downloads")
-CREDENTIALS_FILE = "credentials.json"
-SHEET_NAME = "CPM Portfolio Dashboard"
-JSON_OUTPUT = Path(__file__).parent.parent / "public" / "dashboard_data.json"
+SCRIPT_DIR       = Path(__file__).parent
+DOWNLOADS_DIR    = SCRIPT_DIR / "downloads"
+CREDENTIALS_FILE = SCRIPT_DIR / "credentials.json"
+SHEET_NAME       = "CPM Portfolio Dashboard"
+JSON_OUTPUT      = SCRIPT_DIR.parent / "public" / "dashboard_data.json"
 
 # ---------------------------------------------------------------------------
 # File helpers
@@ -357,7 +358,7 @@ def save_json(summary, owner_data):
 # ---------------------------------------------------------------------------
 
 def push_to_sheets(summary, owner_data):
-    gc = gspread.service_account(filename=CREDENTIALS_FILE)
+    gc = gspread.service_account(filename=str(CREDENTIALS_FILE))
 
     ss = gc.open(SHEET_NAME)
 
@@ -438,7 +439,7 @@ def main():
 
     summary = build_summary(owner_data, rent_data)
 
-    if not Path(CREDENTIALS_FILE).exists():
+    if not CREDENTIALS_FILE.exists():
         print(f"ERROR: {CREDENTIALS_FILE} not found — see setup steps below.")
         return
 
