@@ -1,0 +1,7 @@
+playwright
+python-dotenv
+pdfplumber
+pandas
+openpyxl
+gspread
+oauth2client

@@ -1,0 +1,9 @@
+.env
+propertyme-automation/session.json
+propertyme-automation/credentials.json
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+downloads/
+node_modules/
