@@ -1,0 +1,61 @@
+name: Update Dashboard
+
+on:
+  schedule:
+    - cron: '0 17 * * *'  # 3am AEST Brisbane daily
+  workflow_dispatch:        # allows manual trigger from GitHub UI
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r propertyme-automation/requirements.txt
+
+      - name: Install Playwright browsers
+        run: python -m playwright install --with-deps chromium
+
+      - name: Write secrets to files
+        run: |
+          echo '${{ secrets.GOOGLE_CREDENTIALS }}' > propertyme-automation/credentials.json
+          echo '${{ secrets.SESSION_JSON }}' > propertyme-automation/session.json
+          printf 'PROPERTYME_EMAIL=%s\nPROPERTYME_PASSWORD=%s\n' \
+            '${{ secrets.PROPERTYME_EMAIL }}' \
+            '${{ secrets.PROPERTYME_PASSWORD }}' \
+            > propertyme-automation/.env
+
+      - name: Download PropertyMe reports
+        run: python propertyme-automation/download_reports.py
+
+      - name: Process data and push to Google Sheets
+        run: python propertyme-automation/process_and_push.py
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build dashboard
+        run: npm run build
+
+      - name: Commit and push dashboard update
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/ public/
+          git diff --cached --quiet || git commit -m "Dashboard update $(date +%Y-%m-%d)"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
