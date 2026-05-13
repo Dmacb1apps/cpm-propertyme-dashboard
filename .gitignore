@@ -7,3 +7,5 @@ __pycache__/
 .DS_Store
 downloads/
 node_modules/
+propertyme-automation/debug_*.py
+propertyme-automation/debug_*.json
