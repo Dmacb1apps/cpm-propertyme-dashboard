@@ -136,12 +136,19 @@ def login(page):
 
         page.get_by_role("button", name="Log in").click()
         print(f"  URL immediately after 2FA submit: {page.url}")
-        # Use a broad pattern — redirect may land on manager.propertyme.com with or without a path
-        page.wait_for_url("*manager.propertyme.com*", timeout=30000)
-        print(f"  URL after 2FA redirect: {page.url}")
+        # manager.propertyme.com uses hash-based routing so no load event fires —
+        # poll the href directly until we've left the auth domain
+        page.wait_for_function(
+            "() => !window.location.href.includes('id.propertyme.com')",
+            timeout=30000,
+        )
+        print(f"  Redirected to: {page.url}")
     else:
         print("  No 2FA page detected — waiting for manager redirect...")
-        page.wait_for_url("*manager.propertyme.com*", timeout=20000)
+        page.wait_for_function(
+            "() => !window.location.href.includes('id.propertyme.com')",
+            timeout=20000,
+        )
 
     print(f"  Login complete — current URL: {page.url}")
 
