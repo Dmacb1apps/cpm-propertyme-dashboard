@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-13T14:54:48",
+  "updated": "2026-05-14T00:51:10",
   "month": "May 2026",
   "complexes": [
     {
@@ -34,7 +34,7 @@
       "name": "Kingsbury Estate",
       "owners": 50,
       "flagged": 22,
-      "avgRent": 655,
+      "avgRent": 657,
       "totalRent": 43724.45,
       "totalBills": 43528.88
     },
