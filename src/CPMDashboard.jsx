@@ -50,10 +50,11 @@ export default function CPMDashboard() {
     : flaggedOwners.filter((o) => o.complex === complexFilter);
 
   const navItems = [
-    { id: "overview",  icon: Home,         label: "Overview"        },
-    { id: "flagged",   icon: AlertTriangle, label: "Flagged Owners", badge: totalFlagged || null },
-    { id: "complexes", icon: Building2,     label: "By Complex"      },
-    { id: "owners",    icon: Users,         label: "All Owners"      },
+    { id: "overview",   icon: Home,         label: "Overview"           },
+    { id: "flagged",    icon: AlertTriangle, label: "Flagged Owners", badge: totalFlagged || null },
+    { id: "complexes",  icon: Building2,     label: "By Complex"         },
+    { id: "financials", icon: DollarSign,    label: "Business Financials" },
+    { id: "owners",     icon: Users,         label: "All Owners"         },
   ];
 
   // Formatted timestamp from JSON
@@ -331,6 +332,74 @@ export default function CPMDashboard() {
               })}
             </div>
           )}
+
+          {/* BUSINESS FINANCIALS */}
+          {!loading && !error && page === "financials" && (() => {
+            const f = data?.financials ?? {};
+            const mgmtFees   = f.management_fees ?? 0;
+            const otherIncome = Math.max(0, (f.total_income ?? 0) - mgmtFees);
+            const otherExp   = Math.max(0, (f.total_expenses ?? 0) - (f.loan_interest ?? 0) - (f.wages ?? 0));
+            const netColor   = (f.net_profit ?? 0) >= 0 ? t.success : "#C00000";
+            const panel = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, overflow: "hidden" };
+            const panelHead = { padding: "13px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
+            const tr = (label, value, bold) => (
+              <tr style={{ borderTop: `1px solid ${t.border}` }}>
+                <td style={{ padding: "11px 20px", color: bold ? t.text : t.muted, fontWeight: bold ? 700 : 400 }}>{label}</td>
+                <td style={{ padding: "11px 20px", textAlign: "right", fontWeight: bold ? 700 : 400, color: bold ? t.text : t.muted }}>{fmt(value)}</td>
+              </tr>
+            );
+            return (
+              <div>
+                {/* Stat cards */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 24 }}>
+                  {[
+                    { label: "Cash Balance",  value: f.cash_balance  ?? 0, color: t.success  },
+                    { label: "MTD Income",     value: f.total_income  ?? 0, color: "#1e2a3a"  },
+                    { label: "MTD Expenses",   value: f.total_expenses ?? 0, color: "#C00000" },
+                    { label: "Net Profit",     value: f.net_profit    ?? 0, color: netColor   },
+                  ].map((s) => (
+                    <div key={s.label} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: "18px 20px" }}>
+                      <div style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10 }}>{s.label}</div>
+                      <div style={{ fontSize: 26, fontWeight: 700, color: s.color, letterSpacing: "-0.5px" }}>{fmt(Math.round(s.value))}</div>
+                      <div style={{ height: 3, marginTop: 14, borderRadius: 2, background: s.color, opacity: 0.25 }} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Breakdown panels */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
+                  {/* Income */}
+                  <div style={panel}>
+                    <div style={panelHead}>Income Breakdown</div>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <tbody>
+                        {tr("Management Fees",       mgmtFees)}
+                        {tr("Body Corporate / Other", otherIncome)}
+                        {tr("Total Income",           f.total_income ?? 0, true)}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Expenses */}
+                  <div style={panel}>
+                    <div style={panelHead}>Expense Breakdown</div>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <tbody>
+                        {tr("Loan Interest",   f.loan_interest ?? 0)}
+                        {tr("Wages",           f.wages         ?? 0)}
+                        {tr("Other Expenses",  otherExp)}
+                        {tr("Total Expenses",  f.total_expenses ?? 0, true)}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div style={{ color: t.muted, fontSize: 11, fontStyle: "italic", textAlign: "center" }}>
+                  Management fees are disbursed at month end. Mid-month figures will reflect partial income.
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ALL OWNERS */}
           {!loading && !error && page === "owners" && (
