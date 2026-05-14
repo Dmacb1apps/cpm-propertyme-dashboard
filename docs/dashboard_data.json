@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T12:48:02",
+  "updated": "2026-05-14T12:56:20",
   "month": "May 2026",
   "complexes": [
     {
@@ -2593,10 +2593,10 @@
     "management_fees": 7421.58,
     "wages": 14241.9,
     "loan_interest": 24246.15,
-    "invoices_due_count": 16,
-    "invoices_due_this_month": 81254.56,
-    "overdue_total": 809.09,
-    "top_invoices": [
+    "payables_total": 47886.61,
+    "payables_overdue": 809.09,
+    "payables_count": 10,
+    "top_payables": [
       {
         "contact_name": "Locality Planning Energy Pty Ltd",
         "amount_due": 225.19,
@@ -2606,11 +2606,6 @@
         "contact_name": "Moreton Bay Regional Council",
         "amount_due": 583.9,
         "due_date": "2026-05-13"
-      },
-      {
-        "contact_name": "Lorelei Lipczynski",
-        "amount_due": 250.0,
-        "due_date": "2026-05-14"
       },
       {
         "contact_name": "JMac Property Services",
@@ -2623,9 +2618,49 @@
         "due_date": "2026-05-14"
       },
       {
+        "contact_name": "Wattz Up",
+        "amount_due": 40.0,
+        "due_date": "2026-05-19"
+      },
+      {
+        "contact_name": "ATO",
+        "amount_due": 8729.0,
+        "due_date": "2026-05-21"
+      }
+    ],
+    "receivables_total": 33367.95,
+    "receivables_overdue": 0,
+    "receivables_count": 6,
+    "top_receivables": [
+      {
+        "contact_name": "Lorelei Lipczynski",
+        "amount_due": 250.0,
+        "due_date": "2026-05-14"
+      },
+      {
         "contact_name": "Tammy-Lee Everingham",
         "amount_due": 100.0,
         "due_date": "2026-05-15"
+      },
+      {
+        "contact_name": "Body Corporate for Kingsbury Taigum CTS 50055",
+        "amount_due": 13336.26,
+        "due_date": "2026-05-19"
+      },
+      {
+        "contact_name": "Body Corporate for Treetops at Everton CTS 50668",
+        "amount_due": 6217.12,
+        "due_date": "2026-05-19"
+      },
+      {
+        "contact_name": "Body Corporate for Everton Breeze CTS 52780",
+        "amount_due": 5162.74,
+        "due_date": "2026-06-04"
+      },
+      {
+        "contact_name": "Body Corporate for Greystone Terraces CTS48311",
+        "amount_due": 8301.83,
+        "due_date": "2026-06-07"
       }
     ]
   }

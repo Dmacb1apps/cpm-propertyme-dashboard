@@ -351,18 +351,19 @@ export default function CPMDashboard() {
             return (
               <div>
                 {/* Stat cards */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 14, marginBottom: 24 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 14, marginBottom: 24 }}>
                   {[
-                    { label: "Cash Balance",           value: f.cash_balance           ?? 0, color: t.success  },
-                    { label: "MTD Income",              value: f.total_income           ?? 0, color: t.accent   },
-                    { label: "MTD Expenses",            value: f.total_expenses         ?? 0, color: "#C00000"  },
-                    { label: "Net Profit",              value: f.net_profit             ?? 0, color: netColor   },
-                    { label: "Invoices Due This Month", value: f.invoices_due_this_month ?? 0, color: t.warn    },
+                    { label: "Cash Balance",    value: f.cash_balance      ?? 0, color: t.success },
+                    { label: "MTD Income",       value: f.total_income      ?? 0, color: t.accent  },
+                    { label: "MTD Expenses",     value: f.total_expenses    ?? 0, color: "#C00000" },
+                    { label: "Net Profit",       value: f.net_profit        ?? 0, color: netColor  },
+                    { label: "Bills to Pay",     value: f.payables_total    ?? 0, color: t.warn    },
+                    { label: "To Receive",       value: f.receivables_total ?? 0, color: t.success },
                   ].map((s) => (
-                    <div key={s.label} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: "18px 20px" }}>
-                      <div style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10 }}>{s.label}</div>
-                      <div style={{ fontSize: 24, fontWeight: 700, color: s.color, letterSpacing: "-0.5px" }}>{fmt(Math.round(s.value))}</div>
-                      <div style={{ height: 3, marginTop: 14, borderRadius: 2, background: s.color, opacity: 0.25 }} />
+                    <div key={s.label} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: "16px 18px" }}>
+                      <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10 }}>{s.label}</div>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: s.color, letterSpacing: "-0.5px" }}>{fmt(Math.round(s.value))}</div>
+                      <div style={{ height: 3, marginTop: 12, borderRadius: 2, background: s.color, opacity: 0.25 }} />
                     </div>
                   ))}
                 </div>
@@ -395,44 +396,49 @@ export default function CPMDashboard() {
                   </div>
                 </div>
 
-                {/* Invoices due */}
-                {(f.top_invoices ?? []).length > 0 && (
-                  <div style={{ ...panel, marginBottom: 20 }}>
-                    <div style={{ ...panelHead, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span>Invoices Due This Month</span>
-                      <span style={{ color: t.muted, fontWeight: 400, fontSize: 12 }}>
-                        {f.invoices_due_count} invoices · {fmt(Math.round(f.invoices_due_this_month ?? 0))} total
-                        {(f.overdue_total ?? 0) > 0 && (
-                          <span style={{ color: "#C00000", marginLeft: 12 }}>· {fmt(Math.round(f.overdue_total))} overdue</span>
-                        )}
-                      </span>
+                {/* Invoice tables — payables and receivables side by side */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
+                  {[
+                    { title: "Bills to Pay",         rows: f.top_payables    ?? [], total: f.payables_total    ?? 0, count: f.payables_count    ?? 0, overdue: f.payables_overdue    ?? 0 },
+                    { title: "Invoices to Receive",  rows: f.top_receivables ?? [], total: f.receivables_total ?? 0, count: f.receivables_count ?? 0, overdue: f.receivables_overdue ?? 0 },
+                  ].map(({ title, rows, total, count, overdue }) => (
+                    <div key={title} style={panel}>
+                      <div style={{ ...panelHead, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span>{title}</span>
+                        <span style={{ color: t.muted, fontWeight: 400, fontSize: 11 }}>
+                          {count} · {fmt(Math.round(total))}
+                          {overdue > 0 && <span style={{ color: "#C00000", marginLeft: 8 }}>· {fmt(Math.round(overdue))} overdue</span>}
+                        </span>
+                      </div>
+                      {rows.length === 0
+                        ? <div style={{ padding: "16px 20px", color: t.muted, fontSize: 12 }}>No invoices this month.</div>
+                        : (
+                          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                            <thead>
+                              <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                                <th style={{ padding: "9px 20px", textAlign: "left",  fontWeight: 500 }}>Contact</th>
+                                <th style={{ padding: "9px 20px", textAlign: "right", fontWeight: 500 }}>Amount</th>
+                                <th style={{ padding: "9px 20px", textAlign: "right", fontWeight: 500 }}>Due</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {rows.map((inv, i) => {
+                                const od = inv.due_date < new Date().toISOString().slice(0, 10);
+                                return (
+                                  <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: od ? (dark ? "rgba(192,0,0,0.06)" : "rgba(192,0,0,0.04)") : "transparent" }}>
+                                    <td style={{ padding: "10px 20px", color: od ? "#C00000" : t.text, fontWeight: od ? 600 : 400 }}>{inv.contact_name}</td>
+                                    <td style={{ padding: "10px 20px", textAlign: "right" }}>{fmt(inv.amount_due)}</td>
+                                    <td style={{ padding: "10px 20px", textAlign: "right", color: od ? "#C00000" : t.muted, fontWeight: od ? 600 : 400 }}>{inv.due_date}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        )
+                      }
                     </div>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                      <thead>
-                        <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                          <th style={{ padding: "9px 20px", textAlign: "left",  fontWeight: 500 }}>Contact</th>
-                          <th style={{ padding: "9px 20px", textAlign: "right", fontWeight: 500 }}>Amount Due</th>
-                          <th style={{ padding: "9px 20px", textAlign: "right", fontWeight: 500 }}>Due Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(f.top_invoices ?? []).map((inv, i) => {
-                          const overdue = inv.due_date < new Date().toISOString().slice(0, 10);
-                          return (
-                            <tr key={i} style={{
-                              borderTop: `1px solid ${t.border}`,
-                              background: overdue ? (dark ? "rgba(192,0,0,0.06)" : "rgba(192,0,0,0.04)") : "transparent"
-                            }}>
-                              <td style={{ padding: "10px 20px", fontWeight: overdue ? 600 : 400, color: overdue ? "#C00000" : t.text }}>{inv.contact_name}</td>
-                              <td style={{ padding: "10px 20px", textAlign: "right" }}>{fmt(inv.amount_due)}</td>
-                              <td style={{ padding: "10px 20px", textAlign: "right", color: overdue ? "#C00000" : t.muted, fontWeight: overdue ? 600 : 400 }}>{inv.due_date}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                  ))}
+                </div>
 
                 <div style={{ color: t.muted, fontSize: 11, fontStyle: "italic", textAlign: "center" }}>
                   Management fees are disbursed at month end. Mid-month figures will reflect partial income.

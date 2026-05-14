@@ -492,15 +492,14 @@ def fetch_xero_data():
         bs_rows = bs_resp.json()["Reports"][0].get("Rows", [])
         cash_balance = _xero_section_total(bs_rows, "Bank")
 
-    # Outstanding invoices due this month
+    # Outstanding invoices due this month — split by type
+    import calendar, re as _re, datetime as _dt
     month_start = today.replace(day=1).strftime("%Y-%m-%d")
-    import calendar
     month_end   = today.replace(day=calendar.monthrange(today.year, today.month)[1]).strftime("%Y-%m-%d")
+    today_str   = today.strftime("%Y-%m-%d")
 
-    invoices_due_count  = 0
-    invoices_due_total  = 0.0
-    overdue_total       = 0.0
-    top_invoices        = []
+    payables    = []   # ACCPAY — bills CPM owes
+    receivables = []   # ACCREC — money owed to CPM
 
     inv_resp = requests.get(
         "https://api.xero.com/api.xro/2.0/Invoices",
@@ -509,51 +508,56 @@ def fetch_xero_data():
     )
     if inv_resp.ok:
         invoices = inv_resp.json().get("Invoices", [])
-        today_str = today.strftime("%Y-%m-%d")
         for inv in invoices:
             amount_due = float(inv.get("AmountDue", 0))
             due_date   = inv.get("DueDate", "")
-            # Xero returns dates as /Date(epoch)/ — parse to ISO
-            epoch_m = __import__("re").search(r"/Date\((\d+)\+\d+\)/", due_date)
-            if epoch_m:
-                import datetime as _dt
-                due_date = _dt.datetime.fromtimestamp(int(epoch_m.group(1)) / 1000).strftime("%Y-%m-%d")
-            invoices_due_count  += 1
-            invoices_due_total  += amount_due
-            if due_date < today_str:
-                overdue_total += amount_due
-            top_invoices.append({
+            ep_m = _re.search(r"/Date\((\d+)\+\d+\)/", due_date)
+            if ep_m:
+                due_date = _dt.datetime.fromtimestamp(int(ep_m.group(1)) / 1000).strftime("%Y-%m-%d")
+            row = {
                 "contact_name": inv.get("Contact", {}).get("Name", "Unknown"),
                 "amount_due":   round(amount_due, 2),
                 "due_date":     due_date,
-            })
-        top_invoices.sort(key=lambda x: x["due_date"])
-        print(f"  {len(invoices)} invoices found:")
-        for inv in sorted(invoices, key=lambda x: x.get("DueDate", "")):
-            inv_amount = float(inv.get("AmountDue", 0))
-            inv_type   = inv.get("Type", "?")
-            inv_contact = inv.get("Contact", {}).get("Name", "Unknown")
-            # parse due date for display
-            raw_due = inv.get("DueDate", "")
-            ep_m = __import__("re").search(r"/Date\((\d+)\+\d+\)/", raw_due)
-            if ep_m:
-                import datetime as _dt2
-                raw_due = _dt2.datetime.fromtimestamp(int(ep_m.group(1)) / 1000).strftime("%Y-%m-%d")
-            print(f"    [{inv_type}] {inv_contact}: ${inv_amount:,.2f} due {raw_due}")
-        top_invoices = top_invoices[:6]
+            }
+            if inv.get("Type") == "ACCPAY":
+                payables.append(row)
+            else:
+                receivables.append(row)
+
+    payables.sort(key=lambda x: x["due_date"])
+    receivables.sort(key=lambda x: x["due_date"])
+
+    def _summarise(rows):
+        total   = sum(r["amount_due"] for r in rows)
+        overdue = sum(r["amount_due"] for r in rows if r["due_date"] < today_str)
+        return round(total, 2), round(overdue, 2), rows[:6]
+
+    pay_total, pay_overdue, top_payables       = _summarise(payables)
+    rec_total, rec_overdue, top_receivables    = _summarise(receivables)
+
+    print(f"  {len(payables)} payables (ACCPAY): ${pay_total:,.2f} ({pay_overdue:,.2f} overdue)")
+    for r in payables:
+        print(f"    {r['contact_name']}: ${r['amount_due']:,.2f} due {r['due_date']}")
+    print(f"  {len(receivables)} receivables (ACCREC): ${rec_total:,.2f} ({rec_overdue:,.2f} overdue)")
+    for r in receivables:
+        print(f"    {r['contact_name']}: ${r['amount_due']:,.2f} due {r['due_date']}")
 
     return {
-        "cash_balance":          round(cash_balance, 2),
-        "total_income":          round(total_income, 2),
-        "total_expenses":        round(total_expenses, 2),
-        "net_profit":            round(net_profit, 2),
-        "management_fees":       round(management_fees, 2),
-        "wages":                 round(wages, 2),
-        "loan_interest":         round(loan_interest, 2),
-        "invoices_due_count":    invoices_due_count,
-        "invoices_due_this_month": round(invoices_due_total, 2),
-        "overdue_total":         round(overdue_total, 2),
-        "top_invoices":          top_invoices,
+        "cash_balance":       round(cash_balance, 2),
+        "total_income":       round(total_income, 2),
+        "total_expenses":     round(total_expenses, 2),
+        "net_profit":         round(net_profit, 2),
+        "management_fees":    round(management_fees, 2),
+        "wages":              round(wages, 2),
+        "loan_interest":      round(loan_interest, 2),
+        "payables_total":     pay_total,
+        "payables_overdue":   pay_overdue,
+        "payables_count":     len(payables),
+        "top_payables":       top_payables,
+        "receivables_total":  rec_total,
+        "receivables_overdue": rec_overdue,
+        "receivables_count":  len(receivables),
+        "top_receivables":    top_receivables,
     }
 
 
