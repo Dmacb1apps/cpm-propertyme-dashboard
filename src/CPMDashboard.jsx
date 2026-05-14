@@ -221,26 +221,25 @@ export default function CPMDashboard() {
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                       <thead>
                         <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                          {["Complex", "Units", "Avg Rent", "Flagged", "Net MTD"].map((h) => (
+                          {["Complex", "Units", "Avg Rent", "Rent Change"].map((h) => (
                             <th key={h} style={{ padding: "10px 20px", textAlign: h === "Complex" ? "left" : "right", fontWeight: 500 }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
                         {complexes.map((c, i) => {
-                          const net = c.totalRent - c.totalBills;
-                          const flagColor = c.flagged > 8 ? "#CC0000" : c.flagged > 4 ? "#d29922" : "#1a7f37";
+                          const pct = c.rentChangePct;
+                          const changeEl = pct == null
+                            ? <span style={{ color: t.muted }}>—</span>
+                            : pct >= 0
+                              ? <span style={{ color: "#1a7f37", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
+                              : <span style={{ color: "#CC0000", fontWeight: 600 }}>↓ {pct.toFixed(1)}%</span>;
                           return (
                             <tr key={c.code} style={{ borderTop: `1px solid ${t.border}`, background: i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)") }}>
                               <td style={{ padding: "11px 20px", fontWeight: 600 }}>{c.name}</td>
                               <td style={{ padding: "11px 20px", textAlign: "right", color: t.muted }}>{c.owners}</td>
                               <td style={{ padding: "11px 20px", textAlign: "right" }}>${c.avgRent}/wk</td>
-                              <td style={{ padding: "11px 20px", textAlign: "right" }}>
-                                <span style={{ color: flagColor, fontWeight: 700 }}>{c.flagged}</span>
-                              </td>
-                              <td style={{ padding: "11px 20px", textAlign: "right", fontWeight: 600, color: net >= 0 ? "#1a7f37" : "#CC0000" }}>
-                                {net >= 0 ? "+" : ""}{fmt(Math.round(net))}
-                              </td>
+                              <td style={{ padding: "11px 20px", textAlign: "right" }}>{changeEl}</td>
                             </tr>
                           );
                         })}

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T14:33:09",
+  "updated": "2026-05-14T15:19:50",
   "month": "May 2026",
   "complexes": [
     {
@@ -9,7 +9,8 @@
       "flagged": 12,
       "avgRent": 718,
       "totalRent": 26659.54,
-      "totalBills": 28430.22
+      "totalBills": 28430.22,
+      "rentChangePct": null
     },
     {
       "code": "02",
@@ -18,7 +19,8 @@
       "flagged": 5,
       "avgRent": 765,
       "totalRent": 12400.0,
-      "totalBills": 11158.18
+      "totalBills": 11158.18,
+      "rentChangePct": null
     },
     {
       "code": "03",
@@ -27,7 +29,8 @@
       "flagged": 11,
       "avgRent": 770,
       "totalRent": 17928.91,
-      "totalBills": 22527.49
+      "totalBills": 22527.49,
+      "rentChangePct": null
     },
     {
       "code": "09",
@@ -36,7 +39,8 @@
       "flagged": 22,
       "avgRent": 657,
       "totalRent": 43724.45,
-      "totalBills": 43528.88
+      "totalBills": 43528.88,
+      "rentChangePct": null
     },
     {
       "code": "11",
@@ -45,7 +49,8 @@
       "flagged": 4,
       "avgRent": 701,
       "totalRent": 17575.0,
-      "totalBills": 11675.42
+      "totalBills": 11675.42,
+      "rentChangePct": null
     },
     {
       "code": "12",
@@ -54,7 +59,8 @@
       "flagged": 8,
       "avgRent": 739,
       "totalRent": 26083.95,
-      "totalBills": 15296.58
+      "totalBills": 15296.58,
+      "rentChangePct": null
     },
     {
       "code": "13",
@@ -63,7 +69,8 @@
       "flagged": 12,
       "avgRent": 710,
       "totalRent": 29963.68,
-      "totalBills": 26889.7
+      "totalBills": 26889.7,
+      "rentChangePct": null
     },
     {
       "code": "14",
@@ -72,7 +79,8 @@
       "flagged": 5,
       "avgRent": 762,
       "totalRent": 27191.48,
-      "totalBills": 15680.11
+      "totalBills": 15680.11,
+      "rentChangePct": null
     },
     {
       "code": "15",
@@ -81,7 +89,8 @@
       "flagged": 13,
       "avgRent": 716,
       "totalRent": 30169.96,
-      "totalBills": 224954.7
+      "totalBills": 224954.7,
+      "rentChangePct": null
     },
     {
       "code": "??",
@@ -90,7 +99,8 @@
       "flagged": 0,
       "avgRent": 998,
       "totalRent": 0.0,
-      "totalBills": 0.0
+      "totalBills": 0.0,
+      "rentChangePct": null
     }
   ],
   "flagged": [

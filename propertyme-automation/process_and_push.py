@@ -14,7 +14,7 @@ import os
 import re
 import time
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -41,11 +41,12 @@ COMPLEX_MAP = {
     "15": "Vue Taigum",
 }
 
-SCRIPT_DIR       = Path(__file__).parent
-DOWNLOADS_DIR    = SCRIPT_DIR / "downloads"
-CREDENTIALS_FILE = SCRIPT_DIR / "credentials.json"
-SHEET_NAME       = "CPM Portfolio Dashboard"
-JSON_OUTPUT      = SCRIPT_DIR.parent / "public" / "dashboard_data.json"
+SCRIPT_DIR        = Path(__file__).parent
+DOWNLOADS_DIR     = SCRIPT_DIR / "downloads"
+CREDENTIALS_FILE  = SCRIPT_DIR / "credentials.json"
+SHEET_NAME        = "CPM Portfolio Dashboard"
+JSON_OUTPUT       = SCRIPT_DIR.parent / "public" / "dashboard_data.json"
+RENT_HISTORY_FILE = SCRIPT_DIR.parent / "rent_history.json"
 
 # ---------------------------------------------------------------------------
 # File helpers
@@ -607,26 +608,64 @@ def fetch_xero_data():
 
 
 # ---------------------------------------------------------------------------
+# Rent history
+# ---------------------------------------------------------------------------
+
+def update_rent_history(rent_data):
+    """
+    Load rent_history.json, compare current month avg rents to previous month,
+    persist current month, and return {complex_code: change_pct_or_None}.
+    """
+    today       = date.today()
+    current_key = today.strftime("%Y-%m")
+    prev_key    = (today.replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
+
+    history = {}
+    if RENT_HISTORY_FILE.exists():
+        try:
+            history = json.loads(RENT_HISTORY_FILE.read_text())
+        except Exception:
+            history = {}
+
+    current_rents = {code: round(info["avg_rent"], 2) for code, info in rent_data.items()}
+
+    prev_rents = history.get(prev_key, {})
+    changes = {}
+    for code, avg in current_rents.items():
+        if code in prev_rents and prev_rents[code] > 0:
+            changes[code] = round(((avg - prev_rents[code]) / prev_rents[code]) * 100, 1)
+        else:
+            changes[code] = None
+
+    history[current_key] = current_rents
+    RENT_HISTORY_FILE.write_text(json.dumps(history, indent=2))
+    print(f"  Rent history: {len(history)} month(s) saved to {RENT_HISTORY_FILE.name}")
+
+    return changes
+
+
+# ---------------------------------------------------------------------------
 # JSON export
 # ---------------------------------------------------------------------------
 
 _REVERSE_MAP = {v: k for k, v in COMPLEX_MAP.items()}
 
 
-def save_json(summary, owner_data, financials=None):
+def save_json(summary, owner_data, financials=None, rent_changes=None):
     now = datetime.now()
     payload = {
         "updated": now.strftime("%Y-%m-%dT%H:%M:%S"),
         "month":   now.strftime("%B %Y"),
         "complexes": [
             {
-                "code":       _REVERSE_MAP.get(s["complex_name"], "??"),
-                "name":       s["complex_name"],
-                "owners":     s["owner_count"],
-                "flagged":    s["flagged_count"],
-                "avgRent":    round(s["avg_rent"]),
-                "totalRent":  round(s["total_rent"], 2),
-                "totalBills": round(s["total_bills"], 2),
+                "code":          _REVERSE_MAP.get(s["complex_name"], "??"),
+                "name":          s["complex_name"],
+                "owners":        s["owner_count"],
+                "flagged":       s["flagged_count"],
+                "avgRent":       round(s["avg_rent"]),
+                "totalRent":     round(s["total_rent"], 2),
+                "totalBills":    round(s["total_bills"], 2),
+                "rentChangePct": (rent_changes or {}).get(_REVERSE_MAP.get(s["complex_name"], "??")),
             }
             for s in summary
         ],
@@ -740,7 +779,11 @@ def main():
 
     print("Parsing Monthly Rent Excel...")
     rent_data = parse_monthly_rent(xlsx_path)
-    print(f"  {len(rent_data)} complexes\n")
+    print(f"  {len(rent_data)} complexes")
+
+    print("Updating rent history...")
+    rent_changes = update_rent_history(rent_data)
+    print()
 
     print("Parsing Folio Ledger PDF...")
     owner_data = parse_folio_ledger(pdf_path)
@@ -761,7 +804,7 @@ def main():
     print()
 
     print("Saving dashboard_data.json...")
-    save_json(summary, owner_data, financials)
+    save_json(summary, owner_data, financials, rent_changes)
 
     print("\nPushing to Google Sheets...")
     url = push_to_sheets(summary, owner_data)
