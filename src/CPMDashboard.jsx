@@ -75,11 +75,11 @@ export default function CPMDashboard() {
         borderRight: `1px solid ${t.border}`, display: "flex", flexDirection: "column",
         transition: "width 0.25s ease", overflow: "hidden", position: "sticky", top: 0, height: "100vh"
       }}>
-        <div style={{ padding: "18px 14px 14px", borderBottom: `1px solid ${t.border}`, display: "flex", alignItems: "center", gap: 10, overflow: "hidden" }}>
-          <div style={{ width: 28, height: 28, borderRadius: 6, background: t.accent, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <BarChart3 size={15} color="#fff" />
-          </div>
-          {sidebarOpen && <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: "-0.3px", whiteSpace: "nowrap", color: t.text }}>CPM</span>}
+        <div style={{ padding: "14px 14px 12px", borderBottom: `1px solid ${t.border}`, display: "flex", alignItems: "center", overflow: "hidden" }}>
+          {sidebarOpen
+            ? <img src={dark ? "./cpm-logo-dark.svg" : "./cpm-logo-light.svg"} alt="CPM" style={{ height: 36, width: "auto", objectFit: "contain" }} />
+            : <img src={dark ? "./cpm-logo-dark.svg" : "./cpm-logo-light.svg"} alt="CPM" style={{ height: 28, width: 28, objectFit: "contain" }} />
+          }
         </div>
 
         <div style={{ flex: 1, padding: "10px 8px", display: "flex", flexDirection: "column", gap: 2 }}>
