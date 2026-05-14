@@ -528,6 +528,18 @@ def fetch_xero_data():
                 "due_date":     due_date,
             })
         top_invoices.sort(key=lambda x: x["due_date"])
+        print(f"  {len(invoices)} invoices found:")
+        for inv in sorted(invoices, key=lambda x: x.get("DueDate", "")):
+            inv_amount = float(inv.get("AmountDue", 0))
+            inv_type   = inv.get("Type", "?")
+            inv_contact = inv.get("Contact", {}).get("Name", "Unknown")
+            # parse due date for display
+            raw_due = inv.get("DueDate", "")
+            ep_m = __import__("re").search(r"/Date\((\d+)\+\d+\)/", raw_due)
+            if ep_m:
+                import datetime as _dt2
+                raw_due = _dt2.datetime.fromtimestamp(int(ep_m.group(1)) / 1000).strftime("%Y-%m-%d")
+            print(f"    [{inv_type}] {inv_contact}: ${inv_amount:,.2f} due {raw_due}")
         top_invoices = top_invoices[:6]
 
     return {

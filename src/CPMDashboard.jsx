@@ -23,7 +23,7 @@ export default function CPMDashboard() {
     setError(null);
     fetch("./dashboard_data.json")
       .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then((d) => { setData(d); setLoading(false); })
+      .then((d) => { console.log("financials:", d.financials); setData(d); setLoading(false); })
       .catch((e) => { setError(e.message); setLoading(false); });
   };
 
