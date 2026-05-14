@@ -104,13 +104,15 @@ def login(page):
     btn.scroll_into_view_if_needed()
     page.wait_for_timeout(500)
     btn.click()
+    print(f"  URL immediately after Log in click: {page.url}")
 
     page.wait_for_timeout(2000)
     page.screenshot(path=str(SCRIPT_DIR / "debug_after_submit.png"))
-    print(f"  URL after submit: {page.url}")
+    print(f"  URL after 2s wait: {page.url}")
 
     # Handle 2FA — PropertyMe redirects to /auth/verify
     page.wait_for_load_state("networkidle", timeout=20000)
+    print(f"  URL after networkidle: {page.url}")
     if "/auth/verify" in page.url:
         print("  2FA page detected.")
         page.screenshot(path=str(SCRIPT_DIR / "debug_2fa_page.png"))
@@ -133,9 +135,10 @@ def login(page):
         page.wait_for_timeout(500)
 
         page.get_by_role("button", name="Log in").click()
+        print(f"  URL immediately after 2FA submit: {page.url}")
         # Use a broad pattern — redirect may land on manager.propertyme.com with or without a path
         page.wait_for_url("*manager.propertyme.com*", timeout=30000)
-        print(f"  After 2FA: {page.url}")
+        print(f"  URL after 2FA redirect: {page.url}")
     else:
         print("  No 2FA page detected — waiting for manager redirect...")
         page.wait_for_url("*manager.propertyme.com*", timeout=20000)
@@ -287,8 +290,22 @@ def main():
     print(f"Date range   : {start_date} → {end_date}")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=HEADLESS)
-        context = browser.new_context()
+        browser = p.chromium.launch(
+            headless=HEADLESS,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+            ],
+        )
+        context = browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
+            ),
+            viewport={"width": 1280, "height": 800},
+        )
         page    = context.new_page()
 
         try:
