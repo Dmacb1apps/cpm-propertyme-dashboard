@@ -71,14 +71,14 @@ export default function CPMDashboard() {
 
       {/* Sidebar */}
       <nav style={{
-        width: sidebarOpen ? 220 : 56, flexShrink: 0, background: t.surface,
+        width: sidebarOpen ? 240 : 64, flexShrink: 0, background: t.surface,
         borderRight: `1px solid ${t.border}`, display: "flex", flexDirection: "column",
         transition: "width 0.25s ease", overflow: "hidden", position: "sticky", top: 0, height: "100vh"
       }}>
-        <div style={{ padding: "14px 14px 12px", borderBottom: `1px solid ${t.border}`, display: "flex", alignItems: "center", overflow: "hidden" }}>
+        <div style={{ padding: "16px 16px 14px", borderBottom: `1px solid ${t.border}`, display: "flex", alignItems: "center", overflow: "hidden" }}>
           {sidebarOpen
-            ? <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 36, width: "auto", objectFit: "contain" }} />
-            : <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 28, width: 28, objectFit: "contain" }} />
+            ? <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 52, width: "auto", objectFit: "contain" }} />
+            : <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 38, width: 38, objectFit: "contain" }} />
           }
         </div>
 
@@ -215,8 +215,9 @@ export default function CPMDashboard() {
 
                   {/* Complex performance table */}
                   <div style={{ ...card, overflow: "hidden" }}>
-                    <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 }}>
-                      Complex Performance — {data?.month}
+                    <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span>Complex Performance — {data?.month}</span>
+                      <span style={{ color: t.muted, fontWeight: 400, fontSize: 12 }}>{totalUnits} units total</span>
                     </div>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                       <thead>
