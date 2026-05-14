@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T12:56:20",
+  "updated": "2026-05-14T14:33:09",
   "month": "May 2026",
   "complexes": [
     {
@@ -2592,7 +2592,11 @@
     "net_profit": -24067.8,
     "management_fees": 7421.58,
     "wages": 14241.9,
+    "wages_employee": 9766.98,
+    "wages_management": 0.0,
     "loan_interest": 24246.15,
+    "credit_card_don": 3854.1,
+    "credit_card_duncan": 3958.23,
     "payables_total": 47886.61,
     "payables_overdue": 809.09,
     "payables_count": 10,
@@ -2662,6 +2666,8 @@
         "amount_due": 8301.83,
         "due_date": "2026-06-07"
       }
-    ]
+    ],
+    "invoices_due_this_month": 33367.95,
+    "invoices_due_count": 6
   }
 }

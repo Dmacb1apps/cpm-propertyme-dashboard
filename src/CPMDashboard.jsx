@@ -4,6 +4,7 @@ import {
   Moon, Sun, RefreshCw, TrendingUp, DollarSign,
   BarChart3, Loader
 } from "lucide-react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const fmt = (n) => n < 0
   ? `-$${Math.abs(n).toLocaleString()}`
@@ -23,7 +24,7 @@ export default function CPMDashboard() {
     setError(null);
     fetch("./dashboard_data.json")
       .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then((d) => { console.log("financials:", d.financials); setData(d); setLoading(false); })
+      .then((d) => { setData(d); setLoading(false); })
       .catch((e) => { setError(e.message); setLoading(false); });
   };
 
@@ -335,72 +336,189 @@ export default function CPMDashboard() {
 
           {/* BUSINESS FINANCIALS */}
           {!loading && !error && page === "financials" && (() => {
-            const f = data?.financials ?? {};
-            const mgmtFees   = f.management_fees ?? 0;
-            const otherIncome = Math.max(0, (f.total_income ?? 0) - mgmtFees);
-            const otherExp   = Math.max(0, (f.total_expenses ?? 0) - (f.loan_interest ?? 0) - (f.wages ?? 0));
-            const netColor   = (f.net_profit ?? 0) >= 0 ? t.success : "#C00000";
-            const panel = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, overflow: "hidden" };
+            const f         = data?.financials ?? {};
+            const netColor  = (f.net_profit ?? 0) >= 0 ? t.success : "#C00000";
+            const panel     = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, overflow: "hidden" };
             const panelHead = { padding: "13px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
-            const tr = (label, value, bold) => (
-              <tr style={{ borderTop: `1px solid ${t.border}` }}>
-                <td style={{ padding: "11px 20px", color: bold ? t.text : t.muted, fontWeight: bold ? 700 : 400 }}>{label}</td>
-                <td style={{ padding: "11px 20px", textAlign: "right", fontWeight: bold ? 700 : 400, color: bold ? t.text : t.muted }}>{fmt(value)}</td>
-              </tr>
-            );
+
+            // Donut chart data
+            const donutData = [
+              { name: "Income",   value: f.total_income   ?? 0, color: "#1a7f37" },
+              { name: "Expenses", value: f.total_expenses ?? 0, color: "#C00000" },
+            ];
+
+            // Wages
+            const wageEmp  = f.wages_employee  ?? 0;
+            const wageMgmt = f.wages_management ?? 0;
+            const wageOther = Math.max(0, (f.wages ?? 0) - wageEmp - wageMgmt);
+            const wageRows = [
+              { label: "Staff Wages",    value: wageEmp,   color: "#1e2a3a" },
+              ...(wageMgmt > 0 ? [{ label: "Director Fees",   value: wageMgmt, color: "#C00000" }] : []),
+              ...(wageOther > 0 ? [{ label: "Other Wages",    value: wageOther, color: "#8b949e" }] : []),
+            ];
+            const totalWages = wageEmp + wageMgmt + wageOther;
+
+            // Net position
+            const netPosition = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0);
+
             return (
               <div>
-                {/* Stat cards */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 14, marginBottom: 24 }}>
+                {/* ── Row 1: 3 stat cards ── */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 16 }}>
                   {[
-                    { label: "Cash Balance",    value: f.cash_balance      ?? 0, color: t.success },
-                    { label: "MTD Income",       value: f.total_income      ?? 0, color: t.accent  },
-                    { label: "MTD Expenses",     value: f.total_expenses    ?? 0, color: "#C00000" },
-                    { label: "Net Profit",       value: f.net_profit        ?? 0, color: netColor  },
-                    { label: "Bills to Pay",     value: f.payables_total    ?? 0, color: t.warn    },
-                    { label: "To Receive",       value: f.receivables_total ?? 0, color: t.success },
+                    { label: "Cash Balance",    value: f.cash_balance      ?? 0, color: "#1a7f37", sub: "Bank accounts"          },
+                    { label: "Net Profit MTD",  value: f.net_profit        ?? 0, color: netColor,  sub: `Income ${fmt(Math.round(f.total_income ?? 0))} · Expenses ${fmt(Math.round(f.total_expenses ?? 0))}` },
+                    { label: "Bills to Pay",    value: f.payables_total    ?? 0, color: "#C00000", sub: `${f.payables_count ?? 0} invoices · ${fmt(Math.round(f.payables_overdue ?? 0))} overdue` },
                   ].map((s) => (
-                    <div key={s.label} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: "16px 18px" }}>
-                      <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 10 }}>{s.label}</div>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: s.color, letterSpacing: "-0.5px" }}>{fmt(Math.round(s.value))}</div>
-                      <div style={{ height: 3, marginTop: 12, borderRadius: 2, background: s.color, opacity: 0.25 }} />
+                    <div key={s.label} style={{ background: t.surface, borderTop: `3px solid ${s.color}`, border: `1px solid ${t.border}`, borderRadius: 8, padding: "18px 22px" }}>
+                      <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8 }}>{s.label}</div>
+                      <div style={{ fontSize: 26, fontWeight: 700, color: s.color, letterSpacing: "-0.5px", marginBottom: 6 }}>{fmt(Math.round(s.value))}</div>
+                      <div style={{ color: t.muted, fontSize: 11 }}>{s.sub}</div>
                     </div>
                   ))}
                 </div>
 
-                {/* Breakdown panels */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
-                  {/* Income */}
+                {/* ── Row 2: Donut chart + Credit cards ── */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+
+                  {/* Donut chart */}
                   <div style={panel}>
-                    <div style={panelHead}>Income Breakdown</div>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                      <tbody>
-                        {tr("Management Fees",       mgmtFees)}
-                        {tr("Body Corporate / Other", otherIncome)}
-                        {tr("Total Income",           f.total_income ?? 0, true)}
-                      </tbody>
-                    </table>
+                    <div style={panelHead}>Monthly P&amp;L Overview</div>
+                    <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: 24 }}>
+                      <div style={{ position: "relative", flexShrink: 0, width: 160, height: 160 }}>
+                        <ResponsiveContainer width={160} height={160}>
+                          <PieChart>
+                            <Pie data={donutData} cx="50%" cy="50%" innerRadius={50} outerRadius={72} dataKey="value" paddingAngle={3} startAngle={90} endAngle={-270}>
+                              {donutData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                            </Pie>
+                            <Tooltip formatter={(v) => fmt(Math.round(v))} contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 6, fontSize: 12 }} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                          <div style={{ fontSize: 10, color: t.muted, textTransform: "uppercase", letterSpacing: 0.5 }}>Net</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: netColor }}>{fmt(Math.round(f.net_profit ?? 0))}</div>
+                        </div>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        {donutData.map((d) => (
+                          <div key={d.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                              <div style={{ width: 10, height: 10, borderRadius: 2, background: d.color, flexShrink: 0 }} />
+                              <span style={{ color: t.muted }}>{d.name}</span>
+                            </div>
+                            <span style={{ fontWeight: 700, fontSize: 14, color: t.text }}>{fmt(Math.round(d.value))}</span>
+                          </div>
+                        ))}
+                        <div style={{ borderTop: `1px solid ${t.border}`, paddingTop: 12, marginTop: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ fontSize: 12, color: t.muted }}>Loan Interest</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: t.text }}>{fmt(Math.round(f.loan_interest ?? 0))}</span>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
+                          <span style={{ fontSize: 12, color: t.muted }}>Management Fees</span>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: t.text }}>{fmt(Math.round(f.management_fees ?? 0))}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Expenses */}
+                  {/* Credit cards */}
                   <div style={panel}>
-                    <div style={panelHead}>Expense Breakdown</div>
+                    <div style={panelHead}>Credit Cards</div>
+                    <div style={{ padding: "20px 24px" }}>
+                      {[
+                        { name: "Don",    balance: f.credit_card_don    ?? 0 },
+                        { name: "Duncan", balance: f.credit_card_duncan ?? 0 },
+                      ].map((card) => (
+                        <div key={card.name} style={{ background: "linear-gradient(135deg, #1e2a3a 0%, #2d3f52 100%)", borderRadius: 10, padding: "16px 20px", marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>Credit Card</div>
+                            <div style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>{card.name}</div>
+                          </div>
+                          <div style={{ textAlign: "right" }}>
+                            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>Balance</div>
+                            <div style={{ color: card.balance > 0 ? "#f85149" : "#3fb950", fontWeight: 700, fontSize: 20 }}>{fmt(Math.round(card.balance))}</div>
+                          </div>
+                        </div>
+                      ))}
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 4px 0", borderTop: `1px solid ${t.border}` }}>
+                        <span style={{ fontSize: 12, color: t.muted }}>Total Credit Card Balance</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#f85149" }}>{fmt(Math.round((f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0)))}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Row 3: Wages + Position summary ── */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+
+                  {/* Wages breakdown */}
+                  <div style={panel}>
+                    <div style={panelHead}>Wages Breakdown</div>
+                    <div style={{ padding: "20px 24px" }}>
+                      {wageRows.map((w) => {
+                        const pct = totalWages > 0 ? Math.round((w.value / totalWages) * 100) : 0;
+                        return (
+                          <div key={w.label} style={{ marginBottom: 18 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7, fontSize: 12 }}>
+                              <span style={{ color: t.text }}>{w.label}</span>
+                              <span style={{ color: t.muted }}>{fmt(Math.round(w.value))} <span style={{ color: t.border }}>·</span> {pct}%</span>
+                            </div>
+                            <div style={{ height: 6, borderRadius: 3, background: dark ? "#30363d" : "#e0e0e0" }}>
+                              <div style={{ height: "100%", width: `${pct}%`, borderRadius: 3, background: w.color, transition: "width 0.4s ease" }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {wageRows.length === 0 && (
+                        <div style={{ color: t.muted, fontSize: 12 }}>No wage data this month.</div>
+                      )}
+                      <div style={{ borderTop: `1px solid ${t.border}`, paddingTop: 12, marginTop: 2, display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
+                        <span>Total Wages</span>
+                        <span>{fmt(Math.round(totalWages))}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Financial position */}
+                  <div style={panel}>
+                    <div style={panelHead}>Financial Position</div>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                       <tbody>
-                        {tr("Loan Interest",   f.loan_interest ?? 0)}
-                        {tr("Wages",           f.wages         ?? 0)}
-                        {tr("Other Expenses",  otherExp)}
-                        {tr("Total Expenses",  f.total_expenses ?? 0, true)}
+                        {[
+                          { label: "Cash at Bank",        value: f.cash_balance      ?? 0, color: t.success, sign: 1  },
+                          { label: "Invoices to Receive", value: f.receivables_total ?? 0, color: t.success, sign: 1  },
+                          { label: "Bills to Pay",        value: f.payables_total    ?? 0, color: "#C00000", sign: -1 },
+                        ].map(({ label, value, color, sign }) => (
+                          <tr key={label} style={{ borderTop: `1px solid ${t.border}` }}>
+                            <td style={{ padding: "13px 24px", color: t.muted, fontSize: 13 }}>{label}</td>
+                            <td style={{ padding: "13px 24px", textAlign: "right", fontWeight: 600, color: sign > 0 ? color : "#C00000", fontSize: 13 }}>
+                              {sign < 0 ? "-" : ""}{fmt(Math.round(value))}
+                            </td>
+                          </tr>
+                        ))}
+                        <tr style={{ borderTop: `2px solid ${t.border}`, background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}>
+                          <td style={{ padding: "14px 24px", fontWeight: 700, fontSize: 13 }}>Net Working Capital</td>
+                          <td style={{ padding: "14px 24px", textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : "#C00000" }}>
+                            {fmt(Math.round(netPosition))}
+                          </td>
+                        </tr>
+                        <tr style={{ borderTop: `1px solid ${t.border}` }}>
+                          <td style={{ padding: "13px 24px", color: t.muted, fontSize: 13 }}>Invoices This Month</td>
+                          <td style={{ padding: "13px 24px", textAlign: "right", fontSize: 13 }}>
+                            <span style={{ color: t.muted, marginRight: 8 }}>{f.invoices_due_count ?? 0} invoices</span>
+                            <span style={{ fontWeight: 600, color: t.success }}>{fmt(Math.round(f.invoices_due_this_month ?? 0))}</span>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                {/* Invoice tables — payables and receivables side by side */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
+                {/* ── Row 4: Invoice tables ── */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                   {[
-                    { title: "Bills to Pay",         rows: f.top_payables    ?? [], total: f.payables_total    ?? 0, count: f.payables_count    ?? 0, overdue: f.payables_overdue    ?? 0 },
-                    { title: "Invoices to Receive",  rows: f.top_receivables ?? [], total: f.receivables_total ?? 0, count: f.receivables_count ?? 0, overdue: f.receivables_overdue ?? 0 },
+                    { title: "Bills to Pay",        rows: f.top_payables    ?? [], total: f.payables_total    ?? 0, count: f.payables_count    ?? 0, overdue: f.payables_overdue    ?? 0 },
+                    { title: "Invoices to Receive", rows: f.top_receivables ?? [], total: f.receivables_total ?? 0, count: f.receivables_count ?? 0, overdue: f.receivables_overdue ?? 0 },
                   ].map(({ title, rows, total, count, overdue }) => (
                     <div key={title} style={panel}>
                       <div style={{ ...panelHead, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -411,14 +529,14 @@ export default function CPMDashboard() {
                         </span>
                       </div>
                       {rows.length === 0
-                        ? <div style={{ padding: "16px 20px", color: t.muted, fontSize: 12 }}>No invoices this month.</div>
+                        ? <div style={{ padding: "16px 24px", color: t.muted, fontSize: 12 }}>No invoices this month.</div>
                         : (
                           <table style={{ width: "100%", borderCollapse: "collapse" }}>
                             <thead>
                               <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                                <th style={{ padding: "9px 20px", textAlign: "left",  fontWeight: 500 }}>Contact</th>
-                                <th style={{ padding: "9px 20px", textAlign: "right", fontWeight: 500 }}>Amount</th>
-                                <th style={{ padding: "9px 20px", textAlign: "right", fontWeight: 500 }}>Due</th>
+                                <th style={{ padding: "9px 24px", textAlign: "left",  fontWeight: 500 }}>Contact</th>
+                                <th style={{ padding: "9px 24px", textAlign: "right", fontWeight: 500 }}>Amount</th>
+                                <th style={{ padding: "9px 24px", textAlign: "right", fontWeight: 500 }}>Due</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -426,9 +544,9 @@ export default function CPMDashboard() {
                                 const od = inv.due_date < new Date().toISOString().slice(0, 10);
                                 return (
                                   <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: od ? (dark ? "rgba(192,0,0,0.06)" : "rgba(192,0,0,0.04)") : "transparent" }}>
-                                    <td style={{ padding: "10px 20px", color: od ? "#C00000" : t.text, fontWeight: od ? 600 : 400 }}>{inv.contact_name}</td>
-                                    <td style={{ padding: "10px 20px", textAlign: "right" }}>{fmt(inv.amount_due)}</td>
-                                    <td style={{ padding: "10px 20px", textAlign: "right", color: od ? "#C00000" : t.muted, fontWeight: od ? 600 : 400 }}>{inv.due_date}</td>
+                                    <td style={{ padding: "10px 24px", color: od ? "#C00000" : t.text, fontWeight: od ? 600 : 400, fontSize: 13 }}>{inv.contact_name}</td>
+                                    <td style={{ padding: "10px 24px", textAlign: "right", fontSize: 13 }}>{fmt(inv.amount_due)}</td>
+                                    <td style={{ padding: "10px 24px", textAlign: "right", color: od ? "#C00000" : t.muted, fontWeight: od ? 600 : 400, fontSize: 13 }}>{inv.due_date}</td>
                                   </tr>
                                 );
                               })}
@@ -438,10 +556,6 @@ export default function CPMDashboard() {
                       }
                     </div>
                   ))}
-                </div>
-
-                <div style={{ color: t.muted, fontSize: 11, fontStyle: "italic", textAlign: "center" }}>
-                  Management fees are disbursed at month end. Mid-month figures will reflect partial income.
                 </div>
               </div>
             );

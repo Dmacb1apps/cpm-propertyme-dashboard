@@ -349,6 +349,27 @@ def _xero_sum_keyword(rows, keyword):
     return total
 
 
+def _xero_find_first_keyword(rows, keyword):
+    """
+    Recursively find the FIRST Row whose first cell contains keyword (case-insensitive).
+    Returns abs float value, or 0.0 if not found.
+    """
+    for row in rows:
+        rt = row.get("RowType")
+        if rt == "Row":
+            cells = row.get("Cells", [])
+            if cells and keyword.lower() in cells[0].get("Value", "").lower():
+                try:
+                    return abs(float(cells[1].get("Value") or 0))
+                except (IndexError, ValueError):
+                    return 0.0
+        elif rt == "Section":
+            result = _xero_find_first_keyword(row.get("Rows", []), keyword)
+            if result:
+                return result
+    return 0.0
+
+
 def _xero_section_total(rows, title):
     """Return the SummaryRow value for a named section (used for Balance Sheet Bank total)."""
     for row in rows:
@@ -477,12 +498,28 @@ def fetch_xero_data():
     net_profit      = _xero_find_label(pl_rows, "Net Profit") or 0.0
 
     # Sum all wage and interest lines (each category has multiple accounts)
-    management_fees = _xero_find_label(pl_rows, "Management Fees") or 0.0
-    wages           = _xero_sum_keyword(pl_rows, "wages")
-    loan_interest   = _xero_sum_keyword(pl_rows, "interest")
+    management_fees  = _xero_find_label(pl_rows, "Management Fees") or 0.0
+    wages            = _xero_sum_keyword(pl_rows, "wages")
+    loan_interest    = _xero_sum_keyword(pl_rows, "interest")
 
-    # Balance Sheet for cash position
-    cash_balance = 0.0
+    # Wages breakdown — try common AU Xero account names
+    wages_employee   = (
+        _xero_find_label(pl_rows, "Wages & Salaries")
+        or _xero_find_label(pl_rows, "Wages and Salaries")
+        or _xero_find_first_keyword(pl_rows, "wage")
+        or 0.0
+    )
+    wages_management = (
+        _xero_find_label(pl_rows, "Directors Fees")
+        or _xero_find_label(pl_rows, "Directors Wages")
+        or _xero_find_label(pl_rows, "Director Fees")
+        or 0.0
+    )
+
+    # Balance Sheet for cash position and credit cards
+    cash_balance     = 0.0
+    credit_card_don  = 0.0
+    credit_card_duncan = 0.0
     bs_resp = requests.get(
         "https://api.xero.com/api.xro/2.0/Reports/BalanceSheet",
         headers=headers,
@@ -490,7 +527,9 @@ def fetch_xero_data():
     )
     if bs_resp.ok:
         bs_rows = bs_resp.json()["Reports"][0].get("Rows", [])
-        cash_balance = _xero_section_total(bs_rows, "Bank")
+        cash_balance     = _xero_section_total(bs_rows, "Bank")
+        credit_card_don  = _xero_find_first_keyword(bs_rows, " don")    or _xero_find_first_keyword(bs_rows, "don ")    or 0.0
+        credit_card_duncan = _xero_find_first_keyword(bs_rows, "duncan") or 0.0
 
     # Outstanding invoices due this month — split by type
     import calendar, re as _re, datetime as _dt
@@ -543,21 +582,27 @@ def fetch_xero_data():
         print(f"    {r['contact_name']}: ${r['amount_due']:,.2f} due {r['due_date']}")
 
     return {
-        "cash_balance":       round(cash_balance, 2),
-        "total_income":       round(total_income, 2),
-        "total_expenses":     round(total_expenses, 2),
-        "net_profit":         round(net_profit, 2),
-        "management_fees":    round(management_fees, 2),
-        "wages":              round(wages, 2),
-        "loan_interest":      round(loan_interest, 2),
-        "payables_total":     pay_total,
-        "payables_overdue":   pay_overdue,
-        "payables_count":     len(payables),
-        "top_payables":       top_payables,
-        "receivables_total":  rec_total,
-        "receivables_overdue": rec_overdue,
-        "receivables_count":  len(receivables),
-        "top_receivables":    top_receivables,
+        "cash_balance":           round(cash_balance, 2),
+        "total_income":           round(total_income, 2),
+        "total_expenses":         round(total_expenses, 2),
+        "net_profit":             round(net_profit, 2),
+        "management_fees":        round(management_fees, 2),
+        "wages":                  round(wages, 2),
+        "wages_employee":         round(wages_employee, 2),
+        "wages_management":       round(wages_management, 2),
+        "loan_interest":          round(loan_interest, 2),
+        "credit_card_don":        round(credit_card_don, 2),
+        "credit_card_duncan":     round(credit_card_duncan, 2),
+        "payables_total":         pay_total,
+        "payables_overdue":       pay_overdue,
+        "payables_count":         len(payables),
+        "top_payables":           top_payables,
+        "receivables_total":      rec_total,
+        "receivables_overdue":    rec_overdue,
+        "receivables_count":      len(receivables),
+        "top_receivables":        top_receivables,
+        "invoices_due_this_month": rec_total,
+        "invoices_due_count":     len(receivables),
     }
 
 
