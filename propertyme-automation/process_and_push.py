@@ -362,6 +362,63 @@ def _xero_section_total(rows, title):
     return 0.0
 
 
+def _rotate_xero_token(new_refresh_token):
+    """
+    Persist the new refresh token after Xero's token rotation.
+    - Always writes to xero_tokens.json for local runs.
+    - In CI (CI=true), also updates the GitHub Actions secret via API.
+    """
+    tokens_file = SCRIPT_DIR / "xero_tokens.json"
+    try:
+        existing = json.loads(tokens_file.read_text()) if tokens_file.exists() else {}
+    except Exception:
+        existing = {}
+    existing["refresh_token"] = new_refresh_token
+    tokens_file.write_text(json.dumps(existing, indent=2))
+    print(f"  Refresh token rotated and saved to {tokens_file.name}")
+
+    if os.environ.get("CI") != "true":
+        return
+
+    github_token = os.environ.get("GITHUB_TOKEN")
+    if not github_token:
+        print("  WARNING: CI=true but GITHUB_TOKEN not set — cannot update secret.")
+        return
+
+    try:
+        from nacl import encoding, public as nacl_public
+
+        repo    = "Dmacb1apps/cpm-propertyme-dashboard"
+        api_url = f"https://api.github.com/repos/{repo}/actions/secrets"
+        gh_headers = {
+            "Authorization": f"Bearer {github_token}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+
+        # Fetch repo public key for secret encryption
+        key_resp = requests.get(f"{api_url}/public-key", headers=gh_headers)
+        key_resp.raise_for_status()
+        key_data  = key_resp.json()
+        public_key = nacl_public.PublicKey(key_data["key"].encode(), encoding.Base64Encoder())
+        sealed_box = nacl_public.SealedBox(public_key)
+        encrypted  = sealed_box.encrypt(new_refresh_token.encode())
+        import base64
+        encrypted_b64 = base64.b64encode(encrypted).decode()
+
+        put_resp = requests.put(
+            f"{api_url}/XERO_REFRESH_TOKEN",
+            headers=gh_headers,
+            json={"encrypted_value": encrypted_b64, "key_id": key_data["key_id"]},
+        )
+        put_resp.raise_for_status()
+        print("  GitHub Actions secret XERO_REFRESH_TOKEN updated.")
+    except ImportError:
+        print("  WARNING: PyNaCl not installed — cannot update GitHub secret.")
+    except Exception as e:
+        print(f"  WARNING: Failed to update GitHub secret: {e}")
+
+
 def fetch_xero_data():
     """
     Refresh the Xero access token, pull MTD P&L and Balance Sheet,
@@ -375,7 +432,7 @@ def fetch_xero_data():
         print("  Xero credentials not set — skipping financials.")
         return None
 
-    # Get fresh access token
+    # Get fresh access token — Xero rotates the refresh token on every use
     token_resp = requests.post(
         "https://identity.xero.com/connect/token",
         data={"grant_type": "refresh_token", "refresh_token": refresh_token},
@@ -383,7 +440,11 @@ def fetch_xero_data():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
     token_resp.raise_for_status()
-    access_token = token_resp.json()["access_token"]
+    token_data    = token_resp.json()
+    access_token  = token_data["access_token"]
+    new_refresh   = token_data.get("refresh_token")
+    if new_refresh:
+        _rotate_xero_token(new_refresh)
 
     headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json"}
 
