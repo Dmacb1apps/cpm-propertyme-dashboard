@@ -133,10 +133,12 @@ def login(page):
         page.wait_for_timeout(500)
 
         page.get_by_role("button", name="Log in").click()
-        page.wait_for_url("**/manager.propertyme.com/**", timeout=30000)
+        # Use a broad pattern — redirect may land on manager.propertyme.com with or without a path
+        page.wait_for_url("*manager.propertyme.com*", timeout=30000)
         print(f"  After 2FA: {page.url}")
     else:
-        print("  No 2FA page detected.")
+        print("  No 2FA page detected — waiting for manager redirect...")
+        page.wait_for_url("*manager.propertyme.com*", timeout=20000)
 
     print(f"  Login complete — current URL: {page.url}")
 
