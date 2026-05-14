@@ -308,8 +308,49 @@ def write_sheet(ws, timestamp_str, headers, rows, flagged_indices=None):
 # Xero financials
 # ---------------------------------------------------------------------------
 
+def _xero_find_label(rows, label):
+    """
+    Recursively find a Row or SummaryRow whose first cell exactly matches label.
+    Returns the float value from the second cell, or None if not found.
+    """
+    for row in rows:
+        rt = row.get("RowType")
+        if rt in ("Row", "SummaryRow"):
+            cells = row.get("Cells", [])
+            if cells and cells[0].get("Value", "").strip() == label:
+                try:
+                    return float(cells[1].get("Value") or 0)
+                except (IndexError, ValueError):
+                    return 0.0
+        elif rt == "Section":
+            result = _xero_find_label(row.get("Rows", []), label)
+            if result is not None:
+                return result
+    return None
+
+
+def _xero_sum_keyword(rows, keyword):
+    """
+    Recursively sum all Row values whose first cell contains keyword (case-insensitive).
+    Handles reports that split a category across multiple line items.
+    """
+    total = 0.0
+    for row in rows:
+        rt = row.get("RowType")
+        if rt == "Row":
+            cells = row.get("Cells", [])
+            if cells and keyword.lower() in cells[0].get("Value", "").lower():
+                try:
+                    total += abs(float(cells[1].get("Value") or 0))
+                except (IndexError, ValueError):
+                    pass
+        elif rt == "Section":
+            total += _xero_sum_keyword(row.get("Rows", []), keyword)
+    return total
+
+
 def _xero_section_total(rows, title):
-    """Return the SummaryRow value for a named section."""
+    """Return the SummaryRow value for a named section (used for Balance Sheet Bank total)."""
     for row in rows:
         if row.get("RowType") == "Section" and title.lower() in row.get("Title", "").lower():
             for sub in row.get("Rows", []):
@@ -318,23 +359,6 @@ def _xero_section_total(rows, title):
                         return abs(float(sub["Cells"][1].get("Value") or 0))
                     except (IndexError, ValueError):
                         return 0.0
-    return 0.0
-
-
-def _xero_find_line(rows, keyword):
-    """Search all Row cells recursively for an account matching keyword."""
-    for row in rows:
-        if row.get("RowType") == "Row":
-            cells = row.get("Cells", [])
-            if cells and keyword.lower() in cells[0].get("Value", "").lower():
-                try:
-                    return abs(float(cells[1].get("Value") or 0))
-                except (IndexError, ValueError):
-                    return 0.0
-        elif row.get("RowType") == "Section":
-            result = _xero_find_line(row.get("Rows", []), keyword)
-            if result:
-                return result
     return 0.0
 
 
@@ -382,25 +406,19 @@ def fetch_xero_data():
     pl_resp.raise_for_status()
     pl_rows = pl_resp.json()["Reports"][0].get("Rows", [])
 
-    total_income   = _xero_section_total(pl_rows, "Income")
+    # "Total Income" and "Net Profit" appear as Row/SummaryRow cells in empty-title
+    # sections — use exact label matching rather than section title matching.
+    total_income   = _xero_find_label(pl_rows, "Total Income") or 0.0
     total_expenses = (
-        _xero_section_total(pl_rows, "Less Operating Expenses") or
-        _xero_section_total(pl_rows, "Operating Expenses") or
-        _xero_section_total(pl_rows, "Expenses")
+        (_xero_find_label(pl_rows, "Total Operating Expenses") or 0.0) +
+        (_xero_find_label(pl_rows, "Total Non-operating Expenses") or 0.0)
     )
+    net_profit      = _xero_find_label(pl_rows, "Net Profit") or 0.0
 
-    # Net profit is the final SummaryRow at the report level
-    net_profit = 0.0
-    for row in pl_rows:
-        if row.get("RowType") == "SummaryRow":
-            try:
-                net_profit = float(row["Cells"][1].get("Value") or 0)
-            except (IndexError, ValueError):
-                pass
-
-    management_fees = _xero_find_line(pl_rows, "management")
-    wages           = _xero_find_line(pl_rows, "wages") or _xero_find_line(pl_rows, "salaries")
-    loan_interest   = _xero_find_line(pl_rows, "interest")
+    # Sum all wage and interest lines (each category has multiple accounts)
+    management_fees = _xero_find_label(pl_rows, "Management Fees") or 0.0
+    wages           = _xero_sum_keyword(pl_rows, "wages")
+    loan_interest   = _xero_sum_keyword(pl_rows, "interest")
 
     # Balance Sheet for cash position
     cash_balance = 0.0
@@ -411,10 +429,7 @@ def fetch_xero_data():
     )
     if bs_resp.ok:
         bs_rows = bs_resp.json()["Reports"][0].get("Rows", [])
-        cash_balance = (
-            _xero_find_line(bs_rows, "cash") or
-            _xero_section_total(bs_rows, "Bank")
-        )
+        cash_balance = _xero_section_total(bs_rows, "Bank")
 
     return {
         "cash_balance":    round(cash_balance, 2),
