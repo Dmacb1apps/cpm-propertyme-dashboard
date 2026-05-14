@@ -39,6 +39,7 @@ COMPLEX_MAP = {
     "13": "Everton Breeze",
     "14": "Trend Everton Park",
     "15": "Vue Taigum",
+    "99": "Outside Lettings",
 }
 
 SCRIPT_DIR        = Path(__file__).parent
@@ -660,7 +661,9 @@ def save_json(summary, owner_data, financials=None, rent_changes=None):
             {
                 "code":          _REVERSE_MAP.get(s["complex_name"], "??"),
                 "name":          s["complex_name"],
-                "owners":        s["owner_count"],
+                # For complexes with no folio ledger entries (e.g. Outside Lettings / complex 99),
+                # fall back to the unit count from the rent Excel.
+                "owners":        s["owner_count"] if s["owner_count"] > 0 else s["unit_count"],
                 "flagged":       s["flagged_count"],
                 "avgRent":       round(s["avg_rent"]),
                 "totalRent":     round(s["total_rent"], 2),

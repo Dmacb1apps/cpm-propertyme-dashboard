@@ -227,22 +227,37 @@ export default function CPMDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {complexes.map((c, i) => {
-                          const pct = c.rentChangePct;
-                          const changeEl = pct == null
-                            ? <span style={{ color: t.muted }}>—</span>
-                            : pct >= 0
-                              ? <span style={{ color: "#1a7f37", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
-                              : <span style={{ color: "#CC0000", fontWeight: 600 }}>↓ {pct.toFixed(1)}%</span>;
-                          return (
-                            <tr key={c.code} style={{ borderTop: `1px solid ${t.border}`, background: i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)") }}>
-                              <td style={{ padding: "11px 20px", fontWeight: 600 }}>{c.name}</td>
-                              <td style={{ padding: "11px 20px", textAlign: "right", color: t.muted }}>{c.owners}</td>
-                              <td style={{ padding: "11px 20px", textAlign: "right" }}>${c.avgRent}/wk</td>
-                              <td style={{ padding: "11px 20px", textAlign: "right" }}>{changeEl}</td>
-                            </tr>
-                          );
-                        })}
+                        {(() => {
+                          const main = complexes.filter(c => c.code !== "99");
+                          const outside = complexes.find(c => c.code === "99");
+                          const renderRow = (c, i, divider) => {
+                            const pct = c.rentChangePct;
+                            const changeEl = pct == null
+                              ? <span style={{ color: t.muted }}>—</span>
+                              : pct >= 0
+                                ? <span style={{ color: "#1a7f37", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
+                                : <span style={{ color: "#CC0000", fontWeight: 600 }}>↓ {pct.toFixed(1)}%</span>;
+                            return (
+                              <tr key={c.code} style={{
+                                borderTop: divider
+                                  ? `2px solid ${t.border}`
+                                  : `1px solid ${t.border}`,
+                                background: divider
+                                  ? (dark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)")
+                                  : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)"))
+                              }}>
+                                <td style={{ padding: "11px 20px", fontWeight: 600, color: divider ? t.muted : t.text }}>{c.name}</td>
+                                <td style={{ padding: "11px 20px", textAlign: "right", color: t.muted }}>{c.owners}</td>
+                                <td style={{ padding: "11px 20px", textAlign: "right", color: divider ? t.muted : t.text }}>${c.avgRent}/wk</td>
+                                <td style={{ padding: "11px 20px", textAlign: "right" }}>{changeEl}</td>
+                              </tr>
+                            );
+                          };
+                          return [
+                            ...main.map((c, i) => renderRow(c, i, false)),
+                            ...(outside ? [renderRow(outside, 0, true)] : []),
+                          ];
+                        })()}
                       </tbody>
                     </table>
                   </div>
