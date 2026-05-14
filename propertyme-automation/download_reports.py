@@ -3,8 +3,8 @@ Downloads two PropertyMe reports for the current month:
   - Folio Ledger (PDF)
   - Monthly Property/Rent (Excel)
 
-Requires a valid session.json created by refresh_session.py.
-Files are saved to the downloads/ folder with a date-stamped filename.
+Logs in on every run using PROPERTYME_EMAIL, PROPERTYME_PASSWORD, and
+PROPERTYME_TOTP_SECRET environment variables. No session file required.
 
 Usage:
     python3 download_reports.py
@@ -12,24 +12,27 @@ Usage:
 
 import os
 import time
+import pyotp
 from datetime import date
 from pathlib import Path
+from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 
-SCRIPT_DIR     = Path(__file__).parent
-SESSION_FILE   = SCRIPT_DIR / "session.json"
-DOWNLOADS_DIR  = SCRIPT_DIR / "downloads"
+load_dotenv(Path(__file__).parent / ".env")
+
+SCRIPT_DIR       = Path(__file__).parent
+DOWNLOADS_DIR    = SCRIPT_DIR / "downloads"
 SYSTEM_DOWNLOADS = Path.home() / "Downloads"
-BASE_URL = "https://manager.propertyme.com/#/"
-HEADLESS = os.environ.get("CI") == "true"
+# Navigating to manager.propertyme.com redirects to login when unauthenticated,
+# then redirects back after successful login — keeping session cookies on the right domain.
+MANAGER_URL      = "https://manager.propertyme.com"
+HEADLESS         = os.environ.get("CI") == "true"
 
 
 def this_month_range():
     today = date.today()
     start = today.replace(day=1)
-    # display format for PropertyMe date fields
     display = start.strftime("%d/%m/%Y"), today.strftime("%d/%m/%Y")
-    # ISO format for filenames: 2026-05-13
     iso_today = today.strftime("%Y-%m-%d")
     return display[0], display[1], iso_today
 
@@ -43,6 +46,101 @@ def set_date_field(page, selector, value):
     field.press("Tab")
 
 
+def login(page):
+    """
+    Drive to manager.propertyme.com which redirects to login when unauthenticated.
+    Fills credentials, handles 2FA if prompted, then waits for redirect back.
+    """
+    email    = os.environ["PROPERTYME_EMAIL"]
+    password = os.environ["PROPERTYME_PASSWORD"]
+
+    print(f"  Email being used: {email[:5]}...")
+    print(f"  Password loaded: {'yes' if password else 'NO - EMPTY'}")
+
+    print(f"Navigating to {MANAGER_URL} (will redirect to login)...")
+    page.goto(MANAGER_URL)
+    page.wait_for_load_state("networkidle", timeout=20000)
+    print(f"  Landed on: {page.url}")
+
+    screenshot_path = SCRIPT_DIR / "debug_login_page.png"
+    page.screenshot(path=str(screenshot_path))
+    print(f"  Screenshot saved: {screenshot_path}")
+
+    inputs = page.query_selector_all("input")
+    print(f"  Found {len(inputs)} input field(s):")
+    for inp in inputs:
+        print("  INPUT:",
+              inp.get_attribute("type"),
+              inp.get_attribute("name"),
+              inp.get_attribute("id"),
+              inp.get_attribute("placeholder"))
+
+    # Wait for the form to fully load
+    page.wait_for_selector("input[type='email']", timeout=15000)
+
+    inputs = page.query_selector_all("input")
+    print(f"  Found {len(inputs)} input field(s):")
+    for inp in inputs:
+        print("  INPUT found:",
+              inp.get_attribute("type"),
+              inp.get_attribute("name"),
+              inp.get_attribute("id"))
+
+    # Fill email
+    email_input = page.locator("input[type='email']")
+    email_input.click()
+    email_input.fill(email)
+    page.wait_for_timeout(800)
+
+    # Fill password
+    password_input = page.locator("input[type='password']")
+    password_input.click()
+    password_input.fill(password)
+    page.wait_for_timeout(800)
+
+    # Submit
+    btn = page.locator("button:has-text('Log in')")
+    btn.wait_for(state="visible")
+    btn.scroll_into_view_if_needed()
+    page.wait_for_timeout(500)
+    btn.click()
+
+    page.wait_for_timeout(2000)
+    page.screenshot(path=str(SCRIPT_DIR / "debug_after_submit.png"))
+    print(f"  URL after submit: {page.url}")
+
+    # Handle 2FA — PropertyMe redirects to /auth/verify
+    page.wait_for_load_state("networkidle", timeout=20000)
+    if "/auth/verify" in page.url:
+        print("  2FA page detected.")
+        page.screenshot(path=str(SCRIPT_DIR / "debug_2fa_page.png"))
+        print(f"  Screenshot saved: debug_2fa_page.png")
+
+        inputs = page.query_selector_all("input")
+        print(f"  Found {len(inputs)} input(s) on 2FA page:")
+        for inp in inputs:
+            print("  2FA INPUT:",
+                  inp.get_attribute("type"),
+                  inp.get_attribute("name"),
+                  inp.get_attribute("id"))
+
+        code = pyotp.TOTP(os.environ["PROPERTYME_TOTP_SECRET"]).now()
+        print(f"  Entering 2FA code: {code}")
+
+        otp_boxes = page.locator("input[type='text']")
+        otp_boxes.first.click()
+        page.keyboard.type(code)
+        page.wait_for_timeout(500)
+
+        page.get_by_role("button", name="Log in").click()
+        page.wait_for_url("**/manager.propertyme.com/**", timeout=30000)
+        print(f"  After 2FA: {page.url}")
+    else:
+        print("  No 2FA page detected.")
+
+    print(f"  Login complete — current URL: {page.url}")
+
+
 def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
     print("  Opening Folio Ledger report...")
     with page.expect_popup() as popup_info:
@@ -50,7 +148,6 @@ def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
     report = popup_info.value
     report.wait_for_load_state("domcontentloaded")
 
-    # Wait for the report content to fully render before exporting
     try:
         report.wait_for_load_state("networkidle", timeout=15000)
         print("  Report loaded (networkidle).")
@@ -58,13 +155,12 @@ def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
         print("  networkidle timed out — waiting 3s as fallback.")
         report.wait_for_timeout(3000)
 
-    # Set date range if date fields are present
     if report.locator("input[placeholder*='date'], input[type='date']").count() >= 2:
         date_inputs = report.locator("input[placeholder*='date'], input[type='date']").all()
         set_date_field(report, date_inputs[0], start_date)
         set_date_field(report, date_inputs[1], end_date)
 
-    filename = f"folio_ledger_{iso_date}.pdf"
+    filename  = f"folio_ledger_{iso_date}.pdf"
     save_path = downloads_dir / filename
 
     with report.expect_download() as dl_info:
@@ -77,7 +173,6 @@ def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
 
 def click_export_button(report):
     """Try multiple strategies to click the Export button."""
-    # Strategy 1: role=button with exact name
     btn = report.locator("button:has-text('Export')")
     try:
         btn.wait_for(state="visible", timeout=8000)
@@ -87,7 +182,6 @@ def click_export_button(report):
     except Exception:
         pass
 
-    # Strategy 2: get_by_role
     try:
         report.get_by_role("button", name="Export").click(timeout=5000)
         print("  Found Export button via get_by_role.")
@@ -95,7 +189,6 @@ def click_export_button(report):
     except Exception:
         pass
 
-    # Strategy 3: get_by_text (broader match)
     try:
         report.get_by_text("Export", exact=True).click(timeout=5000)
         print("  Found Export button via get_by_text.")
@@ -123,7 +216,6 @@ def click_export_excel(report):
         except Exception:
             continue
 
-    # Final fallback: get_by_role link
     try:
         report.get_by_role("link", name="Export Excel").click(timeout=5000)
         print("  Found Export Excel via get_by_role link.")
@@ -143,7 +235,6 @@ def download_monthly_rent(page, start_date, end_date, iso_date, downloads_dir):
     report = popup_info.value
     report.wait_for_load_state("domcontentloaded")
 
-    # Wait for report data to load before interacting
     try:
         report.wait_for_load_state("networkidle", timeout=15000)
         print("  Report loaded (networkidle).")
@@ -151,17 +242,14 @@ def download_monthly_rent(page, start_date, end_date, iso_date, downloads_dir):
         print("  networkidle timed out — waiting 3s as fallback.")
         report.wait_for_timeout(3000)
 
-    # Set date range if date fields are present
     if report.locator("input[placeholder*='date'], input[type='date']").count() >= 2:
         date_inputs = report.locator("input[placeholder*='date'], input[type='date']").all()
         set_date_field(report, date_inputs[0], start_date)
         set_date_field(report, date_inputs[1], end_date)
 
-    filename = f"monthly_rent_{iso_date}.xlsx"
+    filename  = f"monthly_rent_{iso_date}.xlsx"
     save_path = downloads_dir / filename
 
-    # Use expect_download to catch the file, with filesystem fallback.
-    # Snapshot ~/Downloads first so we can detect it either way.
     before = set(SYSTEM_DOWNLOADS.glob("*.xlsx"))
 
     try:
@@ -190,30 +278,36 @@ def download_monthly_rent(page, start_date, end_date, iso_date, downloads_dir):
 
 
 def main():
-    if not SESSION_FILE.exists():
-        print(f"No session found at {SESSION_FILE}. Run refresh_session.py first.")
-        return
-
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     start_date, end_date, iso_date = this_month_range()
-    print(f"Session file : {SESSION_FILE}")
     print(f"Downloads dir: {DOWNLOADS_DIR.resolve()}")
     print(f"Headless     : {HEADLESS}")
     print(f"Date range   : {start_date} → {end_date}")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=HEADLESS)
-        context = browser.new_context(storage_state=SESSION_FILE)
-        page = context.new_page()
+        context = browser.new_context()
+        page    = context.new_page()
 
-        page.goto(BASE_URL)
-        page.wait_for_load_state("domcontentloaded")
-        page.locator("[data-test-id='reports-menu']").wait_for(state="visible", timeout=15000)
-        page.locator("[data-test-id='reports-menu']").click()
-        page.wait_for_timeout(500)
+        try:
+            login(page)
 
-        download_folio_ledger(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
-        download_monthly_rent(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
+            # login() already landed us on manager.propertyme.com after redirect —
+            # wait for the reports menu to appear without navigating again.
+            print("Waiting for reports menu...")
+            page.locator("[data-test-id='reports-menu']").wait_for(state="visible", timeout=15000)
+            page.locator("[data-test-id='reports-menu']").click()
+            page.wait_for_timeout(500)
+
+            download_folio_ledger(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
+            download_monthly_rent(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
+
+        except Exception as e:
+            screenshot_path = SCRIPT_DIR / "debug_screenshot.png"
+            page.screenshot(path=str(screenshot_path))
+            print(f"ERROR: {e}")
+            print(f"Screenshot saved to {screenshot_path}")
+            raise
 
         context.close()
         browser.close()
