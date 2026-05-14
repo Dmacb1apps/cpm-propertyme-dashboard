@@ -18,6 +18,8 @@ export default function CPMDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [page, setPage]               = useState("overview");
   const [complexFilter, setComplexFilter] = useState("all");
+  const [isMobile, setIsMobile]       = useState(window.innerWidth <= 768);
+  const [menuOpen, setMenuOpen]       = useState(false);
 
   const loadData = () => {
     setLoading(true);
@@ -30,11 +32,16 @@ export default function CPMDashboard() {
 
   useEffect(() => { loadData(); }, []);
 
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   const t = dark
     ? { bg: "#0d1117", surface: "#161b22", border: "#30363d", text: "#e6edf3", muted: "#8b949e", accent: "#58a6ff", danger: "#f85149", success: "#3fb950", warn: "#d29922" }
     : { bg: "#f4f5f7", surface: "#ffffff",  border: "#dde1e7", text: "#1e2a3a", muted: "#656d76", accent: "#0969da", danger: "#CC0000", success: "#1a7f37", warn: "#9a6700" };
 
-  // Derived totals (safe while loading)
   const complexes      = data?.complexes ?? [];
   const flaggedOwners  = data?.flagged   ?? [];
   const allOwners      = data?.allOwners ?? [];
@@ -51,14 +58,13 @@ export default function CPMDashboard() {
     : flaggedOwners.filter((o) => o.complex === complexFilter);
 
   const navItems = [
-    { id: "overview",   icon: Home,         label: "Overview"           },
+    { id: "overview",   icon: Home,         label: "Overview"            },
     { id: "flagged",    icon: AlertTriangle, label: "Flagged Owners", badge: totalFlagged || null },
-    { id: "complexes",  icon: Building2,     label: "By Complex"         },
+    { id: "complexes",  icon: Building2,     label: "By Complex"          },
     { id: "financials", icon: DollarSign,    label: "Business Financials" },
-    { id: "owners",     icon: Users,         label: "All Owners"         },
+    { id: "owners",     icon: Users,         label: "All Owners"          },
   ];
 
-  // Formatted timestamp from JSON
   const updatedLabel = data?.updated
     ? (() => {
         const d = new Date(data.updated);
@@ -66,81 +72,176 @@ export default function CPMDashboard() {
       })()
     : null;
 
+  // Navigate and close mobile menu
+  const navigate = (id) => { setPage(id); setMenuOpen(false); };
+
+  // Responsive helpers
+  const gap   = isMobile ? 12 : 16;
+  const cp    = isMobile ? "14px 14px" : "20px 22px";   // card padding
+  const tp    = isMobile ? "8px 10px"  : "11px 20px";   // table cell padding
+  const valFz = isMobile ? 22 : 28;                      // stat value font size
+
+  const logoSrc = dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg";
+
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: t.bg, fontFamily: "Arial, sans-serif", color: t.text, fontSize: 13 }}>
 
-      {/* Sidebar */}
-      <nav style={{
-        width: sidebarOpen ? 240 : 64, flexShrink: 0, background: t.surface,
-        borderRight: `1px solid ${t.border}`, display: "flex", flexDirection: "column",
-        transition: "width 0.25s ease", overflow: "hidden", position: "sticky", top: 0, height: "100vh"
-      }}>
-        <div style={{ padding: "16px 16px 14px", borderBottom: `1px solid ${t.border}`, display: "flex", alignItems: "center", overflow: "hidden" }}>
-          {sidebarOpen
-            ? <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 52, width: "auto", objectFit: "contain" }} />
-            : <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 38, width: 38, objectFit: "contain" }} />
-          }
-        </div>
-
-        <div style={{ flex: 1, padding: "10px 8px", display: "flex", flexDirection: "column", gap: 2 }}>
-          {navItems.map((item) => {
-            const active = page === item.id;
-            return (
-              <button key={item.id} onClick={() => setPage(item.id)} style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "8px 10px",
-                borderRadius: 6, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
-                background: active ? (dark ? "rgba(88,166,255,0.1)" : "rgba(9,105,218,0.08)") : "transparent",
-                color: active ? t.accent : t.muted, fontFamily: "inherit", fontSize: 13, fontWeight: active ? 600 : 400,
-                transition: "all 0.15s", whiteSpace: "nowrap", overflow: "hidden"
-              }}>
-                <item.icon size={16} style={{ flexShrink: 0 }} />
-                {sidebarOpen && <span style={{ flex: 1 }}>{item.label}</span>}
-                {sidebarOpen && item.badge && (
-                  <span style={{ background: t.danger, color: "#fff", borderRadius: 10, padding: "1px 7px", fontSize: 11, fontWeight: 700 }}>
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{
-          display: "flex", alignItems: "center", gap: 10, padding: "12px 18px",
-          borderTop: `1px solid ${t.border}`, border: "none", background: "transparent",
-          color: t.muted, cursor: "pointer", fontFamily: "inherit", fontSize: 12
+      {/* ── Sidebar — desktop only ── */}
+      {!isMobile && (
+        <nav style={{
+          width: sidebarOpen ? 240 : 64, flexShrink: 0, background: t.surface,
+          borderRight: `1px solid ${t.border}`, display: "flex", flexDirection: "column",
+          transition: "width 0.25s ease", overflow: "hidden", position: "sticky", top: 0, height: "100vh"
         }}>
-          <ChevronRight size={16} style={{ transform: sidebarOpen ? "rotate(180deg)" : "none", transition: "0.25s", flexShrink: 0 }} />
-          {sidebarOpen && <span>Collapse</span>}
-        </button>
-      </nav>
+          <div style={{ padding: "16px 16px 14px", borderBottom: `1px solid ${t.border}`, display: "flex", alignItems: "center", overflow: "hidden" }}>
+            {sidebarOpen
+              ? <img src={logoSrc} alt="CPM" style={{ height: 52, width: "auto", objectFit: "contain" }} />
+              : <img src={logoSrc} alt="CPM" style={{ height: 38, width: 38, objectFit: "contain" }} />
+            }
+          </div>
 
-      {/* Main */}
+          <div style={{ flex: 1, padding: "10px 8px", display: "flex", flexDirection: "column", gap: 2 }}>
+            {navItems.map((item) => {
+              const active = page === item.id;
+              return (
+                <button key={item.id} onClick={() => setPage(item.id)} style={{
+                  display: "flex", alignItems: "center", gap: 10, padding: "8px 10px",
+                  borderRadius: 6, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
+                  background: active ? (dark ? "rgba(88,166,255,0.1)" : "rgba(9,105,218,0.08)") : "transparent",
+                  color: active ? t.accent : t.muted, fontFamily: "inherit", fontSize: 13, fontWeight: active ? 600 : 400,
+                  transition: "all 0.15s", whiteSpace: "nowrap", overflow: "hidden"
+                }}>
+                  <item.icon size={16} style={{ flexShrink: 0 }} />
+                  {sidebarOpen && <span style={{ flex: 1 }}>{item.label}</span>}
+                  {sidebarOpen && item.badge && (
+                    <span style={{ background: t.danger, color: "#fff", borderRadius: 10, padding: "1px 7px", fontSize: 11, fontWeight: 700 }}>
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{
+            display: "flex", alignItems: "center", gap: 10, padding: "12px 18px",
+            borderTop: `1px solid ${t.border}`, border: "none", background: "transparent",
+            color: t.muted, cursor: "pointer", fontFamily: "inherit", fontSize: 12
+          }}>
+            <ChevronRight size={16} style={{ transform: sidebarOpen ? "rotate(180deg)" : "none", transition: "0.25s", flexShrink: 0 }} />
+            {sidebarOpen && <span>Collapse</span>}
+          </button>
+        </nav>
+      )}
+
+      {/* ── Main column ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
 
-        {/* Topbar */}
-        <div style={{ background: t.surface, borderBottom: `1px solid ${t.border}`, padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 10 }}>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: "-0.3px" }}>
-              {navItems.find((n) => n.id === page)?.label}
-            </div>
-            <div style={{ color: t.muted, fontSize: 11, marginTop: 1 }}>
-              {data?.month ?? "—"}
-              {updatedLabel && ` · Updated ${updatedLabel}`}
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <button onClick={loadData} style={{ background: "transparent", border: `1px solid ${t.border}`, borderRadius: 6, padding: "6px 10px", color: t.muted, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontFamily: "inherit" }}>
-              <RefreshCw size={13} /> Refresh
-            </button>
-            <button onClick={() => setDark(!dark)} style={{ background: "transparent", border: `1px solid ${t.border}`, borderRadius: 6, padding: "7px 8px", color: t.muted, cursor: "pointer", display: "flex" }}>
-              {dark ? <Sun size={14} /> : <Moon size={14} />}
-            </button>
-          </div>
+        {/* ── Topbar ── */}
+        <div style={{
+          background: t.surface, borderBottom: `1px solid ${t.border}`,
+          position: "sticky", top: 0, zIndex: 110,
+          display: "flex", alignItems: "center",
+          minHeight: isMobile ? 48 : 56,
+          padding: isMobile ? "0 12px" : "0 24px",
+          gap: isMobile ? 10 : 0,
+          justifyContent: "space-between",
+        }}>
+          {isMobile ? (
+            /* ── Mobile topbar ── */
+            <>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                style={{ background: "transparent", border: "none", color: t.text, cursor: "pointer", fontSize: 22, lineHeight: 1, padding: "4px 6px", flexShrink: 0 }}
+                aria-label="Menu"
+              >
+                {menuOpen ? "✕" : "☰"}
+              </button>
+
+              <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+                {page === "overview"
+                  ? <img src={logoSrc} alt="CPM" style={{ height: 30, objectFit: "contain" }} />
+                  : <span style={{ fontWeight: 700, fontSize: 15 }}>{navItems.find((n) => n.id === page)?.label}</span>
+                }
+              </div>
+
+              <button
+                onClick={loadData}
+                style={{ background: "transparent", border: `1px solid ${t.border}`, borderRadius: 6, padding: "6px 8px", color: t.muted, cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}
+                aria-label="Refresh"
+              >
+                <RefreshCw size={14} />
+              </button>
+            </>
+          ) : (
+            /* ── Desktop topbar ── */
+            <>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: "-0.3px" }}>
+                  {navItems.find((n) => n.id === page)?.label}
+                </div>
+                <div style={{ color: t.muted, fontSize: 11, marginTop: 1 }}>
+                  {data?.month ?? "—"}
+                  {updatedLabel && ` · Updated ${updatedLabel}`}
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <button onClick={loadData} style={{ background: "transparent", border: `1px solid ${t.border}`, borderRadius: 6, padding: "6px 10px", color: t.muted, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontFamily: "inherit" }}>
+                  <RefreshCw size={13} /> Refresh
+                </button>
+                <button onClick={() => setDark(!dark)} style={{ background: "transparent", border: `1px solid ${t.border}`, borderRadius: 6, padding: "7px 8px", color: t.muted, cursor: "pointer", display: "flex" }}>
+                  {dark ? <Sun size={14} /> : <Moon size={14} />}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Content */}
-        <div style={{ flex: 1, padding: 24, overflowY: "auto" }}>
+        {/* ── Mobile nav dropdown ── */}
+        {isMobile && menuOpen && (
+          <>
+            {/* Backdrop */}
+            <div
+              onClick={() => setMenuOpen(false)}
+              style={{ position: "fixed", inset: 0, zIndex: 99, background: "rgba(0,0,0,0.35)" }}
+            />
+            {/* Menu panel */}
+            <div style={{
+              position: "fixed", top: 48, left: 0, right: 0, zIndex: 100,
+              background: t.surface, borderBottom: `1px solid ${t.border}`,
+              boxShadow: "0 6px 24px rgba(0,0,0,0.25)"
+            }}>
+              {navItems.map((item) => {
+                const active = page === item.id;
+                return (
+                  <button key={item.id} onClick={() => navigate(item.id)} style={{
+                    display: "flex", alignItems: "center", gap: 14,
+                    width: "100%", padding: "15px 20px", border: "none",
+                    borderTop: `1px solid ${t.border}`,
+                    background: active ? (dark ? "rgba(88,166,255,0.08)" : "rgba(9,105,218,0.06)") : "transparent",
+                    color: active ? t.accent : t.text,
+                    fontFamily: "inherit", fontSize: 15, fontWeight: active ? 700 : 400,
+                    cursor: "pointer", textAlign: "left",
+                  }}>
+                    <item.icon size={18} style={{ flexShrink: 0, color: active ? t.accent : t.muted }} />
+                    <span style={{ flex: 1 }}>{item.label}</span>
+                    {item.badge && (
+                      <span style={{ background: "#CC0000", color: "#fff", borderRadius: 10, padding: "2px 8px", fontSize: 12, fontWeight: 700 }}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* ── Content ── */}
+        <div style={{
+          flex: 1, padding: isMobile ? 12 : 24, overflowY: "auto",
+          paddingBottom: isMobile ? "calc(12px + env(safe-area-inset-bottom))" : 24,
+        }}>
 
           {/* Loading */}
           {loading && (
@@ -159,7 +260,9 @@ export default function CPMDashboard() {
             </div>
           )}
 
-          {/* OVERVIEW */}
+          {/* ══════════════════════════════════════════
+              OVERVIEW
+          ══════════════════════════════════════════ */}
           {!loading && !error && page === "overview" && (() => {
             const f   = data?.financials ?? {};
             const nwc = (f.cash_balance ?? 0) + (f.invoices_due_this_month ?? 0) - (f.total_expenses ?? 0);
@@ -169,103 +272,101 @@ export default function CPMDashboard() {
               ? Math.round(complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalUnits)
               : 0;
             const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
-            const lbl  = { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 10, fontWeight: 500 };
-            const val  = { fontSize: 28, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 8 };
+            const lbl  = { color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8, fontWeight: 500 };
+            const val  = { fontSize: valFz, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 8 };
 
             return (
               <div>
-                {/* ── Row 1: 4 stat cards ── */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 20 }}>
+                {/* Row 1: 4 stat cards — 2-col on mobile */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap, marginBottom: gap }}>
 
-                  {/* Cash in Bank */}
-                  <div style={{ ...card, borderTop: "3px solid #1a7f37", padding: "20px 22px" }}>
+                  <div style={{ ...card, borderTop: "3px solid #1a7f37", padding: cp }}>
                     <div style={lbl}>Cash in Bank</div>
                     <div style={{ ...val, color: "#1a7f37" }}>{fmt(Math.round(f.cash_balance ?? 0))}</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>Bank accounts</div>
                   </div>
 
-                  {/* Net Working Capital */}
-                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: "20px 22px" }}>
+                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
                     <div style={lbl}>Net Working Capital</div>
                     <div style={{ ...val, color: nwcColor }}>{fmt(Math.round(nwc))}</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                      <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash</div>
-                      <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.invoices_due_this_month ?? 0))} due to CPM</div>
-                      <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.total_expenses ?? 0))} bills to pay</div>
-                    </div>
+                    {!isMobile && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash</div>
+                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.invoices_due_this_month ?? 0))} due to CPM</div>
+                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.total_expenses ?? 0))} expenses</div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Total Units */}
-                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: "20px 22px" }}>
-                    <div style={lbl}>Total Units in Portfolio</div>
+                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
+                    <div style={lbl}>Total Units</div>
                     <div style={{ ...val, color: t.text }}>{totalUnits}</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>across {complexes.length} complexes</div>
                   </div>
 
-                  {/* Portfolio Avg Rent */}
-                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: "20px 22px" }}>
-                    <div style={lbl}>Portfolio Average Rent</div>
+                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
+                    <div style={lbl}>Avg Rent</div>
                     <div style={{ ...val, color: t.text }}>${weightedAvgRent}/wk</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>per unit per week</div>
                   </div>
                 </div>
 
-                {/* ── Middle: Complex table (60%) + Needs Attention (40%) ── */}
-                <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 16 }}>
+                {/* Middle: Complex table + Needs Attention — stacked on mobile */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "3fr 2fr", gap }}>
 
                   {/* Complex performance table */}
                   <div style={{ ...card, overflow: "hidden" }}>
-                    <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ padding: "14px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span>Complex Performance — {data?.month}</span>
-                      <span style={{ color: t.muted, fontWeight: 400, fontSize: 12 }}>{totalUnits} units total</span>
+                      <span style={{ color: t.muted, fontWeight: 400, fontSize: 12 }}>{totalUnits} units</span>
                     </div>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                      <thead>
-                        <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                          {["Complex", "Units", "Avg Rent", "Rent Change"].map((h) => (
-                            <th key={h} style={{ padding: "10px 20px", textAlign: h === "Complex" ? "left" : "right", fontWeight: 500 }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(() => {
-                          const main = complexes.filter(c => c.code !== "99");
-                          const outside = complexes.find(c => c.code === "99");
-                          const renderRow = (c, i, divider) => {
-                            const pct = c.rentChangePct;
-                            const changeEl = pct == null
-                              ? <span style={{ color: t.muted }}>—</span>
-                              : pct >= 0
-                                ? <span style={{ color: "#1a7f37", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
-                                : <span style={{ color: "#CC0000", fontWeight: 600 }}>↓ {pct.toFixed(1)}%</span>;
-                            return (
-                              <tr key={c.code} style={{
-                                borderTop: divider
-                                  ? `2px solid ${t.border}`
-                                  : `1px solid ${t.border}`,
-                                background: divider
-                                  ? (dark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)")
-                                  : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)"))
-                              }}>
-                                <td style={{ padding: "11px 20px", fontWeight: 600, color: divider ? t.muted : t.text }}>{c.name}</td>
-                                <td style={{ padding: "11px 20px", textAlign: "right", color: t.muted }}>{c.owners}</td>
-                                <td style={{ padding: "11px 20px", textAlign: "right", color: divider ? t.muted : t.text }}>${c.avgRent}/wk</td>
-                                <td style={{ padding: "11px 20px", textAlign: "right" }}>{changeEl}</td>
-                              </tr>
-                            );
-                          };
-                          return [
-                            ...main.map((c, i) => renderRow(c, i, false)),
-                            ...(outside ? [renderRow(outside, 0, true)] : []),
-                          ];
-                        })()}
-                      </tbody>
-                    </table>
+                    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                      <table style={{ width: "100%", minWidth: 320, borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                            {["Complex", "Units", "Avg Rent", "Rent Change"].map((h) => (
+                              <th key={h} style={{ padding: tp, textAlign: h === "Complex" ? "left" : "right", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(() => {
+                            const main    = complexes.filter(c => c.code !== "99");
+                            const outside = complexes.find(c => c.code === "99");
+                            const renderRow = (c, i, divider) => {
+                              const pct = c.rentChangePct;
+                              const changeEl = pct == null
+                                ? <span style={{ color: t.muted }}>—</span>
+                                : pct >= 0
+                                  ? <span style={{ color: "#1a7f37", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
+                                  : <span style={{ color: "#CC0000", fontWeight: 600 }}>↓ {pct.toFixed(1)}%</span>;
+                              return (
+                                <tr key={c.code} style={{
+                                  borderTop: divider ? `2px solid ${t.border}` : `1px solid ${t.border}`,
+                                  background: divider
+                                    ? (dark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)")
+                                    : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)"))
+                                }}>
+                                  <td style={{ padding: tp, fontWeight: 600, color: divider ? t.muted : t.text, whiteSpace: "nowrap" }}>{c.name}</td>
+                                  <td style={{ padding: tp, textAlign: "right", color: t.muted }}>{c.owners}</td>
+                                  <td style={{ padding: tp, textAlign: "right", color: divider ? t.muted : t.text, whiteSpace: "nowrap" }}>${c.avgRent}/wk</td>
+                                  <td style={{ padding: tp, textAlign: "right", whiteSpace: "nowrap" }}>{changeEl}</td>
+                                </tr>
+                              );
+                            };
+                            return [
+                              ...main.map((c, i) => renderRow(c, i, false)),
+                              ...(outside ? [renderRow(outside, 0, true)] : []),
+                            ];
+                          })()}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
                   {/* Needs Attention panel */}
                   <div style={{ ...card, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                    <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 600, fontSize: 13 }}>
+                    <div style={{ padding: "14px 16px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 600, fontSize: 13 }}>
                       <span>Needs Attention</span>
                       {totalFlagged > 0 && (
                         <span style={{ background: "#CC0000", color: "#fff", borderRadius: 12, padding: "2px 9px", fontSize: 11, fontWeight: 700 }}>{totalFlagged}</span>
@@ -273,20 +374,20 @@ export default function CPMDashboard() {
                     </div>
                     <div style={{ flex: 1 }}>
                       {flaggedOwners.length === 0 && (
-                        <div style={{ padding: "20px", color: t.muted, fontSize: 12 }}>No flagged owners this month.</div>
+                        <div style={{ padding: "20px 16px", color: t.muted, fontSize: 12 }}>No flagged owners this month.</div>
                       )}
                       {flaggedOwners.slice(0, 5).map((o, i) => (
-                        <div key={i} style={{ padding: "13px 20px", borderTop: i > 0 ? `1px solid ${t.border}` : "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <div>
-                            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>{o.name}</div>
+                        <div key={i} style={{ padding: `13px 16px`, borderTop: i > 0 ? `1px solid ${t.border}` : "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.name}</div>
                             <div style={{ fontFamily: "monospace", fontSize: 11, color: t.muted }}>{o.code} · {o.complex}</div>
                           </div>
-                          <div style={{ color: "#CC0000", fontWeight: 700, fontSize: 14, flexShrink: 0, marginLeft: 12 }}>{fmt(Math.round(o.net))}</div>
+                          <div style={{ color: "#CC0000", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>{fmt(Math.round(o.net))}</div>
                         </div>
                       ))}
                     </div>
-                    <div style={{ padding: "12px 20px", borderTop: `1px solid ${t.border}` }}>
-                      <button onClick={() => setPage("flagged")} style={{ background: "transparent", border: "none", color: "#CC0000", cursor: "pointer", fontSize: 12, fontFamily: "inherit", fontWeight: 600, padding: 0 }}>
+                    <div style={{ padding: "12px 16px", borderTop: `1px solid ${t.border}` }}>
+                      <button onClick={() => navigate("flagged")} style={{ background: "transparent", border: "none", color: "#CC0000", cursor: "pointer", fontSize: 12, fontFamily: "inherit", fontWeight: 600, padding: 0 }}>
                         View all {flaggedOwners.length} flagged →
                       </button>
                     </div>
@@ -296,7 +397,9 @@ export default function CPMDashboard() {
             );
           })()}
 
-          {/* FLAGGED OWNERS */}
+          {/* ══════════════════════════════════════════
+              FLAGGED OWNERS
+          ══════════════════════════════════════════ */}
           {!loading && !error && page === "flagged" && (
             <div>
               <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
@@ -311,51 +414,55 @@ export default function CPMDashboard() {
                 ))}
               </div>
               <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 }}>
-                <div style={{ padding: "13px 20px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
+                <div style={{ padding: "13px 16px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
                   {filteredFlagged.length} owners where bills exceed rent received — sorted worst first
                 </div>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                      {["#","Unit","Owner","Complex","Rent Received","Bills","Shortfall"].map((h) => (
-                        <th key={h} style={{ padding: "9px 20px", textAlign: ["#","Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500 }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredFlagged.map((o, i) => (
-                      <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)" }}>
-                        <td style={{ padding: "10px 20px", color: t.muted }}>{i + 1}</td>
-                        <td style={{ padding: "10px 20px", color: t.muted, fontFamily: "monospace" }}>{o.code}</td>
-                        <td style={{ padding: "10px 20px", fontWeight: 500 }}>{o.name}</td>
-                        <td style={{ padding: "10px 20px", color: t.muted, fontSize: 12 }}>{o.complex}</td>
-                        <td style={{ padding: "10px 20px", textAlign: "right", color: o.rent === 0 ? t.danger : t.text }}>
-                          {o.rent === 0 ? "—" : `$${o.rent.toLocaleString()}`}
-                        </td>
-                        <td style={{ padding: "10px 20px", textAlign: "right", color: t.muted }}>${o.bills.toLocaleString()}</td>
-                        <td style={{ padding: "10px 20px", textAlign: "right", fontWeight: 700, color: t.danger }}>{fmt(o.net)}</td>
+                <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                  <table style={{ width: "100%", minWidth: 480, borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                        {["#","Unit","Owner","Complex","Rent","Bills","Shortfall"].map((h) => (
+                          <th key={h} style={{ padding: tp, textAlign: ["#","Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {filteredFlagged.map((o, i) => (
+                        <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)" }}>
+                          <td style={{ padding: tp, color: t.muted }}>{i + 1}</td>
+                          <td style={{ padding: tp, color: t.muted, fontFamily: "monospace", whiteSpace: "nowrap" }}>{o.code}</td>
+                          <td style={{ padding: tp, fontWeight: 500 }}>{o.name}</td>
+                          <td style={{ padding: tp, color: t.muted, fontSize: 12, whiteSpace: "nowrap" }}>{o.complex}</td>
+                          <td style={{ padding: tp, textAlign: "right", color: o.rent === 0 ? t.danger : t.text, whiteSpace: "nowrap" }}>
+                            {o.rent === 0 ? "—" : `$${o.rent.toLocaleString()}`}
+                          </td>
+                          <td style={{ padding: tp, textAlign: "right", color: t.muted, whiteSpace: "nowrap" }}>${o.bills.toLocaleString()}</td>
+                          <td style={{ padding: tp, textAlign: "right", fontWeight: 700, color: t.danger, whiteSpace: "nowrap" }}>{fmt(o.net)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
 
-          {/* BY COMPLEX */}
+          {/* ══════════════════════════════════════════
+              BY COMPLEX
+          ══════════════════════════════════════════ */}
           {!loading && !error && page === "complexes" && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap }}>
               {complexes.map((c) => {
                 const pct = c.owners > 0 ? Math.round(c.flagged / c.owners * 100) : 0;
                 const net = c.totalRent - c.totalBills;
                 return (
-                  <div key={c.code} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: 20 }}>
+                  <div key={c.code} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: 16 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 3 }}>{c.name}</div>
                         <div style={{ color: t.muted, fontSize: 11 }}>Complex {c.code} · {c.owners} owners</div>
                       </div>
-                      <span style={{ background: c.flagged > 8 ? "rgba(248,81,73,0.12)" : "rgba(63,185,80,0.12)", color: c.flagged > 8 ? t.danger : t.success, borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>
+                      <span style={{ background: c.flagged > 8 ? "rgba(248,81,73,0.12)" : "rgba(63,185,80,0.12)", color: c.flagged > 8 ? t.danger : t.success, borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", marginLeft: 8 }}>
                         {c.flagged} flagged
                       </span>
                     </div>
@@ -387,58 +494,55 @@ export default function CPMDashboard() {
             </div>
           )}
 
-          {/* BUSINESS FINANCIALS */}
+          {/* ══════════════════════════════════════════
+              BUSINESS FINANCIALS
+          ══════════════════════════════════════════ */}
           {!loading && !error && page === "financials" && (() => {
             const f         = data?.financials ?? {};
             const netColor  = (f.net_profit ?? 0) >= 0 ? t.success : "#C00000";
             const panel     = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, overflow: "hidden" };
-            const panelHead = { padding: "13px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
+            const panelHead = { padding: "13px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
 
-            // Donut chart data
             const donutData = [
               { name: "Income",   value: f.total_income   ?? 0, color: "#1a7f37" },
               { name: "Expenses", value: f.total_expenses ?? 0, color: "#C00000" },
             ];
 
-            // Wages
-            const wageEmp  = f.wages_employee  ?? 0;
-            const wageMgmt = f.wages_management ?? 0;
+            const wageEmp   = f.wages_employee  ?? 0;
+            const wageMgmt  = f.wages_management ?? 0;
             const wageOther = Math.max(0, (f.wages ?? 0) - wageEmp - wageMgmt);
-            const wageRows = [
-              { label: "Staff Wages",    value: wageEmp,   color: "#1e2a3a" },
-              ...(wageMgmt > 0 ? [{ label: "Director Fees",   value: wageMgmt, color: "#C00000" }] : []),
-              ...(wageOther > 0 ? [{ label: "Other Wages",    value: wageOther, color: "#8b949e" }] : []),
+            const wageRows  = [
+              { label: "Staff Wages",  value: wageEmp,   color: "#1e2a3a" },
+              ...(wageMgmt  > 0 ? [{ label: "Director Fees", value: wageMgmt,  color: "#C00000" }] : []),
+              ...(wageOther > 0 ? [{ label: "Other Wages",   value: wageOther, color: "#8b949e" }] : []),
             ];
-            const totalWages = wageEmp + wageMgmt + wageOther;
-
-            // Net position
+            const totalWages  = wageEmp + wageMgmt + wageOther;
             const netPosition = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0);
 
             return (
               <div>
-                {/* ── Row 1: 3 stat cards ── */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 16 }}>
+                {/* Row 1: 3 stat cards — single col on mobile */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap, marginBottom: gap }}>
                   {[
-                    { label: "Cash Balance",    value: f.cash_balance      ?? 0, color: "#1a7f37", sub: "Bank accounts"          },
-                    { label: "Net Profit MTD",  value: f.net_profit        ?? 0, color: netColor,  sub: `Income ${fmt(Math.round(f.total_income ?? 0))} · Expenses ${fmt(Math.round(f.total_expenses ?? 0))}` },
-                    { label: "Bills to Pay",    value: f.payables_total    ?? 0, color: "#C00000", sub: `${f.payables_count ?? 0} invoices · ${fmt(Math.round(f.payables_overdue ?? 0))} overdue` },
+                    { label: "Cash Balance",   value: f.cash_balance   ?? 0, color: "#1a7f37", sub: "Bank accounts" },
+                    { label: "Net Profit MTD", value: f.net_profit     ?? 0, color: netColor,  sub: `Income ${fmt(Math.round(f.total_income ?? 0))} · Exp ${fmt(Math.round(f.total_expenses ?? 0))}` },
+                    { label: "Bills to Pay",   value: f.payables_total ?? 0, color: "#C00000", sub: `${f.payables_count ?? 0} invoices · ${fmt(Math.round(f.payables_overdue ?? 0))} overdue` },
                   ].map((s) => (
-                    <div key={s.label} style={{ background: t.surface, borderTop: `3px solid ${s.color}`, border: `1px solid ${t.border}`, borderRadius: 8, padding: "18px 22px" }}>
+                    <div key={s.label} style={{ background: t.surface, borderTop: `3px solid ${s.color}`, border: `1px solid ${t.border}`, borderRadius: 8, padding: cp }}>
                       <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8 }}>{s.label}</div>
-                      <div style={{ fontSize: 26, fontWeight: 700, color: s.color, letterSpacing: "-0.5px", marginBottom: 6 }}>{fmt(Math.round(s.value))}</div>
+                      <div style={{ fontSize: isMobile ? 24 : 26, fontWeight: 700, color: s.color, letterSpacing: "-0.5px", marginBottom: 6 }}>{fmt(Math.round(s.value))}</div>
                       <div style={{ color: t.muted, fontSize: 11 }}>{s.sub}</div>
                     </div>
                   ))}
                 </div>
 
-                {/* ── Row 2: Donut chart + Credit cards ── */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                {/* Row 2: Donut + Credit cards */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap, marginBottom: gap }}>
 
-                  {/* Donut chart */}
                   <div style={panel}>
                     <div style={panelHead}>Monthly P&amp;L Overview</div>
-                    <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: 24 }}>
-                      <div style={{ position: "relative", flexShrink: 0, width: 160, height: 160 }}>
+                    <div style={{ padding: "20px 16px", display: "flex", alignItems: "center", gap: 20, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+                      <div style={{ position: "relative", flexShrink: 0, width: 160, height: 160, margin: isMobile ? "0 auto" : 0 }}>
                         <ResponsiveContainer width={160} height={160}>
                           <PieChart>
                             <Pie data={donutData} cx="50%" cy="50%" innerRadius={50} outerRadius={72} dataKey="value" paddingAngle={3} startAngle={90} endAngle={-270}>
@@ -452,7 +556,7 @@ export default function CPMDashboard() {
                           <div style={{ fontSize: 14, fontWeight: 700, color: netColor }}>{fmt(Math.round(f.net_profit ?? 0))}</div>
                         </div>
                       </div>
-                      <div style={{ flex: 1 }}>
+                      <div style={{ flex: 1, minWidth: 160 }}>
                         {donutData.map((d) => (
                           <div key={d.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
@@ -474,10 +578,9 @@ export default function CPMDashboard() {
                     </div>
                   </div>
 
-                  {/* Credit cards */}
                   <div style={panel}>
                     <div style={panelHead}>Credit Cards</div>
-                    <div style={{ padding: "20px 24px" }}>
+                    <div style={{ padding: "20px 16px" }}>
                       {[
                         { name: "Don",    balance: f.credit_card_don    ?? 0 },
                         { name: "Duncan", balance: f.credit_card_duncan ?? 0 },
@@ -501,20 +604,19 @@ export default function CPMDashboard() {
                   </div>
                 </div>
 
-                {/* ── Row 3: Wages + Position summary ── */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                {/* Row 3: Wages + Position */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap, marginBottom: gap }}>
 
-                  {/* Wages breakdown */}
                   <div style={panel}>
                     <div style={panelHead}>Wages Breakdown</div>
-                    <div style={{ padding: "20px 24px" }}>
+                    <div style={{ padding: "16px 16px" }}>
                       {wageRows.map((w) => {
                         const pct = totalWages > 0 ? Math.round((w.value / totalWages) * 100) : 0;
                         return (
                           <div key={w.label} style={{ marginBottom: 18 }}>
                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7, fontSize: 12 }}>
                               <span style={{ color: t.text }}>{w.label}</span>
-                              <span style={{ color: t.muted }}>{fmt(Math.round(w.value))} <span style={{ color: t.border }}>·</span> {pct}%</span>
+                              <span style={{ color: t.muted }}>{fmt(Math.round(w.value))} · {pct}%</span>
                             </div>
                             <div style={{ height: 6, borderRadius: 3, background: dark ? "#30363d" : "#e0e0e0" }}>
                               <div style={{ height: "100%", width: `${pct}%`, borderRadius: 3, background: w.color, transition: "width 0.4s ease" }} />
@@ -522,9 +624,7 @@ export default function CPMDashboard() {
                           </div>
                         );
                       })}
-                      {wageRows.length === 0 && (
-                        <div style={{ color: t.muted, fontSize: 12 }}>No wage data this month.</div>
-                      )}
+                      {wageRows.length === 0 && <div style={{ color: t.muted, fontSize: 12 }}>No wage data this month.</div>}
                       <div style={{ borderTop: `1px solid ${t.border}`, paddingTop: 12, marginTop: 2, display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
                         <span>Total Wages</span>
                         <span>{fmt(Math.round(totalWages))}</span>
@@ -532,7 +632,6 @@ export default function CPMDashboard() {
                     </div>
                   </div>
 
-                  {/* Financial position */}
                   <div style={panel}>
                     <div style={panelHead}>Financial Position</div>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -543,22 +642,22 @@ export default function CPMDashboard() {
                           { label: "Bills to Pay",        value: f.payables_total    ?? 0, color: "#C00000", sign: -1 },
                         ].map(({ label, value, color, sign }) => (
                           <tr key={label} style={{ borderTop: `1px solid ${t.border}` }}>
-                            <td style={{ padding: "13px 24px", color: t.muted, fontSize: 13 }}>{label}</td>
-                            <td style={{ padding: "13px 24px", textAlign: "right", fontWeight: 600, color: sign > 0 ? color : "#C00000", fontSize: 13 }}>
+                            <td style={{ padding: tp, color: t.muted, fontSize: 13 }}>{label}</td>
+                            <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: sign > 0 ? color : "#C00000", fontSize: 13, whiteSpace: "nowrap" }}>
                               {sign < 0 ? "-" : ""}{fmt(Math.round(value))}
                             </td>
                           </tr>
                         ))}
                         <tr style={{ borderTop: `2px solid ${t.border}`, background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}>
-                          <td style={{ padding: "14px 24px", fontWeight: 700, fontSize: 13 }}>Net Working Capital</td>
-                          <td style={{ padding: "14px 24px", textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : "#C00000" }}>
+                          <td style={{ padding: tp, fontWeight: 700, fontSize: 13 }}>Net Working Capital</td>
+                          <td style={{ padding: tp, textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : "#C00000", whiteSpace: "nowrap" }}>
                             {fmt(Math.round(netPosition))}
                           </td>
                         </tr>
                         <tr style={{ borderTop: `1px solid ${t.border}` }}>
-                          <td style={{ padding: "13px 24px", color: t.muted, fontSize: 13 }}>Invoices This Month</td>
-                          <td style={{ padding: "13px 24px", textAlign: "right", fontSize: 13 }}>
-                            <span style={{ color: t.muted, marginRight: 8 }}>{f.invoices_due_count ?? 0} invoices</span>
+                          <td style={{ padding: tp, color: t.muted, fontSize: 13 }}>Invoices This Month</td>
+                          <td style={{ padding: tp, textAlign: "right", fontSize: 13, whiteSpace: "nowrap" }}>
+                            <span style={{ color: t.muted, marginRight: 8 }}>{f.invoices_due_count ?? 0} inv</span>
                             <span style={{ fontWeight: 600, color: t.success }}>{fmt(Math.round(f.invoices_due_this_month ?? 0))}</span>
                           </td>
                         </tr>
@@ -567,8 +666,8 @@ export default function CPMDashboard() {
                   </div>
                 </div>
 
-                {/* ── Row 4: Invoice tables ── */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                {/* Row 4: Invoice tables */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap }}>
                   {[
                     { title: "Bills to Pay",        rows: f.top_payables    ?? [], total: f.payables_total    ?? 0, count: f.payables_count    ?? 0, overdue: f.payables_overdue    ?? 0 },
                     { title: "Invoices to Receive", rows: f.top_receivables ?? [], total: f.receivables_total ?? 0, count: f.receivables_count ?? 0, overdue: f.receivables_overdue ?? 0 },
@@ -578,33 +677,35 @@ export default function CPMDashboard() {
                         <span>{title}</span>
                         <span style={{ color: t.muted, fontWeight: 400, fontSize: 11 }}>
                           {count} · {fmt(Math.round(total))}
-                          {overdue > 0 && <span style={{ color: "#C00000", marginLeft: 8 }}>· {fmt(Math.round(overdue))} overdue</span>}
+                          {overdue > 0 && <span style={{ color: "#C00000", marginLeft: 6 }}>· {fmt(Math.round(overdue))} OD</span>}
                         </span>
                       </div>
                       {rows.length === 0
-                        ? <div style={{ padding: "16px 24px", color: t.muted, fontSize: 12 }}>No invoices this month.</div>
+                        ? <div style={{ padding: "16px", color: t.muted, fontSize: 12 }}>No invoices this month.</div>
                         : (
-                          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                            <thead>
-                              <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                                <th style={{ padding: "9px 24px", textAlign: "left",  fontWeight: 500 }}>Contact</th>
-                                <th style={{ padding: "9px 24px", textAlign: "right", fontWeight: 500 }}>Amount</th>
-                                <th style={{ padding: "9px 24px", textAlign: "right", fontWeight: 500 }}>Due</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {rows.map((inv, i) => {
-                                const od = inv.due_date < new Date().toISOString().slice(0, 10);
-                                return (
-                                  <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: od ? (dark ? "rgba(192,0,0,0.06)" : "rgba(192,0,0,0.04)") : "transparent" }}>
-                                    <td style={{ padding: "10px 24px", color: od ? "#C00000" : t.text, fontWeight: od ? 600 : 400, fontSize: 13 }}>{inv.contact_name}</td>
-                                    <td style={{ padding: "10px 24px", textAlign: "right", fontSize: 13 }}>{fmt(inv.amount_due)}</td>
-                                    <td style={{ padding: "10px 24px", textAlign: "right", color: od ? "#C00000" : t.muted, fontWeight: od ? 600 : 400, fontSize: 13 }}>{inv.due_date}</td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
+                          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                            <table style={{ width: "100%", minWidth: 340, borderCollapse: "collapse" }}>
+                              <thead>
+                                <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                                  <th style={{ padding: tp, textAlign: "left",  fontWeight: 500 }}>Contact</th>
+                                  <th style={{ padding: tp, textAlign: "right", fontWeight: 500, whiteSpace: "nowrap" }}>Amount</th>
+                                  <th style={{ padding: tp, textAlign: "right", fontWeight: 500, whiteSpace: "nowrap" }}>Due</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {rows.map((inv, i) => {
+                                  const od = inv.due_date < new Date().toISOString().slice(0, 10);
+                                  return (
+                                    <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: od ? (dark ? "rgba(192,0,0,0.06)" : "rgba(192,0,0,0.04)") : "transparent" }}>
+                                      <td style={{ padding: tp, color: od ? "#C00000" : t.text, fontWeight: od ? 600 : 400 }}>{inv.contact_name}</td>
+                                      <td style={{ padding: tp, textAlign: "right", whiteSpace: "nowrap" }}>{fmt(inv.amount_due)}</td>
+                                      <td style={{ padding: tp, textAlign: "right", color: od ? "#C00000" : t.muted, fontWeight: od ? 600 : 400, whiteSpace: "nowrap" }}>{inv.due_date}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
                         )
                       }
                     </div>
@@ -614,38 +715,42 @@ export default function CPMDashboard() {
             );
           })()}
 
-          {/* ALL OWNERS */}
+          {/* ══════════════════════════════════════════
+              ALL OWNERS
+          ══════════════════════════════════════════ */}
           {!loading && !error && page === "owners" && (
             <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 }}>
-              <div style={{ padding: "13px 20px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
+              <div style={{ padding: "13px 16px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
                 {allOwners.length} owners · {totalFlagged} flagged · sorted by complex
               </div>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                    {["Unit","Owner","Complex","Rent Received","Bills","Net"].map((h) => (
-                      <th key={h} style={{ padding: "9px 20px", textAlign: ["Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500 }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {allOwners.map((o, i) => (
-                    <tr key={i} style={{
-                      borderTop: `1px solid ${t.border}`,
-                      background: o.net < 0
-                        ? (dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)")
-                        : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"))
-                    }}>
-                      <td style={{ padding: "9px 20px", color: t.muted, fontFamily: "monospace", fontSize: 12 }}>{o.code}</td>
-                      <td style={{ padding: "9px 20px", fontWeight: o.net < 0 ? 600 : 400 }}>{o.name}</td>
-                      <td style={{ padding: "9px 20px", color: t.muted, fontSize: 12 }}>{o.complex}</td>
-                      <td style={{ padding: "9px 20px", textAlign: "right" }}>{o.rent === 0 ? <span style={{ color: t.danger }}>$0</span> : `$${o.rent.toLocaleString()}`}</td>
-                      <td style={{ padding: "9px 20px", textAlign: "right", color: t.muted }}>${o.bills.toLocaleString()}</td>
-                      <td style={{ padding: "9px 20px", textAlign: "right", fontWeight: 600, color: o.net < 0 ? t.danger : t.success }}>{fmt(o.net)}</td>
+              <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                <table style={{ width: "100%", minWidth: 480, borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                      {["Unit","Owner","Complex","Rent","Bills","Net"].map((h) => (
+                        <th key={h} style={{ padding: tp, textAlign: ["Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {allOwners.map((o, i) => (
+                      <tr key={i} style={{
+                        borderTop: `1px solid ${t.border}`,
+                        background: o.net < 0
+                          ? (dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)")
+                          : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"))
+                      }}>
+                        <td style={{ padding: tp, color: t.muted, fontFamily: "monospace", fontSize: 12, whiteSpace: "nowrap" }}>{o.code}</td>
+                        <td style={{ padding: tp, fontWeight: o.net < 0 ? 600 : 400 }}>{o.name}</td>
+                        <td style={{ padding: tp, color: t.muted, fontSize: 12, whiteSpace: "nowrap" }}>{o.complex}</td>
+                        <td style={{ padding: tp, textAlign: "right", whiteSpace: "nowrap" }}>{o.rent === 0 ? <span style={{ color: t.danger }}>$0</span> : `$${o.rent.toLocaleString()}`}</td>
+                        <td style={{ padding: tp, textAlign: "right", color: t.muted, whiteSpace: "nowrap" }}>${o.bills.toLocaleString()}</td>
+                        <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: o.net < 0 ? t.danger : t.success, whiteSpace: "nowrap" }}>{fmt(o.net)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
