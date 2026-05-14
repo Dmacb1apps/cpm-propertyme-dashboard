@@ -9,3 +9,4 @@ downloads/
 node_modules/
 propertyme-automation/debug_*.py
 propertyme-automation/debug_*.json
+propertyme-automation/debug_*.png
