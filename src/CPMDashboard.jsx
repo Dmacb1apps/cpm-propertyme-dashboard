@@ -77,8 +77,8 @@ export default function CPMDashboard() {
       }}>
         <div style={{ padding: "14px 14px 12px", borderBottom: `1px solid ${t.border}`, display: "flex", alignItems: "center", overflow: "hidden" }}>
           {sidebarOpen
-            ? <img src={dark ? "./cpm-logo-dark.svg" : "./cpm-logo-light.svg"} alt="CPM" style={{ height: 36, width: "auto", objectFit: "contain" }} />
-            : <img src={dark ? "./cpm-logo-dark.svg" : "./cpm-logo-light.svg"} alt="CPM" style={{ height: 28, width: 28, objectFit: "contain" }} />
+            ? <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 36, width: "auto", objectFit: "contain" }} />
+            : <img src={dark ? "./cpm-logo-light.svg" : "./cpm-logo-dark.svg"} alt="CPM" style={{ height: 28, width: 28, objectFit: "contain" }} />
           }
         </div>
 
