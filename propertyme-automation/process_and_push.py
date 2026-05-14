@@ -104,7 +104,7 @@ _SKIP_RE = re.compile(
     r"|^Consolidated Property"
     r"|^PropertyMe \("
     r"|^Audit\s+Date\s+Ref"                 # column header row
-    r"|^(Opening|Closing) Balance"
+    r"|^Opening Balance"
     r"|^Trust Acc"
 )
 
@@ -142,6 +142,13 @@ def parse_folio_ledger(pdf_path):
             for line in text.split("\n"):
                 line = line.strip()
                 if not line or _SKIP_RE.search(line):
+                    continue
+
+                # Stop attributing transactions when the owner's section ends.
+                # "Closing Balance" marks end-of-owner; "Supplier folios" introduces
+                # CPM's own management fee payments which must not count as owner bills.
+                if re.search(r"^Closing Balance|^Supplier folios", line, re.IGNORECASE):
+                    current_unit = None
                     continue
 
                 # --- Owner header ---
