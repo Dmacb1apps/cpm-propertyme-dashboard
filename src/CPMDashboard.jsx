@@ -32,7 +32,7 @@ export default function CPMDashboard() {
 
   const t = dark
     ? { bg: "#0d1117", surface: "#161b22", border: "#30363d", text: "#e6edf3", muted: "#8b949e", accent: "#58a6ff", danger: "#f85149", success: "#3fb950", warn: "#d29922" }
-    : { bg: "#f6f8fa", surface: "#ffffff",  border: "#d0d7de", text: "#24292f", muted: "#656d76", accent: "#0969da", danger: "#cf222e", success: "#1a7f37", warn: "#9a6700" };
+    : { bg: "#f4f5f7", surface: "#ffffff",  border: "#dde1e7", text: "#1e2a3a", muted: "#656d76", accent: "#0969da", danger: "#CC0000", success: "#1a7f37", warn: "#9a6700" };
 
   // Derived totals (safe while loading)
   const complexes      = data?.complexes ?? [];
@@ -67,7 +67,7 @@ export default function CPMDashboard() {
     : null;
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: t.bg, fontFamily: "'DM Mono', 'Fira Code', monospace", color: t.text, fontSize: 13 }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: t.bg, fontFamily: "Arial, sans-serif", color: t.text, fontSize: 13 }}>
 
       {/* Sidebar */}
       <nav style={{
@@ -160,88 +160,126 @@ export default function CPMDashboard() {
           )}
 
           {/* OVERVIEW */}
-          {!loading && !error && page === "overview" && (
-            <div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 24 }}>
-                {[
-                  { label: "Total Owners",      value: totalOwners,                           sub: `${complexes.length} complexes`,                            icon: Users,       color: t.accent  },
-                  { label: "Flagged MTD",        value: totalFlagged,                          sub: `${totalOwners ? Math.round(totalFlagged/totalOwners*100) : 0}% of portfolio`, icon: AlertTriangle, color: t.danger  },
-                  { label: "Rent Received MTD",  value: `$${(totalRentMTD/1000).toFixed(0)}k`, sub: `month to date — ${data?.month}`,                          icon: DollarSign,  color: t.success },
-                  { label: "Portfolio Avg Rent", value: `$${avgRentPortfolio}`,                sub: "per unit / week",                                          icon: TrendingUp,  color: t.warn    },
-                ].map((s, i) => (
-                  <div key={i} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: "18px 20px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                      <span style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.5px" }}>{s.label}</span>
-                      <s.icon size={15} color={s.color} />
-                    </div>
-                    <div style={{ fontSize: 26, fontWeight: 700, color: s.color, letterSpacing: "-0.5px" }}>{s.value}</div>
-                    <div style={{ color: t.muted, fontSize: 11, marginTop: 4 }}>{s.sub}</div>
+          {!loading && !error && page === "overview" && (() => {
+            const f   = data?.financials ?? {};
+            const nwc = (f.cash_balance ?? 0) + (f.invoices_due_this_month ?? 0) - (f.total_expenses ?? 0);
+            const nwcColor = nwc >= 0 ? "#1a7f37" : "#CC0000";
+            const totalUnits = complexes.reduce((s, c) => s + c.owners, 0);
+            const weightedAvgRent = totalUnits > 0
+              ? Math.round(complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalUnits)
+              : 0;
+            const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
+            const lbl  = { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 10, fontWeight: 500 };
+            const val  = { fontSize: 28, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 8 };
+
+            return (
+              <div>
+                {/* ── Row 1: 4 stat cards ── */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 20 }}>
+
+                  {/* Cash in Bank */}
+                  <div style={{ ...card, borderTop: "3px solid #1a7f37", padding: "20px 22px" }}>
+                    <div style={lbl}>Cash in Bank</div>
+                    <div style={{ ...val, color: "#1a7f37" }}>{fmt(Math.round(f.cash_balance ?? 0))}</div>
+                    <div style={{ color: t.muted, fontSize: 11 }}>Bank accounts</div>
                   </div>
-                ))}
-              </div>
 
-              <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, marginBottom: 24 }}>
-                <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 }}>Complexes — {data?.month}</div>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                      {["Complex","Owners","Avg Rent","Flagged","Rent MTD","Bills MTD","Net MTD"].map((h) => (
-                        <th key={h} style={{ padding: "10px 20px", textAlign: h === "Complex" ? "left" : "right", fontWeight: 500 }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {complexes.map((c, i) => {
-                      const net = c.totalRent - c.totalBills;
-                      return (
-                        <tr key={c.code} style={{ borderTop: `1px solid ${t.border}`, background: i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)") }}>
-                          <td style={{ padding: "11px 20px", fontWeight: 600 }}>{c.name}</td>
-                          <td style={{ padding: "11px 20px", textAlign: "right", color: t.muted }}>{c.owners}</td>
-                          <td style={{ padding: "11px 20px", textAlign: "right" }}>${c.avgRent}</td>
-                          <td style={{ padding: "11px 20px", textAlign: "right" }}>
-                            <span style={{ color: c.flagged > 8 ? t.danger : c.flagged > 4 ? t.warn : t.success, fontWeight: 600 }}>{c.flagged}</span>
-                          </td>
-                          <td style={{ padding: "11px 20px", textAlign: "right" }}>${c.totalRent.toLocaleString()}</td>
-                          <td style={{ padding: "11px 20px", textAlign: "right", color: t.muted }}>${c.totalBills.toLocaleString()}</td>
-                          <td style={{ padding: "11px 20px", textAlign: "right", fontWeight: 600, color: net >= 0 ? t.success : t.danger }}>
-                            {net >= 0 ? "+" : ""}{fmt(net)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                  {/* Net Working Capital */}
+                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: "20px 22px" }}>
+                    <div style={lbl}>Net Working Capital</div>
+                    <div style={{ ...val, color: nwcColor }}>{fmt(Math.round(nwc))}</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                      <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash</div>
+                      <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.invoices_due_this_month ?? 0))} due to CPM</div>
+                      <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.total_expenses ?? 0))} bills to pay</div>
+                    </div>
+                  </div>
 
-              <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 }}>
-                <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontWeight: 600 }}>Worst Flagged Owners</span>
-                  <button onClick={() => setPage("flagged")} style={{ background: "transparent", border: "none", color: t.accent, cursor: "pointer", fontSize: 12, fontFamily: "inherit" }}>View all →</button>
+                  {/* Total Units */}
+                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: "20px 22px" }}>
+                    <div style={lbl}>Total Units in Portfolio</div>
+                    <div style={{ ...val, color: t.text }}>{totalUnits}</div>
+                    <div style={{ color: t.muted, fontSize: 11 }}>across {complexes.length} complexes</div>
+                  </div>
+
+                  {/* Portfolio Avg Rent */}
+                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: "20px 22px" }}>
+                    <div style={lbl}>Portfolio Average Rent</div>
+                    <div style={{ ...val, color: t.text }}>${weightedAvgRent}/wk</div>
+                    <div style={{ color: t.muted, fontSize: 11 }}>per unit per week</div>
+                  </div>
                 </div>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                      {["Unit","Owner","Complex","Rent","Bills","Net"].map((h) => (
-                        <th key={h} style={{ padding: "9px 20px", textAlign: ["Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500 }}>{h}</th>
+
+                {/* ── Middle: Complex table (60%) + Needs Attention (40%) ── */}
+                <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 16 }}>
+
+                  {/* Complex performance table */}
+                  <div style={{ ...card, overflow: "hidden" }}>
+                    <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 }}>
+                      Complex Performance — {data?.month}
+                    </div>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                          {["Complex", "Units", "Avg Rent", "Flagged", "Net MTD"].map((h) => (
+                            <th key={h} style={{ padding: "10px 20px", textAlign: h === "Complex" ? "left" : "right", fontWeight: 500 }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {complexes.map((c, i) => {
+                          const net = c.totalRent - c.totalBills;
+                          const flagColor = c.flagged > 8 ? "#CC0000" : c.flagged > 4 ? "#d29922" : "#1a7f37";
+                          return (
+                            <tr key={c.code} style={{ borderTop: `1px solid ${t.border}`, background: i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)") }}>
+                              <td style={{ padding: "11px 20px", fontWeight: 600 }}>{c.name}</td>
+                              <td style={{ padding: "11px 20px", textAlign: "right", color: t.muted }}>{c.owners}</td>
+                              <td style={{ padding: "11px 20px", textAlign: "right" }}>${c.avgRent}/wk</td>
+                              <td style={{ padding: "11px 20px", textAlign: "right" }}>
+                                <span style={{ color: flagColor, fontWeight: 700 }}>{c.flagged}</span>
+                              </td>
+                              <td style={{ padding: "11px 20px", textAlign: "right", fontWeight: 600, color: net >= 0 ? "#1a7f37" : "#CC0000" }}>
+                                {net >= 0 ? "+" : ""}{fmt(Math.round(net))}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Needs Attention panel */}
+                  <div style={{ ...card, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                    <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 600, fontSize: 13 }}>
+                      <span>Needs Attention</span>
+                      {totalFlagged > 0 && (
+                        <span style={{ background: "#CC0000", color: "#fff", borderRadius: 12, padding: "2px 9px", fontSize: 11, fontWeight: 700 }}>{totalFlagged}</span>
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      {flaggedOwners.length === 0 && (
+                        <div style={{ padding: "20px", color: t.muted, fontSize: 12 }}>No flagged owners this month.</div>
+                      )}
+                      {flaggedOwners.slice(0, 5).map((o, i) => (
+                        <div key={i} style={{ padding: "13px 20px", borderTop: i > 0 ? `1px solid ${t.border}` : "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3 }}>{o.name}</div>
+                            <div style={{ fontFamily: "monospace", fontSize: 11, color: t.muted }}>{o.code} · {o.complex}</div>
+                          </div>
+                          <div style={{ color: "#CC0000", fontWeight: 700, fontSize: 14, flexShrink: 0, marginLeft: 12 }}>{fmt(Math.round(o.net))}</div>
+                        </div>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {flaggedOwners.slice(0, 6).map((o, i) => (
-                      <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)" }}>
-                        <td style={{ padding: "10px 20px", color: t.muted, fontFamily: "monospace" }}>{o.code}</td>
-                        <td style={{ padding: "10px 20px", fontWeight: 500 }}>{o.name}</td>
-                        <td style={{ padding: "10px 20px", color: t.muted }}>{o.complex}</td>
-                        <td style={{ padding: "10px 20px", textAlign: "right" }}>{o.rent === 0 ? <span style={{ color: t.danger }}>$0</span> : `$${o.rent.toLocaleString()}`}</td>
-                        <td style={{ padding: "10px 20px", textAlign: "right", color: t.muted }}>${o.bills.toLocaleString()}</td>
-                        <td style={{ padding: "10px 20px", textAlign: "right", fontWeight: 700, color: t.danger }}>{fmt(o.net)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </div>
+                    <div style={{ padding: "12px 20px", borderTop: `1px solid ${t.border}` }}>
+                      <button onClick={() => setPage("flagged")} style={{ background: "transparent", border: "none", color: "#CC0000", cursor: "pointer", fontSize: 12, fontFamily: "inherit", fontWeight: 600, padding: 0 }}>
+                        View all {flaggedOwners.length} flagged →
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* FLAGGED OWNERS */}
           {!loading && !error && page === "flagged" && (
