@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  secrets: write
 
 jobs:
   update:
@@ -54,7 +53,7 @@ jobs:
           XERO_CLIENT_ID: ${{ secrets.XERO_CLIENT_ID }}
           XERO_CLIENT_SECRET: ${{ secrets.XERO_CLIENT_SECRET }}
           XERO_REFRESH_TOKEN: ${{ secrets.XERO_REFRESH_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ROTATION_PAT: ${{ secrets.ROTATION_PAT }}
         run: python propertyme-automation/process_and_push.py
 
       - name: Set up Node.js 20

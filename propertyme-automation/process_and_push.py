@@ -380,9 +380,9 @@ def _rotate_xero_token(new_refresh_token):
     if os.environ.get("CI") != "true":
         return
 
-    github_token = os.environ.get("GITHUB_TOKEN")
+    github_token = os.environ.get("ROTATION_PAT")
     if not github_token:
-        print("  WARNING: CI=true but GITHUB_TOKEN not set — cannot update secret.")
+        print("  WARNING: CI=true but ROTATION_PAT not set — cannot update secret.")
         return
 
     try:
