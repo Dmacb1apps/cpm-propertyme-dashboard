@@ -410,9 +410,10 @@ def _rotate_xero_token(new_refresh_token):
     if os.environ.get("CI") != "true":
         return
 
+    print("  Updating XERO_REFRESH_TOKEN secret in GitHub...")
     github_token = os.environ.get("ROTATION_PAT")
+    print(f"  ROTATION_PAT present: {'yes' if github_token else 'NO — secret not set in GitHub'}")
     if not github_token:
-        print("  WARNING: CI=true but ROTATION_PAT not set — cannot update secret.")
         return
 
     try:
@@ -428,7 +429,10 @@ def _rotate_xero_token(new_refresh_token):
 
         # Fetch repo public key for secret encryption
         key_resp = requests.get(f"{api_url}/public-key", headers=gh_headers)
-        key_resp.raise_for_status()
+        print(f"  Public key fetch: {key_resp.status_code}")
+        if not key_resp.ok:
+            print(f"  Response body: {key_resp.text}")
+            key_resp.raise_for_status()
         key_data  = key_resp.json()
         public_key = nacl_public.PublicKey(key_data["key"].encode(), encoding.Base64Encoder())
         sealed_box = nacl_public.SealedBox(public_key)
@@ -441,8 +445,11 @@ def _rotate_xero_token(new_refresh_token):
             headers=gh_headers,
             json={"encrypted_value": encrypted_b64, "key_id": key_data["key_id"]},
         )
-        put_resp.raise_for_status()
-        print("  GitHub Actions secret XERO_REFRESH_TOKEN updated.")
+        print(f"  Secret update: {put_resp.status_code}")
+        if not put_resp.ok:
+            print(f"  Response body: {put_resp.text}")
+            put_resp.raise_for_status()
+        print("  XERO_REFRESH_TOKEN secret updated successfully.")
     except ImportError:
         print("  WARNING: PyNaCl not installed — cannot update GitHub secret.")
     except Exception as e:
