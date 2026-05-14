@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T15:46:43",
+  "updated": "2026-05-14T23:23:56",
   "month": "May 2026",
   "complexes": [
     {
@@ -27,7 +27,7 @@
       "name": "Greystone Terraces",
       "owners": 19,
       "flagged": 11,
-      "avgRent": 770,
+      "avgRent": 771,
       "totalRent": 17928.91,
       "totalBills": 22527.49,
       "rentChangePct": null
@@ -37,7 +37,7 @@
       "name": "Kingsbury Estate",
       "owners": 50,
       "flagged": 22,
-      "avgRent": 657,
+      "avgRent": 658,
       "totalRent": 41594.45,
       "totalBills": 41722.53,
       "rentChangePct": null
@@ -77,7 +77,7 @@
       "name": "Trend Everton Park",
       "owners": 22,
       "flagged": 5,
-      "avgRent": 762,
+      "avgRent": 765,
       "totalRent": 27191.48,
       "totalBills": 15680.11,
       "rentChangePct": null
@@ -2588,40 +2588,25 @@
     }
   ],
   "financials": {
-    "cash_balance": 23467.2,
-    "total_income": 25648.48,
+    "cash_balance": 18977.02,
+    "total_income": 26083.92,
     "total_expenses": 48832.03,
-    "net_profit": -24067.8,
+    "net_profit": -23698.63,
     "management_fees": 7421.58,
     "wages": 14241.9,
     "wages_employee": 9766.98,
     "wages_management": 0.0,
     "loan_interest": 24246.15,
     "credit_card_don": 3854.1,
-    "credit_card_duncan": 3958.23,
-    "payables_total": 47886.61,
-    "payables_overdue": 809.09,
-    "payables_count": 10,
+    "credit_card_duncan": 4031.13,
+    "payables_total": 47375.4,
+    "payables_overdue": 583.9,
+    "payables_count": 7,
     "top_payables": [
-      {
-        "contact_name": "Locality Planning Energy Pty Ltd",
-        "amount_due": 225.19,
-        "due_date": "2026-05-13"
-      },
       {
         "contact_name": "Moreton Bay Regional Council",
         "amount_due": 583.9,
         "due_date": "2026-05-13"
-      },
-      {
-        "contact_name": "JMac Property Services",
-        "amount_due": 127.39,
-        "due_date": "2026-05-14"
-      },
-      {
-        "contact_name": "Locality Planning Energy Pty Ltd",
-        "amount_due": 158.63,
-        "due_date": "2026-05-14"
       },
       {
         "contact_name": "Wattz Up",
@@ -2632,20 +2617,30 @@
         "contact_name": "ATO",
         "amount_due": 8729.0,
         "due_date": "2026-05-21"
+      },
+      {
+        "contact_name": "ATO",
+        "amount_due": 37332.0,
+        "due_date": "2026-05-26"
+      },
+      {
+        "contact_name": "Wattz Up",
+        "amount_due": 320.0,
+        "due_date": "2026-05-27"
+      },
+      {
+        "contact_name": "Wattz Up",
+        "amount_due": 200.0,
+        "due_date": "2026-05-28"
       }
     ],
-    "receivables_total": 33367.95,
+    "receivables_total": 44565.4,
     "receivables_overdue": 0,
     "receivables_count": 6,
     "top_receivables": [
       {
-        "contact_name": "Lorelei Lipczynski",
-        "amount_due": 250.0,
-        "due_date": "2026-05-14"
-      },
-      {
-        "contact_name": "Tammy-Lee Everingham",
-        "amount_due": 100.0,
+        "contact_name": "PropertyME",
+        "amount_due": 3897.3,
         "due_date": "2026-05-15"
       },
       {
@@ -2659,6 +2654,11 @@
         "due_date": "2026-05-19"
       },
       {
+        "contact_name": "Body Corporate for Vue Taigum CTS 53523",
+        "amount_due": 7650.15,
+        "due_date": "2026-05-22"
+      },
+      {
         "contact_name": "Body Corporate for Everton Breeze CTS 52780",
         "amount_due": 5162.74,
         "due_date": "2026-06-04"
@@ -2669,7 +2669,7 @@
         "due_date": "2026-06-07"
       }
     ],
-    "invoices_due_this_month": 33367.95,
+    "invoices_due_this_month": 44565.4,
     "invoices_due_count": 6
   }
 }
