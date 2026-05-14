@@ -10,15 +10,20 @@ Usage:
 """
 
 import json
+import os
 import re
 import time
 from collections import defaultdict
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 import pandas as pd
 import pdfplumber
 import gspread
+import requests
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent / ".env")
 
 # ---------------------------------------------------------------------------
 # Config
@@ -300,13 +305,136 @@ def write_sheet(ws, timestamp_str, headers, rows, flagged_indices=None):
 
 
 # ---------------------------------------------------------------------------
+# Xero financials
+# ---------------------------------------------------------------------------
+
+def _xero_section_total(rows, title):
+    """Return the SummaryRow value for a named section."""
+    for row in rows:
+        if row.get("RowType") == "Section" and title.lower() in row.get("Title", "").lower():
+            for sub in row.get("Rows", []):
+                if sub.get("RowType") == "SummaryRow":
+                    try:
+                        return abs(float(sub["Cells"][1].get("Value") or 0))
+                    except (IndexError, ValueError):
+                        return 0.0
+    return 0.0
+
+
+def _xero_find_line(rows, keyword):
+    """Search all Row cells recursively for an account matching keyword."""
+    for row in rows:
+        if row.get("RowType") == "Row":
+            cells = row.get("Cells", [])
+            if cells and keyword.lower() in cells[0].get("Value", "").lower():
+                try:
+                    return abs(float(cells[1].get("Value") or 0))
+                except (IndexError, ValueError):
+                    return 0.0
+        elif row.get("RowType") == "Section":
+            result = _xero_find_line(row.get("Rows", []), keyword)
+            if result:
+                return result
+    return 0.0
+
+
+def fetch_xero_data():
+    """
+    Refresh the Xero access token, pull MTD P&L and Balance Sheet,
+    and return a financials dict. Returns None if credentials are missing.
+    """
+    client_id     = os.environ.get("XERO_CLIENT_ID")
+    client_secret = os.environ.get("XERO_CLIENT_SECRET")
+    refresh_token = os.environ.get("XERO_REFRESH_TOKEN")
+
+    if not all([client_id, client_secret, refresh_token]):
+        print("  Xero credentials not set — skipping financials.")
+        return None
+
+    # Get fresh access token
+    token_resp = requests.post(
+        "https://identity.xero.com/connect/token",
+        data={"grant_type": "refresh_token", "refresh_token": refresh_token},
+        auth=(client_id, client_secret),
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    token_resp.raise_for_status()
+    access_token = token_resp.json()["access_token"]
+
+    headers = {"Authorization": f"Bearer {access_token}", "Accept": "application/json"}
+
+    # Get tenant ID
+    connections = requests.get("https://api.xero.com/connections", headers=headers)
+    connections.raise_for_status()
+    tenant_id = connections.json()[0]["tenantId"]
+    headers["Xero-Tenant-Id"] = tenant_id
+
+    today     = date.today()
+    from_date = today.replace(day=1).strftime("%Y-%m-%d")
+    to_date   = today.strftime("%Y-%m-%d")
+
+    # Profit & Loss
+    pl_resp = requests.get(
+        "https://api.xero.com/api.xro/2.0/Reports/ProfitAndLoss",
+        headers=headers,
+        params={"fromDate": from_date, "toDate": to_date},
+    )
+    pl_resp.raise_for_status()
+    pl_rows = pl_resp.json()["Reports"][0].get("Rows", [])
+
+    total_income   = _xero_section_total(pl_rows, "Income")
+    total_expenses = (
+        _xero_section_total(pl_rows, "Less Operating Expenses") or
+        _xero_section_total(pl_rows, "Operating Expenses") or
+        _xero_section_total(pl_rows, "Expenses")
+    )
+
+    # Net profit is the final SummaryRow at the report level
+    net_profit = 0.0
+    for row in pl_rows:
+        if row.get("RowType") == "SummaryRow":
+            try:
+                net_profit = float(row["Cells"][1].get("Value") or 0)
+            except (IndexError, ValueError):
+                pass
+
+    management_fees = _xero_find_line(pl_rows, "management")
+    wages           = _xero_find_line(pl_rows, "wages") or _xero_find_line(pl_rows, "salaries")
+    loan_interest   = _xero_find_line(pl_rows, "interest")
+
+    # Balance Sheet for cash position
+    cash_balance = 0.0
+    bs_resp = requests.get(
+        "https://api.xero.com/api.xro/2.0/Reports/BalanceSheet",
+        headers=headers,
+        params={"date": to_date},
+    )
+    if bs_resp.ok:
+        bs_rows = bs_resp.json()["Reports"][0].get("Rows", [])
+        cash_balance = (
+            _xero_find_line(bs_rows, "cash") or
+            _xero_section_total(bs_rows, "Bank")
+        )
+
+    return {
+        "cash_balance":    round(cash_balance, 2),
+        "total_income":    round(total_income, 2),
+        "total_expenses":  round(total_expenses, 2),
+        "net_profit":      round(net_profit, 2),
+        "management_fees": round(management_fees, 2),
+        "wages":           round(wages, 2),
+        "loan_interest":   round(loan_interest, 2),
+    }
+
+
+# ---------------------------------------------------------------------------
 # JSON export
 # ---------------------------------------------------------------------------
 
 _REVERSE_MAP = {v: k for k, v in COMPLEX_MAP.items()}
 
 
-def save_json(summary, owner_data):
+def save_json(summary, owner_data, financials=None):
     now = datetime.now()
     payload = {
         "updated": now.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -347,6 +475,9 @@ def save_json(summary, owner_data):
             for o in sorted(owner_data, key=lambda o: (o["complex_code"], o["unit_ref"]))
         ],
     }
+
+    if financials:
+        payload["financials"] = financials
 
     JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     JSON_OUTPUT.write_text(json.dumps(payload, indent=2))
@@ -443,8 +574,15 @@ def main():
         print(f"ERROR: {CREDENTIALS_FILE} not found — see setup steps below.")
         return
 
+    print("Fetching Xero financials...")
+    financials = fetch_xero_data()
+    if financials:
+        print(f"  Net profit: ${financials['net_profit']:,.2f}")
+        print(f"  Cash balance: ${financials['cash_balance']:,.2f}")
+    print()
+
     print("Saving dashboard_data.json...")
-    save_json(summary, owner_data)
+    save_json(summary, owner_data, financials)
 
     print("\nPushing to Google Sheets...")
     url = push_to_sheets(summary, owner_data)

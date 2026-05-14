@@ -49,6 +49,10 @@ jobs:
           find propertyme-automation/downloads -name "*.pdf" -o -name "*.xlsx" 2>/dev/null || echo "(none found)"
 
       - name: Process data and push to Google Sheets
+        env:
+          XERO_CLIENT_ID: ${{ secrets.XERO_CLIENT_ID }}
+          XERO_CLIENT_SECRET: ${{ secrets.XERO_CLIENT_SECRET }}
+          XERO_REFRESH_TOKEN: ${{ secrets.XERO_REFRESH_TOKEN }}
         run: python propertyme-automation/process_and_push.py
 
       - name: Set up Node.js 20

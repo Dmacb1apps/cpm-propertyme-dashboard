@@ -1,6 +1,7 @@
 playwright
 pyotp
 python-dotenv
+requests
 pdfplumber
 pandas
 openpyxl
