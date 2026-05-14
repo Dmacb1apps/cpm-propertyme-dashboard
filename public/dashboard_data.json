@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T02:26:06",
+  "updated": "2026-05-14T12:29:05",
   "month": "May 2026",
   "complexes": [
     {
@@ -25,7 +25,7 @@
       "name": "Greystone Terraces",
       "owners": 19,
       "flagged": 11,
-      "avgRent": 771,
+      "avgRent": 770,
       "totalRent": 17928.91,
       "totalBills": 22527.49
     },
@@ -2587,9 +2587,9 @@
   ],
   "financials": {
     "cash_balance": 23467.2,
-    "total_income": 25764.29,
-    "total_expenses": 48796.14,
-    "net_profit": -23879.74,
+    "total_income": 25648.48,
+    "total_expenses": 48832.03,
+    "net_profit": -24067.8,
     "management_fees": 7421.58,
     "wages": 14241.9,
     "loan_interest": 24246.15

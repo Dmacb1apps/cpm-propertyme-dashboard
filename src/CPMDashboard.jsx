@@ -354,7 +354,7 @@ export default function CPMDashboard() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 24 }}>
                   {[
                     { label: "Cash Balance",  value: f.cash_balance  ?? 0, color: t.success  },
-                    { label: "MTD Income",     value: f.total_income  ?? 0, color: "#1e2a3a"  },
+                    { label: "MTD Income",     value: f.total_income  ?? 0, color: t.accent   },
                     { label: "MTD Expenses",   value: f.total_expenses ?? 0, color: "#C00000" },
                     { label: "Net Profit",     value: f.net_profit    ?? 0, color: netColor   },
                   ].map((s) => (
