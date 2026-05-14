@@ -32,7 +32,8 @@ SCOPES       = (
     "openid profile email offline_access "
     "accounting.reports.profitandloss.read "
     "accounting.reports.balancesheet.read "
-    "accounting.settings.read"
+    "accounting.settings.read "
+    "accounting.invoices.read"
 )
 
 
