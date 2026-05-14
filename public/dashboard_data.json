@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-14T12:29:05",
+  "updated": "2026-05-14T12:43:09",
   "month": "May 2026",
   "complexes": [
     {
@@ -2592,6 +2592,41 @@
     "net_profit": -24067.8,
     "management_fees": 7421.58,
     "wages": 14241.9,
-    "loan_interest": 24246.15
+    "loan_interest": 24246.15,
+    "invoices_due_count": 16,
+    "invoices_due_this_month": 81254.56,
+    "overdue_total": 809.09,
+    "top_invoices": [
+      {
+        "contact_name": "Locality Planning Energy Pty Ltd",
+        "amount_due": 225.19,
+        "due_date": "2026-05-13"
+      },
+      {
+        "contact_name": "Moreton Bay Regional Council",
+        "amount_due": 583.9,
+        "due_date": "2026-05-13"
+      },
+      {
+        "contact_name": "Lorelei Lipczynski",
+        "amount_due": 250.0,
+        "due_date": "2026-05-14"
+      },
+      {
+        "contact_name": "JMac Property Services",
+        "amount_due": 127.39,
+        "due_date": "2026-05-14"
+      },
+      {
+        "contact_name": "Locality Planning Energy Pty Ltd",
+        "amount_due": 158.63,
+        "due_date": "2026-05-14"
+      },
+      {
+        "contact_name": "Tammy-Lee Everingham",
+        "amount_due": 100.0,
+        "due_date": "2026-05-15"
+      }
+    ]
   }
 }

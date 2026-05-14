@@ -492,14 +492,56 @@ def fetch_xero_data():
         bs_rows = bs_resp.json()["Reports"][0].get("Rows", [])
         cash_balance = _xero_section_total(bs_rows, "Bank")
 
+    # Outstanding invoices due this month
+    month_start = today.replace(day=1).strftime("%Y-%m-%d")
+    import calendar
+    month_end   = today.replace(day=calendar.monthrange(today.year, today.month)[1]).strftime("%Y-%m-%d")
+
+    invoices_due_count  = 0
+    invoices_due_total  = 0.0
+    overdue_total       = 0.0
+    top_invoices        = []
+
+    inv_resp = requests.get(
+        "https://api.xero.com/api.xro/2.0/Invoices",
+        headers=headers,
+        params={"Statuses": "AUTHORISED", "DueDateFrom": month_start, "DueDateTo": month_end},
+    )
+    if inv_resp.ok:
+        invoices = inv_resp.json().get("Invoices", [])
+        today_str = today.strftime("%Y-%m-%d")
+        for inv in invoices:
+            amount_due = float(inv.get("AmountDue", 0))
+            due_date   = inv.get("DueDate", "")
+            # Xero returns dates as /Date(epoch)/ — parse to ISO
+            epoch_m = __import__("re").search(r"/Date\((\d+)\+\d+\)/", due_date)
+            if epoch_m:
+                import datetime as _dt
+                due_date = _dt.datetime.fromtimestamp(int(epoch_m.group(1)) / 1000).strftime("%Y-%m-%d")
+            invoices_due_count  += 1
+            invoices_due_total  += amount_due
+            if due_date < today_str:
+                overdue_total += amount_due
+            top_invoices.append({
+                "contact_name": inv.get("Contact", {}).get("Name", "Unknown"),
+                "amount_due":   round(amount_due, 2),
+                "due_date":     due_date,
+            })
+        top_invoices.sort(key=lambda x: x["due_date"])
+        top_invoices = top_invoices[:6]
+
     return {
-        "cash_balance":    round(cash_balance, 2),
-        "total_income":    round(total_income, 2),
-        "total_expenses":  round(total_expenses, 2),
-        "net_profit":      round(net_profit, 2),
-        "management_fees": round(management_fees, 2),
-        "wages":           round(wages, 2),
-        "loan_interest":   round(loan_interest, 2),
+        "cash_balance":          round(cash_balance, 2),
+        "total_income":          round(total_income, 2),
+        "total_expenses":        round(total_expenses, 2),
+        "net_profit":            round(net_profit, 2),
+        "management_fees":       round(management_fees, 2),
+        "wages":                 round(wages, 2),
+        "loan_interest":         round(loan_interest, 2),
+        "invoices_due_count":    invoices_due_count,
+        "invoices_due_this_month": round(invoices_due_total, 2),
+        "overdue_total":         round(overdue_total, 2),
+        "top_invoices":          top_invoices,
     }
 
 
