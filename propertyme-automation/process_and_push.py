@@ -12,9 +12,12 @@ Usage:
 import json
 import os
 import re
+import smtplib
 import time
 from collections import defaultdict
 from datetime import date, datetime, timedelta
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from pathlib import Path
 
 import pandas as pd
@@ -22,6 +25,9 @@ import pdfplumber
 import gspread
 import requests
 from dotenv import load_dotenv
+
+from parse_inspections import parse_inspections_due
+from inspection_dashboard_section import generate_inspection_html
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -660,13 +666,89 @@ def update_rent_history(rent_data):
 
 
 # ---------------------------------------------------------------------------
+# Inspection email alert
+# ---------------------------------------------------------------------------
+
+DASHBOARD_URL = "https://dmacb1apps.github.io/cpm-propertyme-dashboard/"
+ALERT_TO      = "duncan@cpmanagement.com.au"
+
+
+def send_inspection_alert(inspection_data):
+    """Send an email if any inspections are overdue. Requires SMTP_USER + SMTP_PASSWORD env vars."""
+    overdue = inspection_data.get("overdue", [])
+    if not overdue:
+        return
+
+    smtp_user = os.environ.get("SMTP_USER")
+    smtp_pass = os.environ.get("SMTP_PASSWORD")
+    if not smtp_user or not smtp_pass:
+        print("  SMTP_USER/SMTP_PASSWORD not set — skipping email alert.")
+        return
+
+    count   = len(overdue)
+    subject = f"CPM: {count} inspection{'s' if count != 1 else ''} overdue"
+
+    rows_html = ""
+    rows_text = ""
+    for p in overdue:
+        days = p["days_overdue"]
+        rows_html += (
+            f"<tr>"
+            f"<td style='padding:6px 10px;border-bottom:1px solid #eee'>{p['property']}</td>"
+            f"<td style='padding:6px 10px;border-bottom:1px solid #eee;color:#CC0000;font-weight:bold'>{days}d</td>"
+            f"<td style='padding:6px 10px;border-bottom:1px solid #eee'>{p['manager']}</td>"
+            f"<td style='padding:6px 10px;border-bottom:1px solid #eee'>{p['due_date']}</td>"
+            f"</tr>"
+        )
+        rows_text += f"  • {p['property']} — {days}d overdue — {p['manager']} (due {p['due_date']})\n"
+
+    html_body = f"""
+<html><body style="font-family:Arial,sans-serif;color:#222;max-width:640px">
+<h2 style="color:#CC0000">⚠️ {count} Inspection{'s' if count != 1 else ''} Overdue</h2>
+<table style="width:100%;border-collapse:collapse;font-size:14px">
+  <thead>
+    <tr style="background:#1e2a3a;color:#fff">
+      <th style="padding:8px 10px;text-align:left">Property</th>
+      <th style="padding:8px 10px;text-align:left">Overdue</th>
+      <th style="padding:8px 10px;text-align:left">Manager</th>
+      <th style="padding:8px 10px;text-align:left">Due Date</th>
+    </tr>
+  </thead>
+  <tbody>{rows_html}</tbody>
+</table>
+<p style="margin-top:18px">
+  <a href="{DASHBOARD_URL}" style="background:#CC0000;color:#fff;padding:10px 18px;
+     text-decoration:none;border-radius:5px;font-weight:bold">View Dashboard</a>
+</p>
+</body></html>"""
+
+    text_body = f"{count} inspection{'s' if count != 1 else ''} overdue:\n\n{rows_text}\nDashboard: {DASHBOARD_URL}"
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = smtp_user
+    msg["To"]      = ALERT_TO
+    msg.attach(MIMEText(text_body, "plain"))
+    msg.attach(MIMEText(html_body, "html"))
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, ALERT_TO, msg.as_string())
+        print(f"  Alert email sent to {ALERT_TO}: {subject}")
+    except Exception as e:
+        print(f"  WARNING: Failed to send email alert: {e}")
+
+
+# ---------------------------------------------------------------------------
 # JSON export
 # ---------------------------------------------------------------------------
 
 _REVERSE_MAP = {v: k for k, v in COMPLEX_MAP.items()}
 
 
-def save_json(summary, owner_data, financials=None, rent_changes=None):
+def save_json(summary, owner_data, financials=None, rent_changes=None, inspections=None):
     now = datetime.now()
     payload = {
         "updated": now.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -713,6 +795,10 @@ def save_json(summary, owner_data, financials=None, rent_changes=None):
 
     if financials:
         payload["financials"] = financials
+
+    if inspections:
+        payload["inspections"]     = inspections
+        payload["inspectionHtml"]  = generate_inspection_html(inspections)
 
     JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     JSON_OUTPUT.write_text(json.dumps(payload, indent=2))
@@ -807,6 +893,18 @@ def main():
     flagged    = [o for o in owner_data if o["flagged"]]
     print(f"  {len(owner_data)} owners, {len(flagged)} flagged\n")
 
+    print("Parsing Inspection data...")
+    inspection_data = None
+    try:
+        insp_path = latest_file("inspections_due.xlsx")
+        inspection_data = parse_inspections_due(str(insp_path))
+        print(f"  {inspection_data['overdue_count']} overdue, {inspection_data['upcoming_count']} due within 30d, {inspection_data['no_date_count']} no date set")
+    except FileNotFoundError:
+        print("  inspections_due.xlsx not found — skipping")
+    except Exception as e:
+        print(f"  WARNING: Failed to parse inspection data: {e}")
+    print()
+
     summary = build_summary(owner_data, rent_data)
 
     if not CREDENTIALS_FILE.exists():
@@ -821,7 +919,11 @@ def main():
     print()
 
     print("Saving dashboard_data.json...")
-    save_json(summary, owner_data, financials, rent_changes)
+    save_json(summary, owner_data, financials, rent_changes, inspection_data)
+
+    if inspection_data and inspection_data["overdue_count"] > 0:
+        print(f"\nSending inspection alert ({inspection_data['overdue_count']} overdue)...")
+        send_inspection_alert(inspection_data)
 
     print("\nPushing to Google Sheets...")
     url = push_to_sheets(summary, owner_data)

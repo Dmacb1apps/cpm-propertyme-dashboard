@@ -62,6 +62,8 @@ jobs:
           XERO_CLIENT_SECRET: ${{ secrets.XERO_CLIENT_SECRET }}
           XERO_REFRESH_TOKEN: ${{ secrets.XERO_REFRESH_TOKEN }}
           ROTATION_PAT: ${{ secrets.ROTATION_PAT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: python propertyme-automation/process_and_push.py
 
       - name: Set up Node.js 20

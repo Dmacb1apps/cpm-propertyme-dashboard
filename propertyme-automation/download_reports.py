@@ -289,6 +289,38 @@ def download_monthly_rent(page, start_date, end_date, iso_date, downloads_dir):
     report.close()
 
 
+INSPECTION_REPORT_URL = (
+    "https://manager.propertyme.com/reporting/#/Properties/"
+    "PropertyDetailsReport/a8e30508-f824-4993-a50e-1957a2a4d9dd/true"
+)
+
+
+def download_inspections_due(page, downloads_dir):
+    """Download the Inspections - Properties Due report as Excel (sync)."""
+    print("  Opening Inspections Due report...")
+    save_path = downloads_dir / "inspections_due.xlsx"
+
+    page.goto(INSPECTION_REPORT_URL, wait_until="networkidle", timeout=30000)
+
+    # Wait for the Export button — signals report data has rendered
+    page.wait_for_selector(
+        "button:has-text('Export'), a:has-text('Export'), [class*='export']",
+        timeout=30000,
+    )
+    page.wait_for_timeout(2000)  # Angular/React reports need a moment after button appears
+
+    print("  Clicking Export...")
+    page.click("button:has-text('Export'), a:has-text('Export')")
+    page.wait_for_selector("text=Export Excel", timeout=10000)
+
+    print("  Selecting Export Excel...")
+    with page.expect_download(timeout=30000) as dl_info:
+        page.click("text=Export Excel")
+    dl_info.value.save_as(save_path)
+
+    print(f"  Saved: {save_path}")
+
+
 def main():
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     start_date, end_date, iso_date = this_month_range()
@@ -327,6 +359,7 @@ def main():
 
             download_folio_ledger(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
             download_monthly_rent(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
+            download_inspections_due(page, DOWNLOADS_DIR)
 
         except Exception as e:
             screenshot_path = SCRIPT_DIR / "debug_screenshot.png"
