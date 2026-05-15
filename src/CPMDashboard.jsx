@@ -279,8 +279,8 @@ export default function CPMDashboard() {
 
             return (
               <div>
-                {/* Row 1: 4 stat cards — 2-col on mobile */}
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap, marginBottom: gap }}>
+                {/* Row 1: 5 stat cards — 2-col on mobile */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap, marginBottom: gap }}>
 
                   <div style={{ ...card, borderTop: "3px solid #1a7f37", padding: cp }}>
                     <div style={lbl}>Cash in Bank</div>
@@ -311,6 +311,25 @@ export default function CPMDashboard() {
                     <div style={{ ...val, color: t.text }}>${weightedAvgRent}/wk</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>per unit per week</div>
                   </div>
+
+                  {(() => {
+                    const od = inspections?.overdue_count ?? null;
+                    const color = od === null ? t.muted : od > 0 ? "#CC0000" : "#1a7f37";
+                    return (
+                      <div
+                        onClick={() => navigate("inspections")}
+                        style={{ ...card, borderTop: `3px solid ${color}`, padding: cp, cursor: "pointer" }}
+                      >
+                        <div style={lbl}>Inspections Overdue</div>
+                        <div style={{ ...val, color }}>
+                          {od === null ? "—" : od}
+                        </div>
+                        <div style={{ color: t.muted, fontSize: 11 }}>
+                          {od === null ? "no data yet" : od === 0 ? "all clear ✓" : `${od === 1 ? "property" : "properties"} overdue`}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Middle: Complex table + Needs Attention — stacked on mobile */}
