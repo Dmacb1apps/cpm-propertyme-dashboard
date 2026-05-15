@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Home, AlertTriangle, Building2, Users, ChevronRight,
   Moon, Sun, RefreshCw, TrendingUp, DollarSign,
-  BarChart3, Loader
+  BarChart3, Loader, ClipboardList
 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -42,9 +42,10 @@ export default function CPMDashboard() {
     ? { bg: "#0d1117", surface: "#161b22", border: "#30363d", text: "#e6edf3", muted: "#8b949e", accent: "#58a6ff", danger: "#f85149", success: "#3fb950", warn: "#d29922" }
     : { bg: "#f4f5f7", surface: "#ffffff",  border: "#dde1e7", text: "#1e2a3a", muted: "#656d76", accent: "#0969da", danger: "#CC0000", success: "#1a7f37", warn: "#9a6700" };
 
-  const complexes      = data?.complexes ?? [];
-  const flaggedOwners  = data?.flagged   ?? [];
-  const allOwners      = data?.allOwners ?? [];
+  const complexes      = data?.complexes    ?? [];
+  const flaggedOwners  = data?.flagged      ?? [];
+  const allOwners      = data?.allOwners    ?? [];
+  const inspections    = data?.inspections  ?? null;
 
   const totalOwners    = complexes.reduce((s, c) => s + c.owners, 0);
   const totalFlagged   = complexes.reduce((s, c) => s + c.flagged, 0);
@@ -58,11 +59,12 @@ export default function CPMDashboard() {
     : flaggedOwners.filter((o) => o.complex === complexFilter);
 
   const navItems = [
-    { id: "overview",   icon: Home,         label: "Overview"            },
-    { id: "flagged",    icon: AlertTriangle, label: "Flagged Owners", badge: totalFlagged || null },
-    { id: "complexes",  icon: Building2,     label: "By Complex"          },
-    { id: "financials", icon: DollarSign,    label: "Business Financials" },
-    { id: "owners",     icon: Users,         label: "All Owners"          },
+    { id: "overview",     icon: Home,          label: "Overview"            },
+    { id: "flagged",      icon: AlertTriangle,  label: "Flagged Owners",    badge: totalFlagged || null },
+    { id: "complexes",    icon: Building2,      label: "By Complex"          },
+    { id: "financials",   icon: DollarSign,     label: "Business Financials" },
+    { id: "owners",       icon: Users,          label: "All Owners"          },
+    { id: "inspections",  icon: ClipboardList,  label: "Inspections",        badge: inspections?.overdue_count || null },
   ];
 
   const updatedLabel = data?.updated
@@ -753,6 +755,165 @@ export default function CPMDashboard() {
               </div>
             </div>
           )}
+
+          {/* ══════════════════════════════════════════
+              INSPECTIONS
+          ══════════════════════════════════════════ */}
+          {!loading && !error && page === "inspections" && (() => {
+            const card    = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
+            const ph      = { padding: "13px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
+
+            if (!inspections) {
+              return (
+                <div style={{ ...card, padding: "32px 24px", color: t.muted, fontSize: 13, textAlign: "center" }}>
+                  No inspection data yet — will populate after the next scheduled run.
+                </div>
+              );
+            }
+
+            const overdue  = inspections.overdue  ?? [];
+            const upcoming = inspections.upcoming  ?? [];
+            const noDate   = (inspections.no_date ?? []).filter(x => !x.property.includes("BODY") && !x.property.includes("SSKB"));
+            const byMgr    = inspections.by_manager ?? {};
+
+            const overdueCount  = inspections.overdue_count  ?? 0;
+            const upcomingCount = inspections.upcoming_count ?? 0;
+            const noDateCount   = noDate.length;
+
+            const badgeColor = (days) =>
+              days > 21 ? "#CC0000" : days > 7 ? "#e07b00" : t.warn;
+
+            return (
+              <div>
+                {/* Stat strip */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr 1fr" : "repeat(3,1fr)", gap, marginBottom: gap }}>
+                  {[
+                    { label: "Overdue",        value: overdueCount,  color: overdueCount  > 0 ? "#CC0000" : t.success },
+                    { label: "Due within 30d", value: upcomingCount, color: upcomingCount > 0 ? t.warn    : t.success },
+                    { label: "No date set",    value: noDateCount,   color: noDateCount   > 0 ? t.muted   : t.success },
+                  ].map((s) => (
+                    <div key={s.label} style={{ ...card, borderTop: `3px solid ${s.color}`, padding: cp }}>
+                      <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>{s.label}</div>
+                      <div style={{ fontSize: valFz, fontWeight: 700, color: s.color }}>{s.value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Overdue list + manager pills — stacked on mobile */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "3fr 2fr", gap, marginBottom: gap }}>
+
+                  {/* Overdue list */}
+                  <div style={card}>
+                    <div style={{ ...ph, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span>Overdue Inspections</span>
+                      <span style={{ color: t.muted, fontWeight: 400, fontSize: 11 }}>as at {inspections.report_date}</span>
+                    </div>
+
+                    {overdueCount === 0 ? (
+                      <div style={{ padding: "20px 16px", display: "flex", alignItems: "center", gap: 10, color: t.success, fontSize: 13 }}>
+                        <span style={{ fontSize: 20 }}>✅</span>
+                        <span>All inspections are on schedule</span>
+                      </div>
+                    ) : (
+                      overdue.map((p, i) => {
+                        const bc = badgeColor(p.days_overdue);
+                        const borderColor = p.days_overdue > 21 ? "#CC0000" : p.days_overdue > 7 ? "#e07b00" : t.warn;
+                        return (
+                          <div key={i} style={{
+                            borderTop: `1px solid ${t.border}`,
+                            borderLeft: `4px solid ${borderColor}`,
+                            padding: "11px 14px",
+                            display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
+                          }}>
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              <div style={{ fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.property}</div>
+                              <div style={{ fontSize: 11, color: t.muted, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {p.tenant || "—"} · due {p.due_date}
+                              </div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                              <span style={{ background: bc, color: p.days_overdue <= 7 && !dark ? "#111" : "#fff", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 12, whiteSpace: "nowrap" }}>
+                                {p.days_overdue}d overdue
+                              </span>
+                              <span style={{ fontSize: 11, color: t.muted, whiteSpace: "nowrap" }}>{p.manager.split(" ")[0]}</span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {/* Manager summary */}
+                  <div style={card}>
+                    <div style={ph}>Manager Summary</div>
+                    <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+                      {Object.entries(byMgr).length === 0 && (
+                        <div style={{ color: t.muted, fontSize: 12 }}>No manager data.</div>
+                      )}
+                      {Object.entries(byMgr).map(([mgr, stats]) => {
+                        const od  = stats.overdue ?? 0;
+                        const tot = stats.total   ?? 0;
+                        const pillBg = od > 0 ? "#CC0000" : (dark ? "#1a3a25" : "#d4edda");
+                        const pillTx = od > 0 ? "#fff"    : t.success;
+                        return (
+                          <div key={mgr} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                            <span style={{ fontSize: 13, fontWeight: 500 }}>{mgr.split(" ")[0]}</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{ fontSize: 11, color: t.muted }}>{tot} properties</span>
+                              <span style={{ background: pillBg, color: pillTx, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 12, whiteSpace: "nowrap" }}>
+                                {od} overdue
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upcoming */}
+                {upcoming.length > 0 && (
+                  <div style={{ ...card, marginBottom: gap }}>
+                    <div style={{ ...ph, color: t.warn }}>Due Within 30 Days ({upcomingCount})</div>
+                    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                      <table style={{ width: "100%", minWidth: 340, borderCollapse: "collapse" }}>
+                        <thead>
+                          <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                            {["Property", "Due Date", "Manager"].map((h) => (
+                              <th key={h} style={{ padding: tp, textAlign: "left", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {upcoming.map((p, i) => (
+                            <tr key={i} style={{ borderTop: `1px solid ${t.border}` }}>
+                              <td style={{ padding: tp, fontWeight: 500 }}>{p.property}</td>
+                              <td style={{ padding: tp, color: t.warn, whiteSpace: "nowrap" }}>{p.due_date}</td>
+                              <td style={{ padding: tp, color: t.muted, whiteSpace: "nowrap" }}>{p.manager.split(" ")[0]}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* No date set */}
+                {noDate.length > 0 && (
+                  <div style={card}>
+                    <div style={{ ...ph, color: t.muted }}>No Inspection Date Set ({noDateCount})</div>
+                    <div style={{ padding: "10px 16px", display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {noDate.map((p, i) => (
+                        <span key={i} style={{ background: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", borderRadius: 6, padding: "4px 10px", fontSize: 11, color: t.muted }}>
+                          {p.property} <span style={{ opacity: 0.6 }}>({p.manager.split(" ")[0]})</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
         </div>
       </div>
