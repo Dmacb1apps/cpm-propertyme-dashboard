@@ -267,7 +267,7 @@ export default function CPMDashboard() {
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "overview" && (() => {
             const f   = data?.financials ?? {};
-            const nwc = (f.cash_balance ?? 0) + (f.invoices_due_this_month ?? 0) - (f.total_expenses ?? 0);
+            const nwc = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0);
             const nwcColor = nwc >= 0 ? "#1a7f37" : "#CC0000";
             const totalUnits = complexes.reduce((s, c) => s + c.owners, 0);
             const weightedAvgRent = totalUnits > 0
@@ -294,8 +294,8 @@ export default function CPMDashboard() {
                     {!isMobile && (
                       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                         <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash</div>
-                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.invoices_due_this_month ?? 0))} due to CPM</div>
-                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.total_expenses ?? 0))} expenses</div>
+                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.receivables_total ?? 0))} receivables</div>
+                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.payables_total ?? 0))} payables</div>
                       </div>
                     )}
                   </div>
