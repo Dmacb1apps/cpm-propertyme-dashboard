@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-15T01:12:28",
+  "updated": "2026-05-15T18:18:53",
   "month": "May 2026",
   "complexes": [
     {
@@ -2634,9 +2634,9 @@
         "due_date": "2026-05-28"
       }
     ],
-    "receivables_total": 44565.4,
+    "receivables_total": 48396.2,
     "receivables_overdue": 0,
-    "receivables_count": 6,
+    "receivables_count": 7,
     "top_receivables": [
       {
         "contact_name": "PropertyME",
@@ -2669,8 +2669,8 @@
         "due_date": "2026-06-07"
       }
     ],
-    "invoices_due_this_month": 44565.4,
-    "invoices_due_count": 6
+    "invoices_due_this_month": 48396.2,
+    "invoices_due_count": 7
   },
   "inspections": {
     "report_date": "2026-05-15",
