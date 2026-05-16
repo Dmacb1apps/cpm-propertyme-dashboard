@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-15T18:18:53",
+  "updated": "2026-05-16T17:49:24",
   "month": "May 2026",
   "complexes": [
     {
@@ -2589,9 +2589,9 @@
   ],
   "financials": {
     "cash_balance": 18977.02,
-    "total_income": 36581.61,
+    "total_income": 40064.16,
     "total_expenses": 48832.03,
-    "net_profit": -13200.94,
+    "net_profit": -9718.39,
     "management_fees": 7421.58,
     "wages": 14241.9,
     "wages_employee": 9766.98,
@@ -2635,7 +2635,7 @@
       }
     ],
     "receivables_total": 48396.2,
-    "receivables_overdue": 0,
+    "receivables_overdue": 3897.3,
     "receivables_count": 7,
     "top_receivables": [
       {
@@ -2673,10 +2673,10 @@
     "invoices_due_count": 7
   },
   "inspections": {
-    "report_date": "2026-05-15",
+    "report_date": "2026-05-16",
     "total_properties": 231,
     "overdue_count": 5,
-    "upcoming_count": 42,
+    "upcoming_count": 47,
     "no_date_count": 4,
     "overdue": [
       {
@@ -2685,7 +2685,7 @@
         "tenant": "14.20 Giovanni Faoro & Claudineia Tres Largo",
         "due_date": "2026-04-15",
         "frequency_wks": 17,
-        "days_overdue": 30
+        "days_overdue": 31
       },
       {
         "property": "11.13 13/114 Bunya Road, Everton Hills",
@@ -2693,7 +2693,7 @@
         "tenant": "11.13 Zoe Pleming & Charlotte McGarry",
         "due_date": "2026-04-24",
         "frequency_wks": 17,
-        "days_overdue": 21
+        "days_overdue": 22
       },
       {
         "property": "12.31 31 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2701,7 +2701,7 @@
         "tenant": "12.31 Gizem ALKAS & Faiz REHMAN",
         "due_date": "2026-05-04",
         "frequency_wks": 17,
-        "days_overdue": 11
+        "days_overdue": 12
       },
       {
         "property": "14.05 05 / 122 Soames St, Everton Park Q 4053",
@@ -2709,7 +2709,7 @@
         "tenant": "Miriam Smith & Chloe Agius & Lauren Cutmore",
         "due_date": "2026-05-12",
         "frequency_wks": 17,
-        "days_overdue": 3
+        "days_overdue": 4
       },
       {
         "property": "12.32 32 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2717,7 +2717,7 @@
         "tenant": "12.32 Scott HYNES",
         "due_date": "2026-05-14",
         "frequency_wks": 13,
-        "days_overdue": 1
+        "days_overdue": 2
       }
     ],
     "upcoming": [
@@ -2727,7 +2727,7 @@
         "tenant": "Kevin-John KELLY & Cherrie KELLY & Karla WHITTRED",
         "due_date": "2026-05-18",
         "frequency_wks": 13,
-        "days_overdue": -3
+        "days_overdue": -2
       },
       {
         "property": "15.15 15 / 47 Abbeywood Street, Taigum Q 4018",
@@ -2735,7 +2735,7 @@
         "tenant": "Maria A De Los Andes Toledo Mirke & Carlos Alberto Gualteros Romero & Diana Milena Calvo Sanchez",
         "due_date": "2026-05-19",
         "frequency_wks": 17,
-        "days_overdue": -4
+        "days_overdue": -3
       },
       {
         "property": "12.45 45 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2743,31 +2743,7 @@
         "tenant": "12.45 Wayne AARONS & Susan AARONS",
         "due_date": "2026-05-30",
         "frequency_wks": 17,
-        "days_overdue": -15
-      },
-      {
-        "property": "12.03 03 / 36 Bunya Road, Everton Hills Q 4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "12.03 Alan HUNT & Jemma HUNT",
-        "due_date": "2026-06-03",
-        "frequency_wks": 17,
-        "days_overdue": -19
-      },
-      {
-        "property": "12.14 14 / 36 Bunya Road, Everton Hills Q 4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "12.14 Julio PACHECO & Fabrizzio TOAPANTA & Manuela DIAZ",
-        "due_date": "2026-06-03",
-        "frequency_wks": 17,
-        "days_overdue": -19
-      },
-      {
-        "property": "12.35 35 / 36 Bunya Road, Everton Hills Q 4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "12.35 Rachel JOHNSTON & Jane JOHNSTON",
-        "due_date": "2026-06-03",
-        "frequency_wks": 17,
-        "days_overdue": -19
+        "days_overdue": -14
       },
       {
         "property": "12.12 12 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2775,7 +2751,7 @@
         "tenant": "12.12 Mikayla NICOL & Nicholas LEE",
         "due_date": "2026-06-03",
         "frequency_wks": 17,
-        "days_overdue": -19
+        "days_overdue": -18
       },
       {
         "property": "12.02 02 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2783,7 +2759,7 @@
         "tenant": "Ramiro Antonio Franciso ALMAJANE & Aram OHANNNESIAN & Will Issei EICHLER-PARKER & Dylan APPLEYARD",
         "due_date": "2026-06-03",
         "frequency_wks": 17,
-        "days_overdue": -19
+        "days_overdue": -18
       },
       {
         "property": "12.06 06 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2791,7 +2767,23 @@
         "tenant": "",
         "due_date": "2026-06-03",
         "frequency_wks": 17,
-        "days_overdue": -19
+        "days_overdue": -18
+      },
+      {
+        "property": "12.14 14 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "12.14 Julio PACHECO & Fabrizzio TOAPANTA & Manuela DIAZ",
+        "due_date": "2026-06-03",
+        "frequency_wks": 17,
+        "days_overdue": -18
+      },
+      {
+        "property": "12.35 35 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "12.35 Rachel JOHNSTON & Jane JOHNSTON",
+        "due_date": "2026-06-03",
+        "frequency_wks": 17,
+        "days_overdue": -18
       },
       {
         "property": "12.08 08 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2799,7 +2791,15 @@
         "tenant": "12.08 Anastasia Johnson & Luciana Johnson & Mia Johnson",
         "due_date": "2026-06-03",
         "frequency_wks": 17,
-        "days_overdue": -19
+        "days_overdue": -18
+      },
+      {
+        "property": "12.03 03 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "12.03 Alan HUNT & Jemma HUNT",
+        "due_date": "2026-06-03",
+        "frequency_wks": 17,
+        "days_overdue": -18
       },
       {
         "property": "12.01 01 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2807,15 +2807,7 @@
         "tenant": "12.01 Donna STEPHENS & Marc STEPHENS",
         "due_date": "2026-06-04",
         "frequency_wks": 16,
-        "days_overdue": -20
-      },
-      {
-        "property": "02.15 15/1141 South Pine Road, Arana Hills, QLD 40",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "02.15 Ronal INKIRIWANG & Junie WARIKI",
-        "due_date": "2026-06-04",
-        "frequency_wks": 17,
-        "days_overdue": -20
+        "days_overdue": -19
       },
       {
         "property": "12.33 33 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2823,7 +2815,7 @@
         "tenant": "12.33 Julio Monroy & Jhoana Vasquez",
         "due_date": "2026-06-04",
         "frequency_wks": 17,
-        "days_overdue": -20
+        "days_overdue": -19
       },
       {
         "property": "12.39 39 / 36 Bunya Road, Everton Hills Q 4053",
@@ -2831,7 +2823,15 @@
         "tenant": "12.39 Chelsea ANDREWS",
         "due_date": "2026-06-04",
         "frequency_wks": 17,
-        "days_overdue": -20
+        "days_overdue": -19
+      },
+      {
+        "property": "02.15 15/1141 South Pine Road, Arana Hills, QLD 40",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "02.15 Ronal INKIRIWANG & Junie WARIKI",
+        "due_date": "2026-06-04",
+        "frequency_wks": 17,
+        "days_overdue": -19
       },
       {
         "property": "03.21 21/8 Russell Str Everton Park QLD 4053",
@@ -2839,7 +2839,7 @@
         "tenant": "03.21ED Erwin Buitrago Galindo & Diana Luz Lozano Velasco",
         "due_date": "2026-06-05",
         "frequency_wks": 17,
-        "days_overdue": -21
+        "days_overdue": -20
       },
       {
         "property": "03.47 47/8 Russell Str Everton Park QLD 4053",
@@ -2847,7 +2847,7 @@
         "tenant": "03.47 Andrea Vergara MELENDEZ & Rafael RODRIGUEZ",
         "due_date": "2026-06-05",
         "frequency_wks": 17,
-        "days_overdue": -21
+        "days_overdue": -20
       },
       {
         "property": "02.13 13/1141 South Pine Road, Arana Hills",
@@ -2855,6 +2855,22 @@
         "tenant": "02.13 Jesse THOMPSON",
         "due_date": "2026-06-09",
         "frequency_wks": 17,
+        "days_overdue": -24
+      },
+      {
+        "property": "02.21 21/1141 South Pine Road, Arana Hills QLD4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "02.21 Matilda BELL & Amanda JONES",
+        "due_date": "2026-06-10",
+        "frequency_wks": 16,
+        "days_overdue": -25
+      },
+      {
+        "property": "02.16 16/1141 South Pine Road, Arana Hills, QLD 40",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "02.16 Patricia Anne O'FLAHERTY & Paul J ANKERS & Troy O'FLAHERTY",
+        "due_date": "2026-06-10",
+        "frequency_wks": 16,
         "days_overdue": -25
       },
       {
@@ -2863,23 +2879,7 @@
         "tenant": "03.49 Owen SULISTIO",
         "due_date": "2026-06-10",
         "frequency_wks": 17,
-        "days_overdue": -26
-      },
-      {
-        "property": "02.21 21/1141 South Pine Road, Arana Hills QLD4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "02.21 Matilda BELL & Amanda JONES",
-        "due_date": "2026-06-10",
-        "frequency_wks": 16,
-        "days_overdue": -26
-      },
-      {
-        "property": "02.16 16/1141 South Pine Road, Arana Hills, QLD 40",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "02.16 Patricia Anne O'FLAHERTY & Paul J ANKERS & Troy O'FLAHERTY",
-        "due_date": "2026-06-10",
-        "frequency_wks": 16,
-        "days_overdue": -26
+        "days_overdue": -25
       },
       {
         "property": "02.17 17/1141 South Pine Road, Arana Hills QLD4035",
@@ -2887,23 +2887,7 @@
         "tenant": "02.17 Lucy PATERSON & Jake COOPER",
         "due_date": "2026-06-10",
         "frequency_wks": 16,
-        "days_overdue": -26
-      },
-      {
-        "property": "02.25 25/1141 South Pine Rd, Arana Hills QLD 4054",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "02.25 Sheree O'NEILL",
-        "due_date": "2026-06-10",
-        "frequency_wks": 13,
-        "days_overdue": -26
-      },
-      {
-        "property": "02.22 22/1141 South Pine Road, Arana Hills QLD4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "02.22 Kaya WARE & Imogen HARRIS & Keanu GONCALVES",
-        "due_date": "2026-06-10",
-        "frequency_wks": 16,
-        "days_overdue": -26
+        "days_overdue": -25
       },
       {
         "property": "02.06 06/1141 South Pine Road, Arana Hills Q",
@@ -2911,7 +2895,7 @@
         "tenant": "02.06 Ben FORD & Alla SKLYARENKO",
         "due_date": "2026-06-10",
         "frequency_wks": 16,
-        "days_overdue": -26
+        "days_overdue": -25
       },
       {
         "property": "02.04 4/1141 South Pine Road, Arana Hills Q 4054",
@@ -2919,7 +2903,23 @@
         "tenant": "Raymond BOSMAN & Miranda HAMILTON & Elyse BENNETT",
         "due_date": "2026-06-10",
         "frequency_wks": 16,
-        "days_overdue": -26
+        "days_overdue": -25
+      },
+      {
+        "property": "02.22 22/1141 South Pine Road, Arana Hills QLD4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "02.22 Kaya WARE & Imogen HARRIS & Keanu GONCALVES",
+        "due_date": "2026-06-10",
+        "frequency_wks": 16,
+        "days_overdue": -25
+      },
+      {
+        "property": "02.25 25/1141 South Pine Rd, Arana Hills QLD 4054",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "02.25 Sheree O'NEILL",
+        "due_date": "2026-06-10",
+        "frequency_wks": 13,
+        "days_overdue": -25
       },
       {
         "property": "02.05 05/1141 South Pine Road, Arana Hills Q",
@@ -2927,6 +2927,70 @@
         "tenant": "02.05 Taylor BARTLETT & Isabelle SWINDALE & Sarah LATTER",
         "due_date": "2026-06-10",
         "frequency_wks": 16,
+        "days_overdue": -25
+      },
+      {
+        "property": "12.24 24 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "12.24 Nigel McCulloch & Amy McCulloch",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
+        "days_overdue": -26
+      },
+      {
+        "property": "14.11 11 / 122 Soames St, Everton Park Q 4053",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "14.11 Gemma HOGAN & Nicholas BARNES",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
+        "days_overdue": -26
+      },
+      {
+        "property": "14.16 16 / 122 Soames St, Everton Park Q 4053",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "Alcleah Dunn & Sienna Rose Roberts & Isabella Johnson",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
+        "days_overdue": -26
+      },
+      {
+        "property": "12.20 20 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "12.20 James BAXTER & Richard DRUMMOND",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
+        "days_overdue": -26
+      },
+      {
+        "property": "12.29 29 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "tenant": "12.29 Andrew DUNN & Jacob HOUSE",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
+        "days_overdue": -26
+      },
+      {
+        "property": "14.28 28 / 122 Soames St, Everton Park Q 4053",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "14.28 Lizzy Poulson & James Ballah",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
+        "days_overdue": -26
+      },
+      {
+        "property": "14.23 23 / 122 Soames St, Everton Park Q 4053",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "14.23 Sarah Brock & Mitchell Mills",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
+        "days_overdue": -26
+      },
+      {
+        "property": "14.26 26 / 122 Soames St, Everton Park Q 4053",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "14.26 Tahnee Jade Kellett & Joshua Matthew Stevens",
+        "due_date": "2026-06-11",
+        "frequency_wks": 17,
         "days_overdue": -26
       },
       {
@@ -2935,69 +2999,13 @@
         "tenant": "99.Soames Liyunqian Xu & Ziyu Zeng",
         "due_date": "2026-06-11",
         "frequency_wks": 17,
-        "days_overdue": -27
+        "days_overdue": -26
       },
       {
-        "property": "14.28 28 / 122 Soames St, Everton Park Q 4053",
-        "manager": "Tammy-lee Barritt",
-        "tenant": "14.28 Lizzy Poulson & James Ballah",
-        "due_date": "2026-06-11",
-        "frequency_wks": 17,
-        "days_overdue": -27
-      },
-      {
-        "property": "12.29 29 / 36 Bunya Road, Everton Hills Q 4053",
+        "property": "12.16 16 / 36 Bunya Road, Everton Hills Q 4053",
         "manager": "Lorelei Lipczynski",
-        "tenant": "12.29 Andrew DUNN & Jacob HOUSE",
-        "due_date": "2026-06-11",
-        "frequency_wks": 17,
-        "days_overdue": -27
-      },
-      {
-        "property": "12.24 24 / 36 Bunya Road, Everton Hills Q 4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "12.24 Nigel McCulloch & Amy McCulloch",
-        "due_date": "2026-06-11",
-        "frequency_wks": 17,
-        "days_overdue": -27
-      },
-      {
-        "property": "12.20 20 / 36 Bunya Road, Everton Hills Q 4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "12.20 James BAXTER & Richard DRUMMOND",
-        "due_date": "2026-06-11",
-        "frequency_wks": 17,
-        "days_overdue": -27
-      },
-      {
-        "property": "14.26 26 / 122 Soames St, Everton Park Q 4053",
-        "manager": "Tammy-lee Barritt",
-        "tenant": "14.26 Tahnee Jade Kellett & Joshua Matthew Stevens",
-        "due_date": "2026-06-11",
-        "frequency_wks": 17,
-        "days_overdue": -27
-      },
-      {
-        "property": "14.11 11 / 122 Soames St, Everton Park Q 4053",
-        "manager": "Tammy-lee Barritt",
-        "tenant": "14.11 Gemma HOGAN & Nicholas BARNES",
-        "due_date": "2026-06-11",
-        "frequency_wks": 17,
-        "days_overdue": -27
-      },
-      {
-        "property": "14.23 23 / 122 Soames St, Everton Park Q 4053",
-        "manager": "Tammy-lee Barritt",
-        "tenant": "14.23 Sarah Brock & Mitchell Mills",
-        "due_date": "2026-06-11",
-        "frequency_wks": 17,
-        "days_overdue": -27
-      },
-      {
-        "property": "14.16 16 / 122 Soames St, Everton Park Q 4053",
-        "manager": "Tammy-lee Barritt",
-        "tenant": "Alcleah Dunn & Sienna Rose Roberts & Isabella Johnson",
-        "due_date": "2026-06-11",
+        "tenant": "12.16MS Madeline CHANT & Stuart CHANT",
+        "due_date": "2026-06-12",
         "frequency_wks": 17,
         "days_overdue": -27
       },
@@ -3007,15 +3015,7 @@
         "tenant": "02.08 Connor James Anderson & Pierce Anderson",
         "due_date": "2026-06-12",
         "frequency_wks": 17,
-        "days_overdue": -28
-      },
-      {
-        "property": "12.16 16 / 36 Bunya Road, Everton Hills Q 4053",
-        "manager": "Lorelei Lipczynski",
-        "tenant": "12.16MS Madeline CHANT & Stuart CHANT",
-        "due_date": "2026-06-12",
-        "frequency_wks": 17,
-        "days_overdue": -28
+        "days_overdue": -27
       },
       {
         "property": "12.25 25 / 36 Bunya Road, Everton Hills Q 4053",
@@ -3023,15 +3023,7 @@
         "tenant": "12.25 Amanda HAYE & Gary HAYE",
         "due_date": "2026-06-12",
         "frequency_wks": 17,
-        "days_overdue": -28
-      },
-      {
-        "property": "11.23 23 / 114 Bunya Road, Everton Hills Q4053",
-        "manager": "Tammy-lee Barritt",
-        "tenant": "11.23 Holly Weir",
-        "due_date": "2026-06-12",
-        "frequency_wks": 17,
-        "days_overdue": -28
+        "days_overdue": -27
       },
       {
         "property": "11.20 20 / 114 Bunya Road, Everton Hills Q4053",
@@ -3039,7 +3031,15 @@
         "tenant": "11.20 Stacey Bayley & Matthew Martin",
         "due_date": "2026-06-12",
         "frequency_wks": 17,
-        "days_overdue": -28
+        "days_overdue": -27
+      },
+      {
+        "property": "11.23 23 / 114 Bunya Road, Everton Hills Q4053",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "11.23 Holly Weir",
+        "due_date": "2026-06-12",
+        "frequency_wks": 17,
+        "days_overdue": -27
       },
       {
         "property": "11.14 14 / 114 Bunya Road, Everton Hills Q4053",
@@ -3047,7 +3047,7 @@
         "tenant": "11.14 Lena O'Donoghue & David Werndly",
         "due_date": "2026-06-12",
         "frequency_wks": 17,
-        "days_overdue": -28
+        "days_overdue": -27
       },
       {
         "property": "11.24 24 / 114 Bunya Road, Everton Hills Q4053",
@@ -3055,7 +3055,47 @@
         "tenant": "11.24 Celeste Jennifer Kenner & Lily Anderson & Levi Mahony",
         "due_date": "2026-06-12",
         "frequency_wks": 17,
-        "days_overdue": -28
+        "days_overdue": -27
+      },
+      {
+        "property": "09.90 90 / 79 Cartwright St, Taigum Q4018",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "09.90 Melissa Collison",
+        "due_date": "2026-06-15",
+        "frequency_wks": 17,
+        "days_overdue": -30
+      },
+      {
+        "property": "09.07 07 / 79 Cartwright St, Taigum Q4018",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "09.07 Ryan Cockram & Anja Cameron",
+        "due_date": "2026-06-15",
+        "frequency_wks": 17,
+        "days_overdue": -30
+      },
+      {
+        "property": "09.79 79 / 79 Cartwright St, Taigum Q4018",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "09.79 Tamera Law & Caitlin Tremayne & Chelsea Luggar",
+        "due_date": "2026-06-15",
+        "frequency_wks": 17,
+        "days_overdue": -30
+      },
+      {
+        "property": "09.80 80 / 79 Cartwright St, Taigum Q4018",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "09.80 Rori Chapman & Tiffany Baldwin",
+        "due_date": "2026-06-15",
+        "frequency_wks": 17,
+        "days_overdue": -30
+      },
+      {
+        "property": "09.89 89 / 79 Cartwright St, Taigum Q4018",
+        "manager": "Tammy-lee Barritt",
+        "tenant": "09.89Kylie Beard",
+        "due_date": "2026-06-15",
+        "frequency_wks": 17,
+        "days_overdue": -30
       }
     ],
     "no_date": [
@@ -3084,10 +3124,10 @@
       },
       "Tammy-lee Barritt": {
         "overdue": 3,
-        "upcoming": 11,
+        "upcoming": 16,
         "total": 121
       }
     }
   },
-  "inspectionHtml": "\n  <!-- INSPECTION MONITOR SECTION -->\n  <style>\n    .insp-card          { background:#1e2530; border-radius:10px; padding:18px 20px; margin:18px 0; }\n    .insp-card-header   { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }\n    .insp-card-title    { font-size:15px; font-weight:700; color:#e0e6ef; letter-spacing:.3px; }\n    .insp-card-tag      { font-size:11px; color:#8a95a3; background:#252d3a; padding:3px 8px; border-radius:4px; }\n    .insp-alert-header  { font-size:13px; font-weight:600; color:#ff6b6b; margin-bottom:10px; padding:8px 10px;\n                           background:rgba(204,0,0,.12); border-radius:6px; }\n    .insp-all-clear     { font-size:13px; color:#4ade80; padding:10px; background:rgba(74,222,128,.08);\n                           border-radius:6px; margin-bottom:10px; }\n    .insp-row           { display:flex; justify-content:space-between; align-items:center;\n                           padding:9px 12px; margin:5px 0; background:#252d3a;\n                           border-radius:6px; gap:10px; }\n    .insp-left          { flex:1; min-width:0; }\n    .insp-prop          { font-size:12.5px; font-weight:600; color:#c8d3e0;\n                           white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }\n    .insp-tenant        { font-size:11px; color:#6b7a8d; margin-top:2px;\n                           white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }\n    .insp-right         { display:flex; align-items:center; gap:8px; flex-shrink:0; }\n    .insp-badge         { font-size:11px; font-weight:700; padding:3px 8px;\n                           border-radius:12px; white-space:nowrap; }\n    .insp-mgr           { font-size:11px; color:#8a95a3; white-space:nowrap; }\n    .insp-pills         { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }\n    .insp-pill          { font-size:11px; font-weight:600; padding:4px 10px;\n                           border-radius:12px; white-space:nowrap; }\n    .insp-nodate        { font-size:11px; color:#8a95a3; margin-top:10px;\n                           padding:8px 10px; background:#252d3a; border-radius:6px; }\n    .insp-nodate ul     { margin:4px 0 0 14px; padding:0; }\n    .insp-nodate li     { margin-top:2px; }\n  </style>\n\n  <div class=\"insp-card\">\n    <div class=\"insp-card-header\">\n      <span class=\"insp-card-title\">\ud83c\udfe0 Inspection Monitor</span>\n      <span class=\"insp-card-tag\">As at 2026-05-15 \u00b7 231 properties</span>\n    </div>\n    \n      <div class=\"insp-alert-header\">\n        \u26a0\ufe0f 5 properties overdue \u2014 action required\n      </div>\n      \n        <div class=\"insp-row\" style=\"border-left:4px solid #CC0000\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">14.20 20 / 122 Soames St, Everton Park Q 4053</div>\n            <div class=\"insp-tenant\">14.20 Giovanni Faoro & Claudineia Tres Largo</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#CC0000;color:#fff\">30d overdue</span>\n            <span class=\"insp-mgr\">Tammy-lee</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #e07b00\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">11.13 13/114 Bunya Road, Everton Hills</div>\n            <div class=\"insp-tenant\">11.13 Zoe Pleming & Charlotte McGarry</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#e07b00;color:#fff\">21d overdue</span>\n            <span class=\"insp-mgr\">Tammy-lee</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #e07b00\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">12.31 31 / 36 Bunya Road, Everton Hills Q 4053</div>\n            <div class=\"insp-tenant\">12.31 Gizem ALKAS & Faiz REHMAN</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#e07b00;color:#fff\">11d overdue</span>\n            <span class=\"insp-mgr\">Lorelei</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #c9a800\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">14.05 05 / 122 Soames St, Everton Park Q 4053</div>\n            <div class=\"insp-tenant\">Miriam Smith & Chloe Agius & Lauren Cutmore</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#c9a800;color:#111\">3d overdue</span>\n            <span class=\"insp-mgr\">Tammy-lee</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #c9a800\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">12.32 32 / 36 Bunya Road, Everton Hills Q 4053</div>\n            <div class=\"insp-tenant\">12.32 Scott HYNES</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#c9a800;color:#111\">1d overdue</span>\n            <span class=\"insp-mgr\">Lorelei</span>\n          </div>\n        </div>\n    \n      <div class=\"insp-nodate\">\n        <strong>\u26a0\ufe0f No due date set:</strong>\n        <ul><li>99. Makepeace Cres, 5 (Lorelei)</li><li>14.18 18 / 122 Soames St, Everton Park Q 4053 (Tammy-lee)</li></ul>\n      </div>\n    <div class=\"insp-pills\">\n      \n        <span class=\"insp-pill\" style=\"background:#CC0000;color:#fff\">\n          Lorelei: 2 overdue / 110 total\n        </span>\n        <span class=\"insp-pill\" style=\"background:#CC0000;color:#fff\">\n          Tammy-lee: 3 overdue / 121 total\n        </span>\n    </div>\n  </div>\n  <!-- END INSPECTION MONITOR -->\n"
+  "inspectionHtml": "\n  <!-- INSPECTION MONITOR SECTION -->\n  <style>\n    .insp-card          { background:#1e2530; border-radius:10px; padding:18px 20px; margin:18px 0; }\n    .insp-card-header   { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }\n    .insp-card-title    { font-size:15px; font-weight:700; color:#e0e6ef; letter-spacing:.3px; }\n    .insp-card-tag      { font-size:11px; color:#8a95a3; background:#252d3a; padding:3px 8px; border-radius:4px; }\n    .insp-alert-header  { font-size:13px; font-weight:600; color:#ff6b6b; margin-bottom:10px; padding:8px 10px;\n                           background:rgba(204,0,0,.12); border-radius:6px; }\n    .insp-all-clear     { font-size:13px; color:#4ade80; padding:10px; background:rgba(74,222,128,.08);\n                           border-radius:6px; margin-bottom:10px; }\n    .insp-row           { display:flex; justify-content:space-between; align-items:center;\n                           padding:9px 12px; margin:5px 0; background:#252d3a;\n                           border-radius:6px; gap:10px; }\n    .insp-left          { flex:1; min-width:0; }\n    .insp-prop          { font-size:12.5px; font-weight:600; color:#c8d3e0;\n                           white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }\n    .insp-tenant        { font-size:11px; color:#6b7a8d; margin-top:2px;\n                           white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }\n    .insp-right         { display:flex; align-items:center; gap:8px; flex-shrink:0; }\n    .insp-badge         { font-size:11px; font-weight:700; padding:3px 8px;\n                           border-radius:12px; white-space:nowrap; }\n    .insp-mgr           { font-size:11px; color:#8a95a3; white-space:nowrap; }\n    .insp-pills         { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }\n    .insp-pill          { font-size:11px; font-weight:600; padding:4px 10px;\n                           border-radius:12px; white-space:nowrap; }\n    .insp-nodate        { font-size:11px; color:#8a95a3; margin-top:10px;\n                           padding:8px 10px; background:#252d3a; border-radius:6px; }\n    .insp-nodate ul     { margin:4px 0 0 14px; padding:0; }\n    .insp-nodate li     { margin-top:2px; }\n  </style>\n\n  <div class=\"insp-card\">\n    <div class=\"insp-card-header\">\n      <span class=\"insp-card-title\">\ud83c\udfe0 Inspection Monitor</span>\n      <span class=\"insp-card-tag\">As at 2026-05-16 \u00b7 231 properties</span>\n    </div>\n    \n      <div class=\"insp-alert-header\">\n        \u26a0\ufe0f 5 properties overdue \u2014 action required\n      </div>\n      \n        <div class=\"insp-row\" style=\"border-left:4px solid #CC0000\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">14.20 20 / 122 Soames St, Everton Park Q 4053</div>\n            <div class=\"insp-tenant\">14.20 Giovanni Faoro & Claudineia Tres Largo</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#CC0000;color:#fff\">31d overdue</span>\n            <span class=\"insp-mgr\">Tammy-lee</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #CC0000\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">11.13 13/114 Bunya Road, Everton Hills</div>\n            <div class=\"insp-tenant\">11.13 Zoe Pleming & Charlotte McGarry</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#CC0000;color:#fff\">22d overdue</span>\n            <span class=\"insp-mgr\">Tammy-lee</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #e07b00\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">12.31 31 / 36 Bunya Road, Everton Hills Q 4053</div>\n            <div class=\"insp-tenant\">12.31 Gizem ALKAS & Faiz REHMAN</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#e07b00;color:#fff\">12d overdue</span>\n            <span class=\"insp-mgr\">Lorelei</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #c9a800\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">14.05 05 / 122 Soames St, Everton Park Q 4053</div>\n            <div class=\"insp-tenant\">Miriam Smith & Chloe Agius & Lauren Cutmore</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#c9a800;color:#111\">4d overdue</span>\n            <span class=\"insp-mgr\">Tammy-lee</span>\n          </div>\n        </div>\n        <div class=\"insp-row\" style=\"border-left:4px solid #c9a800\">\n          <div class=\"insp-left\">\n            <div class=\"insp-prop\">12.32 32 / 36 Bunya Road, Everton Hills Q 4053</div>\n            <div class=\"insp-tenant\">12.32 Scott HYNES</div>\n          </div>\n          <div class=\"insp-right\">\n            <span class=\"insp-badge\" style=\"background:#c9a800;color:#111\">2d overdue</span>\n            <span class=\"insp-mgr\">Lorelei</span>\n          </div>\n        </div>\n    \n      <div class=\"insp-nodate\">\n        <strong>\u26a0\ufe0f No due date set:</strong>\n        <ul><li>99. Makepeace Cres, 5 (Lorelei)</li><li>14.18 18 / 122 Soames St, Everton Park Q 4053 (Tammy-lee)</li></ul>\n      </div>\n    <div class=\"insp-pills\">\n      \n        <span class=\"insp-pill\" style=\"background:#CC0000;color:#fff\">\n          Lorelei: 2 overdue / 110 total\n        </span>\n        <span class=\"insp-pill\" style=\"background:#CC0000;color:#fff\">\n          Tammy-lee: 3 overdue / 121 total\n        </span>\n    </div>\n  </div>\n  <!-- END INSPECTION MONITOR -->\n"
 }
