@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-18T05:17:03",
+  "updated": "2026-05-18T05:31:34",
   "month": "May 2026",
   "complexes": [
     {
@@ -2668,14 +2668,64 @@
     "invoices_due_count": 5
   },
   "inspections": {
-    "overdue": [],
-    "scheduled": [],
+    "overdue": [
+      {
+        "unit_code": "14.20",
+        "property": "14.20 20 / 122 Soames St, Everton Park Q 4053",
+        "manager": "Tammy-lee Barritt",
+        "due_date": "2026-04-15",
+        "days_overdue": 33
+      },
+      {
+        "unit_code": "11.13",
+        "property": "11.13 13/114 Bunya Road, Everton Hills",
+        "manager": "Tammy-lee Barritt",
+        "due_date": "2026-04-24",
+        "days_overdue": 24
+      },
+      {
+        "unit_code": "14.05",
+        "property": "14.05 05 / 122 Soames St, Everton Park Q 4053",
+        "manager": "Tammy-lee Barritt",
+        "due_date": "2026-05-12",
+        "days_overdue": 6
+      }
+    ],
+    "scheduled": [
+      {
+        "unit_code": "12.31",
+        "property": "12.31 31 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-05-04",
+        "days_overdue": 14,
+        "booked_date": "2026-05-19"
+      },
+      {
+        "unit_code": "12.32",
+        "property": "12.32 32 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-05-14",
+        "days_overdue": 4,
+        "booked_date": "2026-05-19"
+      }
+    ],
     "frequency_flags": [],
     "summary": {
-      "total_overdue": 0,
-      "total_scheduled": 0,
+      "total_overdue": 3,
+      "total_scheduled": 2,
       "total_frequency_flags": 0,
-      "by_manager": {}
+      "by_manager": {
+        "Tammy-lee Barritt": {
+          "overdue": 3,
+          "scheduled": 0,
+          "frequency_flags": 0
+        },
+        "Lorelei Lipczynski": {
+          "overdue": 0,
+          "scheduled": 2,
+          "frequency_flags": 0
+        }
+      }
     }
   }
 }
