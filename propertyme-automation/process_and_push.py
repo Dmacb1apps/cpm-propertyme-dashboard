@@ -184,20 +184,21 @@ def parse_folio_ledger(pdf_path):
                 if current_unit is None:
                     continue
 
-                # DEBUG — print every dollar-amount line for 09.21
-                if current_unit == "09.21" and "$" in line:
-                    print(f"[DEBUG 09.21] {repr(line)}")
-
                 # --- Transaction line ---
-                # Must start: {6-digit-audit} {date} {ref} {Type}
-                tx_m = re.match(
-                    r"^\d{6}\s+\S+\s+\S+\s+(Payment|Receipt|Withdrawal)\b",
-                    line, re.IGNORECASE
-                )
-                if not tx_m:
+                # Use simple string check rather than positional regex —
+                # pdfplumber can merge date and ref into one token
+                # (e.g. "14/05/202664755") which breaks strict matching.
+                if "Closing Balance" in line:
+                    continue
+                if "Receipt" in line:
+                    tx_type = "receipt"
+                elif "Payment" in line:
+                    tx_type = "payment"
+                elif "Withdrawal" in line:
+                    tx_type = "withdrawal"
+                else:
                     continue
 
-                tx_type = tx_m.group(1).lower()
                 if tx_type == "withdrawal":
                     continue  # owner disbursement — not a bill
 
