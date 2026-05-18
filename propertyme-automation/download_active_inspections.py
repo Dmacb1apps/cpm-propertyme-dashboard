@@ -53,7 +53,8 @@ def download_active_inspections_excel(
 
     print("[active_inspections] Selecting 'Export Excel'...")
     save_path = os.path.join(download_dir, "active_inspections.xlsx")
-    with page.expect_download(timeout=timeout_ms) as dl_info:
+    page.wait_for_timeout(3_000)  # give PropertyMe time to start generating
+    with page.expect_download(timeout=90_000) as dl_info:
         page.click("text=Export Excel")
     dl_info.value.save_as(save_path)
 
