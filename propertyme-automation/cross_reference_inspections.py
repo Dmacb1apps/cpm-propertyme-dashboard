@@ -59,7 +59,18 @@ def load_properties_due(path: str) -> pd.DataFrame:
     raw.columns = ["col0", "inspection_due", "frequency",
                    "property", "owner", "tenant", "manager"]
 
-    df = raw[raw["inspection_due"].notna() & raw["col0"].isna()].copy()
+    # Drop any row where inspection_due is not a real date.
+    # This removes the header row ("Inspection Due") and manager group rows.
+    def is_date(val):
+        if pd.isna(val):
+            return False
+        try:
+            pd.to_datetime(val)
+            return True
+        except Exception:
+            return False
+
+    df = raw[raw["inspection_due"].apply(is_date)].copy()
     df["inspection_due"] = pd.to_datetime(df["inspection_due"])
 
     today = pd.Timestamp(date.today())
