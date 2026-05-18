@@ -897,21 +897,22 @@ def main():
     print(f"  {len(owner_data)} owners, {len(flagged)} flagged\n")
 
     print("Running inspection analysis...")
-    inspection_data = None
+    _EMPTY_INSPECTIONS = {
+        "overdue": [], "scheduled": [], "frequency_flags": [],
+        "summary": {"total_overdue": 0, "total_scheduled": 0,
+                    "total_frequency_flags": 0, "by_manager": {}},
+    }
     try:
-        insp_path   = DOWNLOADS_DIR / "inspections_due.xlsx"
-        active_path = DOWNLOADS_DIR / "active_inspections.xlsx"
-        if not insp_path.exists():
-            print("  inspections_due.xlsx not found — skipping")
-        elif not active_path.exists():
-            print("  active_inspections.xlsx not found — skipping (run download_reports.py first)")
-        else:
-            result = run_inspection_analysis(str(insp_path), str(active_path))
-            inspection_data = result["inspections"]
-            s = inspection_data["summary"]
-            print(f"  {s['total_overdue']} overdue, {s['total_scheduled']} scheduled (already booked), {s['total_frequency_flags']} frequency flags")
+        inspection_results = run_inspection_analysis(
+            due_path=str(DOWNLOADS_DIR / "inspections_due.xlsx"),
+            active_path=str(DOWNLOADS_DIR / "active_inspections.xlsx"),
+        )
+        inspection_data = inspection_results["inspections"]
+        s = inspection_data["summary"]
+        print(f"[inspections] Overdue: {s['total_overdue']}, Scheduled: {s['total_scheduled']}, Frequency flags: {s['total_frequency_flags']}")
     except Exception as e:
-        print(f"  WARNING: Failed to run inspection analysis: {e}")
+        print(f"[inspections] WARNING: Could not run inspection analysis: {e}")
+        inspection_data = _EMPTY_INSPECTIONS
     print()
 
     summary = build_summary(owner_data, rent_data)
