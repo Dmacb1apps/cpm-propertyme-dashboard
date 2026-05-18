@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-18T04:54:57",
+  "updated": "2026-05-18T05:17:03",
   "month": "May 2026",
   "complexes": [
     {
@@ -2666,5 +2666,16 @@
     ],
     "invoices_due_this_month": 31162.64,
     "invoices_due_count": 5
+  },
+  "inspections": {
+    "overdue": [],
+    "scheduled": [],
+    "frequency_flags": [],
+    "summary": {
+      "total_overdue": 0,
+      "total_scheduled": 0,
+      "total_frequency_flags": 0,
+      "by_manager": {}
+    }
   }
 }
