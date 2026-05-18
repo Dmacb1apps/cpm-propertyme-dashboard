@@ -184,6 +184,10 @@ def parse_folio_ledger(pdf_path):
                 if current_unit is None:
                     continue
 
+                # DEBUG — print every dollar-amount line for 09.21
+                if current_unit == "09.21" and "$" in line:
+                    print(f"[DEBUG 09.21] {repr(line)}")
+
                 # --- Transaction line ---
                 # Must start: {6-digit-audit} {date} {ref} {Type}
                 tx_m = re.match(
