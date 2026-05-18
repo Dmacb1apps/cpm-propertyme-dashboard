@@ -40,7 +40,10 @@ def download_active_inspections_excel(
 
     # After download_inspections_due the page has navigated away — go back to home
     print("[active_inspections] Navigating back to reports menu...")
-    page.goto(MANAGER_URL, wait_until="networkidle", timeout=30_000)
+    try:
+        page.goto(MANAGER_URL, wait_until="networkidle", timeout=30_000)
+    except Exception:
+        page.wait_for_timeout(3_000)  # fallback — same pattern as Folio Ledger
     page.locator("[data-test-id='reports-menu']").wait_for(state="visible", timeout=15_000)
     page.locator("[data-test-id='reports-menu']").click()
     page.wait_for_timeout(500)
