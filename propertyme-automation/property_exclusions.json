@@ -1,0 +1,558 @@
+{
+  "_note": "Properties excluded from inspection frequency monitoring. Add entries here when a property is sold or owner moves in. The dashboard 'No longer managed' button will add entries automatically in future.",
+  "excluded_properties": [
+    {
+      "unit_code": "01.07",
+      "property": "01.07 07/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "01.13",
+      "property": "01.13 13/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "01.14",
+      "property": "01.14 14/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "01.17",
+      "property": "01.17 17/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "01.20",
+      "property": "01.20 20/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "01.25",
+      "property": "01.25 25/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "01.34",
+      "property": "01.34 34/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "01.38",
+      "property": "01.38 38/40 Bunya Rd, Everton Hills QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "02.07",
+      "property": "02.07 07/1141 South Pine Road, Arana Hills",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "02.10",
+      "property": "02.10 10/1141 South Pine Road, Arana Hills 4035",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "02.19",
+      "property": "02.19 19/1141 South Pine Road, Arana Hills QLD",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "03.17",
+      "property": "03.17 17/8 Russell St, Everton Park QLD 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.02",
+      "property": "09.02 02 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.12",
+      "property": "09.12 12 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.13",
+      "property": "09.13 13 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.14",
+      "property": "09.14 14 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.15",
+      "property": "09.15 15 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.16",
+      "property": "09.16 16 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.22",
+      "property": "09.22 22 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.27",
+      "property": "09.27 27 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.40",
+      "property": "09.40 40 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.42",
+      "property": "09.42 42 / 79 Cartwright Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.60",
+      "property": "09.60 60 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.65",
+      "property": "09.65 65 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.68",
+      "property": "09.68 68 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.69",
+      "property": "09.69 69 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.70",
+      "property": "09.70 70 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.71",
+      "property": "09.71 71 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.81",
+      "property": "09.81 81 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.84",
+      "property": "09.84 84 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "09.85",
+      "property": "09.85 85 / 79 Cartwright St, Taigum Q4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.04",
+      "property": "11.04 04 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.06",
+      "property": "11.06 06 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.09",
+      "property": "11.09 09 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.16",
+      "property": "11.16 16 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.17",
+      "property": "11.17 17 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.20",
+      "property": "11.20 20 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.26",
+      "property": "11.26 26 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "11.OA.05",
+      "property": "11.OA.05 05 / 114 Bunya Road, Everton Hills Q4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.04",
+      "property": "12.04 04 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.07",
+      "property": "12.07 07 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.09",
+      "property": "12.09 09 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.10",
+      "property": "12.10 10 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.11",
+      "property": "12.11 11 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.13",
+      "property": "12.13 13/36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.15",
+      "property": "12.15 15 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.17",
+      "property": "12.17 17 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.18",
+      "property": "12.18 18 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.34",
+      "property": "12.34 34 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.35",
+      "property": "12.35 35 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "12.37",
+      "property": "12.37 37 / 36 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "13.07",
+      "property": "13.07 07 / 27 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "13.17",
+      "property": "13.17 17 / 27 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "13.29",
+      "property": "13.29 29 / 27 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "13.34",
+      "property": "13.34 34 / 27 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "13.36",
+      "property": "13.36 36 / 27 Bunya Road, Everton Hills Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "14.13",
+      "property": "14.13 13 / 122 Soames St, Everton Park Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "14.18",
+      "property": "14.18 18 / 122 Soames St, Everton Park Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "14.22",
+      "property": "14.22 22 / 122 Soames St, Everton Park Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "14.25",
+      "property": "14.25 25 / 122 Soames St, Everton Park Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "14.34",
+      "property": "14.34 34 / 122 Soames St, Everton Park Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "14.35",
+      "property": "14.35 35 / 122 Soames St, Everton Park Q 4053",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.02",
+      "property": "15.02 02 / 47 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.06",
+      "property": "15.06 06 / 47 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.12",
+      "property": "15.12 12 / 47 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.14",
+      "property": "15.14 14 / 47 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.16",
+      "property": "15.16 16 / 47 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.17",
+      "property": "15.17 17 / 47 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.24",
+      "property": "15.24 24 / 47 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.26",
+      "property": "15.26 26 / 42 Abbeywood St, Taigum QLD 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.31",
+      "property": "15.31 31 / 42 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.34",
+      "property": "15.34 34 / 42 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "15.48",
+      "property": "15.48 48 / 42 Abbeywood Street, Taigum Q 4018",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "99.FARM3",
+      "property": "99.FARM3 3 / 26 Farm Street, Newmarket Q 4051",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "99.FLOC305",
+      "property": "99.FLOC305 305/117 Flockton St, Everton Park",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "99.Goodall,",
+      "property": "99.Goodall, 19 Goodall Str Kedron",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "99.JUNC",
+      "property": "99.JUNC 64 Junction Rd, Griffin QLD 4503",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "99.NORM",
+      "property": "99.NORM 5/37 Norman Dr, Chermside",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    },
+    {
+      "unit_code": "99.Taylor",
+      "property": "99.Taylor 79/30 Taylor Pl, Mackenzie Qld",
+      "reason": "No longer managed",
+      "excluded_date": "2026-05-18",
+      "excluded_by": "manual_import"
+    }
+  ]
+}

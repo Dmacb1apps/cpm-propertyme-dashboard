@@ -18,6 +18,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 
+from download_active_inspections import download_active_inspections_excel
+
 load_dotenv(Path(__file__).parent / ".env")
 
 SCRIPT_DIR       = Path(__file__).parent
@@ -360,6 +362,7 @@ def main():
             download_folio_ledger(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
             download_monthly_rent(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
             download_inspections_due(page, DOWNLOADS_DIR)
+            download_active_inspections_excel(page, download_dir=str(DOWNLOADS_DIR))
 
         except Exception as e:
             screenshot_path = SCRIPT_DIR / "debug_screenshot.png"

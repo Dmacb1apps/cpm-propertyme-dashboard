@@ -64,7 +64,7 @@ export default function CPMDashboard() {
     { id: "complexes",    icon: Building2,      label: "By Complex"          },
     { id: "financials",   icon: DollarSign,     label: "Business Financials" },
     { id: "owners",       icon: Users,          label: "All Owners"          },
-    { id: "inspections",  icon: ClipboardList,  label: "Inspections",        badge: inspections?.overdue_count || null },
+    { id: "inspections",  icon: ClipboardList,  label: "Inspections",        badge: inspections?.summary?.total_overdue || null },
   ];
 
   const updatedLabel = data?.updated
@@ -313,8 +313,9 @@ export default function CPMDashboard() {
                   </div>
 
                   {(() => {
-                    const od = inspections?.overdue_count ?? null;
-                    const color = od === null ? t.muted : od > 0 ? "#CC0000" : "#1a7f37";
+                    const od  = inspections?.summary?.total_overdue  ?? null;
+                    const ffl = inspections?.summary?.total_frequency_flags ?? 0;
+                    const color = od === null ? t.muted : od > 0 ? "#CC0000" : ffl > 0 ? t.warn : "#1a7f37";
                     return (
                       <div
                         onClick={() => navigate("inspections")}
@@ -325,7 +326,13 @@ export default function CPMDashboard() {
                           {od === null ? "—" : od}
                         </div>
                         <div style={{ color: t.muted, fontSize: 11 }}>
-                          {od === null ? "no data yet" : od === 0 ? "all clear ✓" : `${od === 1 ? "property" : "properties"} overdue`}
+                          {od === null
+                            ? "no data yet"
+                            : od === 0 && ffl === 0
+                              ? "all clear ✓"
+                              : od === 0
+                                ? `${ffl} frequency flag${ffl !== 1 ? "s" : ""}`
+                                : `${od === 1 ? "property" : "properties"} overdue`}
                         </div>
                       </div>
                     );
@@ -779,8 +786,8 @@ export default function CPMDashboard() {
               INSPECTIONS
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "inspections" && (() => {
-            const card    = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
-            const ph      = { padding: "13px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
+            const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
+            const ph   = { padding: "13px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
 
             if (!inspections) {
               return (
@@ -790,26 +797,26 @@ export default function CPMDashboard() {
               );
             }
 
-            const overdue  = inspections.overdue  ?? [];
-            const upcoming = inspections.upcoming  ?? [];
-            const noDate   = (inspections.no_date ?? []).filter(x => !x.property.includes("BODY") && !x.property.includes("SSKB"));
-            const byMgr    = inspections.by_manager ?? {};
-
-            const overdueCount  = inspections.overdue_count  ?? 0;
-            const upcomingCount = inspections.upcoming_count ?? 0;
-            const noDateCount   = noDate.length;
+            const summary        = inspections.summary        ?? {};
+            const overdue        = inspections.overdue        ?? [];
+            const scheduled      = inspections.scheduled      ?? [];
+            const freqFlags      = inspections.frequency_flags ?? [];
+            const byMgr          = summary.by_manager         ?? {};
+            const overdueCount   = summary.total_overdue         ?? 0;
+            const scheduledCount = summary.total_scheduled       ?? 0;
+            const freqFlagCount  = summary.total_frequency_flags ?? 0;
 
             const badgeColor = (days) =>
               days > 21 ? "#CC0000" : days > 7 ? "#e07b00" : t.warn;
 
             return (
               <div>
-                {/* Stat strip */}
+                {/* ── Stat strip ── */}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr 1fr" : "repeat(3,1fr)", gap, marginBottom: gap }}>
                   {[
-                    { label: "Overdue",        value: overdueCount,  color: overdueCount  > 0 ? "#CC0000" : t.success },
-                    { label: "Due within 30d", value: upcomingCount, color: upcomingCount > 0 ? t.warn    : t.success },
-                    { label: "No date set",    value: noDateCount,   color: noDateCount   > 0 ? t.muted   : t.success },
+                    { label: "Overdue",          value: overdueCount,   color: overdueCount   > 0 ? "#CC0000" : t.success },
+                    { label: "Scheduled",         value: scheduledCount, color: scheduledCount > 0 ? t.warn    : t.success },
+                    { label: "Frequency Flags",  value: freqFlagCount,  color: freqFlagCount  > 0 ? t.warn    : t.success },
                   ].map((s) => (
                     <div key={s.label} style={{ ...card, borderTop: `3px solid ${s.color}`, padding: cp }}>
                       <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>{s.label}</div>
@@ -818,24 +825,22 @@ export default function CPMDashboard() {
                   ))}
                 </div>
 
-                {/* Overdue list + manager pills — stacked on mobile */}
+                {/* ── Section 1: Overdue + Manager summary ── */}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "3fr 2fr", gap, marginBottom: gap }}>
 
                   {/* Overdue list */}
                   <div style={card}>
-                    <div style={{ ...ph, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span>Overdue Inspections</span>
-                      <span style={{ color: t.muted, fontWeight: 400, fontSize: 11 }}>as at {inspections.report_date}</span>
+                    <div style={{ ...ph, color: overdueCount > 0 ? "#CC0000" : t.text }}>
+                      Overdue — Action Required ({overdueCount})
                     </div>
-
                     {overdueCount === 0 ? (
                       <div style={{ padding: "20px 16px", display: "flex", alignItems: "center", gap: 10, color: t.success, fontSize: 13 }}>
                         <span style={{ fontSize: 20 }}>✅</span>
-                        <span>All inspections are on schedule</span>
+                        <span>No properties genuinely overdue</span>
                       </div>
                     ) : (
                       overdue.map((p, i) => {
-                        const bc = badgeColor(p.days_overdue);
+                        const bc          = badgeColor(p.days_overdue);
                         const borderColor = p.days_overdue > 21 ? "#CC0000" : p.days_overdue > 7 ? "#e07b00" : t.warn;
                         return (
                           <div key={i} style={{
@@ -846,16 +851,13 @@ export default function CPMDashboard() {
                           }}>
                             <div style={{ minWidth: 0, flex: 1 }}>
                               <div style={{ fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.property}</div>
-                              <div style={{ fontSize: 11, color: t.muted, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                {p.tenant || "—"} · due {p.due_date}
+                              <div style={{ fontSize: 11, color: t.muted, marginTop: 2 }}>
+                                {p.manager.split(" ")[0]} · due {p.due_date}
                               </div>
                             </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-                              <span style={{ background: bc, color: p.days_overdue <= 7 && !dark ? "#111" : "#fff", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 12, whiteSpace: "nowrap" }}>
-                                {p.days_overdue}d overdue
-                              </span>
-                              <span style={{ fontSize: 11, color: t.muted, whiteSpace: "nowrap" }}>{p.manager.split(" ")[0]}</span>
-                            </div>
+                            <span style={{ background: bc, color: "#fff", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 12, whiteSpace: "nowrap", flexShrink: 0 }}>
+                              {p.days_overdue}d overdue
+                            </span>
                           </div>
                         );
                       })
@@ -866,68 +868,102 @@ export default function CPMDashboard() {
                   <div style={card}>
                     <div style={ph}>Manager Summary</div>
                     <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
-                      {Object.entries(byMgr).length === 0 && (
+                      {Object.entries(byMgr).length === 0 ? (
                         <div style={{ color: t.muted, fontSize: 12 }}>No manager data.</div>
-                      )}
-                      {Object.entries(byMgr).map(([mgr, stats]) => {
-                        const od  = stats.overdue ?? 0;
-                        const tot = stats.total   ?? 0;
-                        const pillBg = od > 0 ? "#CC0000" : (dark ? "#1a3a25" : "#d4edda");
-                        const pillTx = od > 0 ? "#fff"    : t.success;
-                        return (
-                          <div key={mgr} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                            <span style={{ fontSize: 13, fontWeight: 500 }}>{mgr.split(" ")[0]}</span>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <span style={{ fontSize: 11, color: t.muted }}>{tot} properties</span>
-                              <span style={{ background: pillBg, color: pillTx, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 12, whiteSpace: "nowrap" }}>
-                                {od} overdue
-                              </span>
+                      ) : (
+                        Object.entries(byMgr).map(([mgr, stats]) => {
+                          const od  = stats.overdue         ?? 0;
+                          const sc  = stats.scheduled       ?? 0;
+                          const ff  = stats.frequency_flags ?? 0;
+                          const pillBg = od > 0 ? "#CC0000" : (dark ? "#1a3a25" : "#d4edda");
+                          const pillTx = od > 0 ? "#fff"    : t.success;
+                          return (
+                            <div key={mgr}>
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 4 }}>
+                                <span style={{ fontSize: 13, fontWeight: 600 }}>{mgr.split(" ")[0]}</span>
+                                <span style={{ background: pillBg, color: pillTx, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 12, whiteSpace: "nowrap" }}>
+                                  {od} overdue
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", gap: 10, fontSize: 11, color: t.muted }}>
+                                {sc > 0 && <span style={{ color: t.warn }}>{sc} scheduled</span>}
+                                {ff > 0 && <span style={{ color: t.warn }}>{ff} freq flags</span>}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Upcoming */}
-                {upcoming.length > 0 && (
+                {/* ── Section 2: Scheduled — no action needed ── */}
+                {scheduled.length > 0 && (
                   <div style={{ ...card, marginBottom: gap }}>
-                    <div style={{ ...ph, color: t.warn }}>Due Within 30 Days ({upcomingCount})</div>
-                    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                      <table style={{ width: "100%", minWidth: 340, borderCollapse: "collapse" }}>
-                        <thead>
-                          <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                            {["Property", "Due Date", "Manager"].map((h) => (
-                              <th key={h} style={{ padding: tp, textAlign: "left", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {upcoming.map((p, i) => (
-                            <tr key={i} style={{ borderTop: `1px solid ${t.border}` }}>
-                              <td style={{ padding: tp, fontWeight: 500 }}>{p.property}</td>
-                              <td style={{ padding: tp, color: t.warn, whiteSpace: "nowrap" }}>{p.due_date}</td>
-                              <td style={{ padding: tp, color: t.muted, whiteSpace: "nowrap" }}>{p.manager.split(" ")[0]}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                    <div style={{ ...ph, color: t.warn }}>
+                      Scheduled — No Action Needed ({scheduledCount})
                     </div>
+                    <div style={{ padding: "8px 16px 4px", fontSize: 11, color: t.muted }}>
+                      These properties are past their due date but already have a future booking.
+                    </div>
+                    {scheduled.map((p, i) => (
+                      <div key={i} style={{
+                        borderTop: `1px solid ${t.border}`,
+                        borderLeft: `4px solid ${t.warn}`,
+                        padding: "11px 14px",
+                        display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
+                      }}>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.property}</div>
+                          <div style={{ fontSize: 11, color: t.muted, marginTop: 2 }}>
+                            {p.manager.split(" ")[0]} · was due {p.due_date}
+                          </div>
+                        </div>
+                        <span style={{ background: dark ? "rgba(210,153,34,0.15)" : "rgba(154,103,0,0.1)", color: t.warn, fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 12, whiteSpace: "nowrap", flexShrink: 0 }}>
+                          Booked {p.booked_date}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
 
-                {/* No date set */}
-                {noDate.length > 0 && (
+                {/* ── Section 3: Frequency flags ── */}
+                {freqFlags.length > 0 && (
                   <div style={card}>
-                    <div style={{ ...ph, color: t.muted }}>No Inspection Date Set ({noDateCount})</div>
-                    <div style={{ padding: "10px 16px", display: "flex", flexWrap: "wrap", gap: 8 }}>
-                      {noDate.map((p, i) => (
-                        <span key={i} style={{ background: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", borderRadius: 6, padding: "4px 10px", fontSize: 11, color: t.muted }}>
-                          {p.property} <span style={{ opacity: 0.6 }}>({p.manager.split(" ")[0]})</span>
-                        </span>
-                      ))}
+                    <div style={{ ...ph, color: t.warn }}>
+                      Behind on Inspection Schedule ({freqFlagCount})
                     </div>
+                    <div style={{ padding: "8px 16px 4px", fontSize: 11, color: t.muted }}>
+                      Properties falling behind the 17-week / 3-per-year inspection cadence.
+                    </div>
+                    {freqFlags.map((p, i) => (
+                      <div key={i} style={{
+                        borderTop: `1px solid ${t.border}`,
+                        borderLeft: `4px solid ${t.warn}`,
+                        padding: "11px 14px",
+                        display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
+                      }}>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontWeight: 600, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.property}</div>
+                          <div style={{ fontSize: 11, color: t.muted, marginTop: 2 }}>
+                            {p.manager.split(" ")[0]} · {p.routine_inspections_done} routine{p.routine_inspections_done !== 1 ? "s" : ""} done · {p.tenancy_months}mo tenancy
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3, flexShrink: 0 }}>
+                          <span style={{ background: dark ? "rgba(210,153,34,0.15)" : "rgba(154,103,0,0.1)", color: t.warn, fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 12, whiteSpace: "nowrap" }}>
+                            {p.days_since_last_routine}d since last
+                          </span>
+                          <span style={{ fontSize: 10, color: t.muted, whiteSpace: "nowrap" }}>{p.flag}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* All-clear if nothing flagged at all */}
+                {overdueCount === 0 && scheduledCount === 0 && freqFlagCount === 0 && (
+                  <div style={{ ...card, padding: "32px 24px", textAlign: "center", color: t.success, fontSize: 14 }}>
+                    ✅ All inspections are on schedule — no flags
                   </div>
                 )}
               </div>

@@ -26,7 +26,7 @@ import gspread
 import requests
 from dotenv import load_dotenv
 
-from parse_inspections import parse_inspections_due
+from cross_reference_inspections import run_inspection_analysis
 from inspection_dashboard_section import generate_inspection_html
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -797,8 +797,11 @@ def save_json(summary, owner_data, financials=None, rent_changes=None, inspectio
         payload["financials"] = financials
 
     if inspections:
-        payload["inspections"]     = inspections
-        payload["inspectionHtml"]  = generate_inspection_html(inspections)
+        payload["inspections"] = inspections
+        try:
+            payload["inspectionHtml"] = generate_inspection_html(inspections)
+        except Exception:
+            pass  # inspectionHtml is legacy; new structure uses dashboard_data["inspections"] directly
 
     JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     JSON_OUTPUT.write_text(json.dumps(payload, indent=2))
@@ -893,16 +896,22 @@ def main():
     flagged    = [o for o in owner_data if o["flagged"]]
     print(f"  {len(owner_data)} owners, {len(flagged)} flagged\n")
 
-    print("Parsing Inspection data...")
+    print("Running inspection analysis...")
     inspection_data = None
     try:
-        insp_path = latest_file("inspections_due.xlsx")
-        inspection_data = parse_inspections_due(str(insp_path))
-        print(f"  {inspection_data['overdue_count']} overdue, {inspection_data['upcoming_count']} due within 30d, {inspection_data['no_date_count']} no date set")
-    except FileNotFoundError:
-        print("  inspections_due.xlsx not found — skipping")
+        insp_path   = DOWNLOADS_DIR / "inspections_due.xlsx"
+        active_path = DOWNLOADS_DIR / "active_inspections.xlsx"
+        if not insp_path.exists():
+            print("  inspections_due.xlsx not found — skipping")
+        elif not active_path.exists():
+            print("  active_inspections.xlsx not found — skipping (run download_reports.py first)")
+        else:
+            result = run_inspection_analysis(str(insp_path), str(active_path))
+            inspection_data = result["inspections"]
+            s = inspection_data["summary"]
+            print(f"  {s['total_overdue']} overdue, {s['total_scheduled']} scheduled (already booked), {s['total_frequency_flags']} frequency flags")
     except Exception as e:
-        print(f"  WARNING: Failed to parse inspection data: {e}")
+        print(f"  WARNING: Failed to run inspection analysis: {e}")
     print()
 
     summary = build_summary(owner_data, rent_data)
@@ -921,8 +930,8 @@ def main():
     print("Saving dashboard_data.json...")
     save_json(summary, owner_data, financials, rent_changes, inspection_data)
 
-    if inspection_data and inspection_data["overdue_count"] > 0:
-        print(f"\nSending inspection alert ({inspection_data['overdue_count']} overdue)...")
+    if inspection_data and inspection_data["summary"]["total_overdue"] > 0:
+        print(f"\nSending inspection alert ({inspection_data['summary']['total_overdue']} overdue)...")
         send_inspection_alert(inspection_data)
 
     print("\nPushing to Google Sheets...")
