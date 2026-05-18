@@ -756,7 +756,7 @@ _REVERSE_MAP = {v: k for k, v in COMPLEX_MAP.items()}
 def save_json(summary, owner_data, financials=None, rent_changes=None, inspections=None):
     now = datetime.now()
     payload = {
-        "updated": now.strftime("%Y-%m-%dT%H:%M:%S"),
+        "updated": now.strftime("%Y-%m-%dT%H:%M:%S+00:00"),
         "month":   now.strftime("%B %Y"),
         "complexes": [
             {
