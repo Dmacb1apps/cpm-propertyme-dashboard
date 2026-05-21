@@ -506,6 +506,8 @@ def fetch_xero_data():
     from_date = today.replace(day=1).strftime("%Y-%m-%d")
     to_date   = today.strftime("%Y-%m-%d")
 
+    print(f"  Xero date params — P&L: {from_date} → {to_date}  |  Balance Sheet: {to_date}")
+
     # Profit & Loss
     pl_resp = requests.get(
         "https://api.xero.com/api.xro/2.0/Reports/ProfitAndLoss",
