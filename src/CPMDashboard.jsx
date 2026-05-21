@@ -267,7 +267,7 @@ export default function CPMDashboard() {
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "overview" && (() => {
             const f   = data?.financials ?? {};
-            const nwc = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0);
+            const nwc = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0) - (f.credit_card_don ?? 0) - (f.credit_card_duncan ?? 0);
             const nwcColor = nwc >= 0 ? "#1a7f37" : "#CC0000";
             const totalUnits = complexes.reduce((s, c) => s + c.owners, 0);
             const weightedAvgRent = totalUnits > 0
@@ -293,9 +293,10 @@ export default function CPMDashboard() {
                     <div style={{ ...val, color: nwcColor }}>{fmt(Math.round(nwc))}</div>
                     {!isMobile && (
                       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash</div>
-                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.receivables_total ?? 0))} receivables</div>
-                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.payables_total ?? 0))} payables</div>
+                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash in bank</div>
+                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.receivables_total ?? 0))} due to CPM</div>
+                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.payables_total ?? 0))} bills to pay</div>
+                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round((f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0)))} credit cards</div>
                       </div>
                     )}
                   </div>
@@ -538,14 +539,15 @@ export default function CPMDashboard() {
 
             const wageEmp   = f.wages_employee  ?? 0;
             const wageMgmt  = f.wages_management ?? 0;
-            const wageOther = Math.max(0, (f.wages ?? 0) - wageEmp - wageMgmt);
+            const superAmt  = f.superannuation_employees ?? f.superannuation ?? 0;
+            const wageOther = Math.max(0, (f.wages ?? 0) - wageEmp - wageMgmt - superAmt);
             const wageRows  = [
               { label: "Staff Wages",  value: wageEmp,   color: "#1e2a3a" },
               ...(wageMgmt  > 0 ? [{ label: "Director Fees", value: wageMgmt,  color: "#C00000" }] : []),
               ...(wageOther > 0 ? [{ label: "Other Wages",   value: wageOther, color: "#8b949e" }] : []),
             ];
-            const totalWages  = wageEmp + wageMgmt + wageOther;
-            const netPosition = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0);
+            const totalWages  = wageEmp + wageMgmt + wageOther;   // super excluded
+            const netPosition = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0) - (f.credit_card_don ?? 0) - (f.credit_card_duncan ?? 0);
 
             return (
               <div>
@@ -657,6 +659,12 @@ export default function CPMDashboard() {
                         <span>Total Wages</span>
                         <span>{fmt(Math.round(totalWages))}</span>
                       </div>
+                      {superAmt > 0 && (
+                        <div style={{ marginTop: 10, padding: "9px 12px", background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", borderRadius: 6, borderLeft: "3px solid #8b949e", display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                          <span style={{ color: t.muted }}>Super (paid quarterly)</span>
+                          <span style={{ color: t.muted }}>{fmt(Math.round(superAmt))}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -665,21 +673,22 @@ export default function CPMDashboard() {
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                       <tbody>
                         {[
-                          { label: "Cash at Bank",        value: f.cash_balance      ?? 0, color: t.success, sign: 1  },
-                          { label: "Invoices to Receive", value: f.receivables_total ?? 0, color: t.success, sign: 1  },
-                          { label: "Bills to Pay",        value: f.payables_total    ?? 0, color: "#C00000", sign: -1 },
-                        ].map(({ label, value, color, sign }) => (
+                          { label: "Cash in Bank",          value: f.cash_balance      ?? 0,                                                sign: 1  },
+                          { label: "Due to CPM (incoming)", value: f.receivables_total ?? 0,                                                sign: 1  },
+                          { label: "Bills to Pay",          value: f.payables_total    ?? 0,                                                sign: -1 },
+                          { label: "Credit Cards",          value: (f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0),                  sign: -1 },
+                        ].map(({ label, value, sign }) => (
                           <tr key={label} style={{ borderTop: `1px solid ${t.border}` }}>
                             <td style={{ padding: tp, color: t.muted, fontSize: 13 }}>{label}</td>
-                            <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: sign > 0 ? color : "#C00000", fontSize: 13, whiteSpace: "nowrap" }}>
-                              {sign < 0 ? "-" : ""}{fmt(Math.round(value))}
+                            <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: sign > 0 ? t.success : "#C00000", fontSize: 13, whiteSpace: "nowrap" }}>
+                              {sign < 0 ? "−" : "+"} {fmt(Math.round(value))}
                             </td>
                           </tr>
                         ))}
                         <tr style={{ borderTop: `2px solid ${t.border}`, background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}>
                           <td style={{ padding: tp, fontWeight: 700, fontSize: 13 }}>Net Working Capital</td>
                           <td style={{ padding: tp, textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : "#C00000", whiteSpace: "nowrap" }}>
-                            {fmt(Math.round(netPosition))}
+                            = {fmt(Math.round(netPosition))}
                           </td>
                         </tr>
                         <tr style={{ borderTop: `1px solid ${t.border}` }}>
