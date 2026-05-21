@@ -2,7 +2,7 @@ name: Update Dashboard
 
 on:
   schedule:
-    - cron: '0 17 * * *'  # 3am AEST Brisbane daily
+    - cron: '0 21 * * *'  # 7am AEST Brisbane daily
   workflow_dispatch:        # allows manual trigger from GitHub UI
 
 permissions:
