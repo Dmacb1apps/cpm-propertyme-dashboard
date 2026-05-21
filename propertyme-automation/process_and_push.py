@@ -556,6 +556,30 @@ def fetch_xero_data():
     )
     if bs_resp.ok:
         bs_rows = bs_resp.json()["Reports"][0].get("Rows", [])
+
+        # ── DEBUG: print every account in every Bank-related section ──────────
+        def _debug_bank_rows(rows, depth=0):
+            indent = "  " * depth
+            for row in rows:
+                rt    = row.get("RowType", "")
+                title = row.get("Title", "")
+                cells = row.get("Cells", [])
+                if rt == "Section":
+                    print(f"{indent}[Section] '{title}'")
+                    _debug_bank_rows(row.get("Rows", []), depth + 1)
+                elif rt in ("Row", "SummaryRow"):
+                    name    = cells[0].get("Value", "") if len(cells) > 0 else ""
+                    balance = cells[1].get("Value", "") if len(cells) > 1 else ""
+                    code    = cells[0].get("Attributes", [{}])[0].get("Value", "") if cells else ""
+                    tag     = "TOTAL" if rt == "SummaryRow" else "     "
+                    print(f"{indent}  {tag}  name='{name}'  code='{code}'  balance='{balance}'")
+
+        print("  [Balance Sheet raw — Bank section]")
+        for row in bs_rows:
+            if row.get("RowType") == "Section" and "bank" in row.get("Title", "").lower():
+                _debug_bank_rows([row], depth=1)
+        # ── END DEBUG ──────────────────────────────────────────────────────────
+
         cash_balance     = _xero_section_total(bs_rows, "Bank")
         credit_card_don  = _xero_find_first_keyword(bs_rows, " don")    or _xero_find_first_keyword(bs_rows, "don ")    or 0.0
         credit_card_duncan = _xero_find_first_keyword(bs_rows, "duncan") or 0.0
