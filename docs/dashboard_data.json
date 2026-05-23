@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-22T22:04:10+00:00",
+  "updated": "2026-05-23T21:50:37+00:00",
   "month": "May 2026",
   "complexes": [
     {
@@ -1917,9 +1917,9 @@
   ],
   "financials": {
     "cash_balance": 27463.59,
-    "total_income": 40064.16,
+    "total_income": 44679.34,
     "total_expenses": 56263.45,
-    "net_profit": -17213.77,
+    "net_profit": -12598.59,
     "management_fees": 7421.58,
     "wages": 21362.85,
     "wages_employee": 14650.47,
@@ -1957,13 +1957,13 @@
         "due_date": "2026-05-30"
       }
     ],
-    "receivables_total": 30063.66,
-    "receivables_overdue": 0,
+    "receivables_total": 30022.22,
+    "receivables_overdue": 7608.71,
     "receivables_count": 5,
     "top_receivables": [
       {
         "contact_name": "Body Corporate for Vue Taigum CTS 53523",
-        "amount_due": 7650.15,
+        "amount_due": 7608.71,
         "due_date": "2026-05-22"
       },
       {
@@ -1987,7 +1987,7 @@
         "due_date": "2026-06-17"
       }
     ],
-    "invoices_due_this_month": 30063.66,
+    "invoices_due_this_month": 30022.22,
     "invoices_due_count": 5
   },
   "inspections": {
@@ -1998,7 +1998,7 @@
         "property": "99. 51 Steuart Street, Bundaberg North",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-05-18",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-05-25"
       },
       {
@@ -2006,7 +2006,7 @@
         "property": "15.15 15 / 47 Abbeywood Street, Taigum Q 4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-05-19",
-        "days_overdue": 3,
+        "days_overdue": 4,
         "booked_date": "2026-06-17"
       }
     ],
@@ -2017,7 +2017,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 12.1,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 107,
+        "days_since_last_routine": 108,
         "flag": "LOW COUNT"
       }
     ],
