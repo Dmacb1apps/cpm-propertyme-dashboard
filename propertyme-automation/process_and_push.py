@@ -53,7 +53,8 @@ DOWNLOADS_DIR     = SCRIPT_DIR / "downloads"
 CREDENTIALS_FILE  = SCRIPT_DIR / "credentials.json"
 SHEET_NAME        = "CPM Portfolio Dashboard"
 JSON_OUTPUT       = SCRIPT_DIR.parent / "public" / "dashboard_data.json"
-RENT_HISTORY_FILE = SCRIPT_DIR.parent / "rent_history.json"
+RENT_HISTORY_FILE       = SCRIPT_DIR.parent / "rent_history.json"
+PORTFOLIO_HISTORY_FILE  = SCRIPT_DIR.parent / "public" / "rent_history.json"
 
 # ---------------------------------------------------------------------------
 # File helpers
@@ -848,6 +849,55 @@ def save_json(summary, owner_data, financials=None, rent_changes=None, inspectio
 
 
 # ---------------------------------------------------------------------------
+# Portfolio rent history (public/rent_history.json)
+# ---------------------------------------------------------------------------
+
+def update_portfolio_history(summary):
+    """
+    Append the current month's portfolio-level unit count and weighted avg
+    weekly rent to public/rent_history.json, unless the month is already
+    present. Uses the same fields that go into dashboard_data.json.
+    """
+    today       = date.today()
+    current_key = today.strftime("%Y-%m")
+
+    # Load existing history (array format)
+    history = []
+    if PORTFOLIO_HISTORY_FILE.exists():
+        try:
+            history = json.loads(PORTFOLIO_HISTORY_FILE.read_text())
+        except Exception:
+            history = []
+
+    # Skip if current month already recorded
+    existing_months = {entry["month"] for entry in history}
+    if current_key in existing_months:
+        print(f"  Portfolio history: {current_key} already present — skipped")
+        return
+
+    # Compute portfolio totals from summary
+    total_units = sum(
+        (s["owner_count"] if s["owner_count"] > 0 else s["unit_count"])
+        for s in summary
+    )
+    weighted_rent_sum = sum(
+        s["avg_rent"] * (s["owner_count"] if s["owner_count"] > 0 else s["unit_count"])
+        for s in summary
+    )
+    avg_weekly_rent = round(weighted_rent_sum / total_units, 2) if total_units > 0 else 0.0
+
+    history.append({
+        "month":           current_key,
+        "units":           total_units,
+        "avg_weekly_rent": avg_weekly_rent,
+    })
+
+    PORTFOLIO_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+    PORTFOLIO_HISTORY_FILE.write_text(json.dumps(history, indent=2))
+    print(f"  Portfolio history: appended {current_key} ({total_units} units, ${avg_weekly_rent}/wk avg) → {PORTFOLIO_HISTORY_FILE.name}")
+
+
+# ---------------------------------------------------------------------------
 # Push to Google Sheets
 # ---------------------------------------------------------------------------
 
@@ -969,6 +1019,10 @@ def main():
 
     print("Saving dashboard_data.json...")
     save_json(summary, owner_data, financials, rent_changes, inspection_data)
+
+    print("Updating portfolio rent history...")
+    update_portfolio_history(summary)
+    print()
 
     if inspection_data and inspection_data["summary"]["total_overdue"] > 0:
         print(f"\nSending inspection alert ({inspection_data['summary']['total_overdue']} overdue)...")

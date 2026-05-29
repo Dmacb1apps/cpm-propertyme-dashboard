@@ -4,7 +4,7 @@ import {
   Moon, Sun, RefreshCw, TrendingUp, DollarSign,
   BarChart3, Loader, ClipboardList
 } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 
 const fmt = (n) => n < 0
   ? `-$${Math.abs(n).toLocaleString()}`
@@ -20,6 +20,8 @@ export default function CPMDashboard() {
   const [complexFilter, setComplexFilter] = useState("all");
   const [isMobile, setIsMobile]       = useState(window.innerWidth <= 768);
   const [menuOpen, setMenuOpen]       = useState(false);
+  const [rentHistory, setRentHistory] = useState([]);
+  const [trendFilter, setTrendFilter] = useState("last12");
 
   const loadData = () => {
     setLoading(true);
@@ -31,6 +33,13 @@ export default function CPMDashboard() {
   };
 
   useEffect(() => { loadData(); }, []);
+
+  useEffect(() => {
+    fetch("./rent_history.json")
+      .then((r) => r.ok ? r.json() : [])
+      .then((d) => setRentHistory(Array.isArray(d) ? d : []))
+      .catch(() => setRentHistory([]));
+  }, []);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -429,6 +438,76 @@ export default function CPMDashboard() {
                     </div>
                   </div>
                 </div>
+
+                {/* Portfolio Trend chart */}
+                {rentHistory.length > 0 && (() => {
+                  const now   = new Date();
+                  const curYr = now.getFullYear();
+                  const curMo = now.getMonth(); // 0-indexed
+
+                  // Financial year runs Jul–Jun; find the start of the current FY
+                  const fyStartYear = curMo >= 6 ? curYr : curYr - 1;
+                  const fyStartKey  = `${fyStartYear}-07`;
+
+                  const filtered = rentHistory.filter((d) => {
+                    if (trendFilter === "last12") {
+                      const [y, m] = d.month.split("-").map(Number);
+                      const diffMonths = (curYr - y) * 12 + (curMo + 1 - m);
+                      return diffMonths >= 0 && diffMonths < 12;
+                    }
+                    if (trendFilter === "fy") return d.month >= fyStartKey;
+                    return true; // "all"
+                  });
+
+                  const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                  const chartData = filtered.map((d) => {
+                    const [y, m] = d.month.split("-");
+                    return {
+                      label: `${MONTH_LABELS[parseInt(m, 10) - 1]} ${y.slice(2)}`,
+                      units: d.units,
+                      rent:  Math.round(d.avg_weekly_rent),
+                    };
+                  });
+
+                  const btnStyle = (active) => ({
+                    padding: "5px 14px", borderRadius: 20, border: `1px solid ${t.border}`,
+                    cursor: "pointer", fontFamily: "inherit", fontSize: 12,
+                    background: active ? "#CC0000" : t.surface,
+                    color:      active ? "#fff"    : t.muted,
+                  });
+
+                  return (
+                    <div style={{ ...card, marginTop: gap, padding: 0, overflow: "hidden" }}>
+                      <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                        <span style={{ fontWeight: 600, fontSize: 13 }}>Portfolio Trend</span>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          {[["last12","Last 12 Months"],["fy","This Financial Year"],["all","All Time"]].map(([key, label]) => (
+                            <button key={key} onClick={() => setTrendFilter(key)} style={btnStyle(trendFilter === key)}>{label}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <div style={{ padding: "20px 8px 12px 0" }}>
+                        <ResponsiveContainer width="100%" height={260}>
+                          <LineChart data={chartData} margin={{ top: 4, right: 32, left: 8, bottom: 4 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke={dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)"} vertical={false} />
+                            <XAxis dataKey="label" tick={{ fontSize: 11, fill: t.muted }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                            <YAxis yAxisId="units" orientation="left"  tick={{ fontSize: 11, fill: "#58a6ff" }} tickLine={false} axisLine={false} width={38} />
+                            <YAxis yAxisId="rent"  orientation="right" tick={{ fontSize: 11, fill: "#CC0000"  }} tickLine={false} axisLine={false} width={48} tickFormatter={(v) => `$${v}`} />
+                            <Tooltip
+                              contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 6, fontSize: 12 }}
+                              labelStyle={{ color: t.text, fontWeight: 600, marginBottom: 4 }}
+                              formatter={(value, name) => name === "Units" ? [value, "Units in Pool"] : [`$${value}/wk`, "Avg Weekly Rent"]}
+                            />
+                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
+                            <Line yAxisId="units" type="monotone" dataKey="units" name="Units" stroke="#58a6ff" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                            <Line yAxisId="rent"  type="monotone" dataKey="rent"  name="Avg Rent" stroke="#CC0000" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  );
+                })()}
+
               </div>
             );
           })()}
