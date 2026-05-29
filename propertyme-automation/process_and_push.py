@@ -964,8 +964,70 @@ def push_to_sheets(summary, owner_data):
 # Main
 # ---------------------------------------------------------------------------
 
+def _check_rent_file_freshness():
+    """Warn loudly (and email) if the newest monthly rent file is more than 2 days old."""
+    files = sorted(DOWNLOADS_DIR.glob("monthly_rent_*.xlsx"))
+    if not files:
+        msg = (
+            "STALENESS ALERT: No monthly_rent_*.xlsx found in downloads/. "
+            "The PropertyMe download step may have failed silently."
+        )
+        print(f"\n{'!'*70}\n{msg}\n{'!'*70}\n")
+        _send_staleness_alert(msg)
+        return
+
+    newest = files[-1]
+    age_days = (datetime.now() - datetime.fromtimestamp(newest.stat().st_mtime)).days
+    if age_days > 2:
+        msg = (
+            f"STALENESS ALERT: The newest monthly rent file is {age_days} days old "
+            f"({newest.name}). The PropertyMe download may be failing silently. "
+            f"Check the GitHub Actions logs."
+        )
+        print(f"\n{'!'*70}\n{msg}\n{'!'*70}\n")
+        _send_staleness_alert(msg)
+
+
+def _send_staleness_alert(body_text):
+    smtp_user = os.environ.get("SMTP_USER")
+    smtp_pass = os.environ.get("SMTP_PASSWORD")
+    if not smtp_user or not smtp_pass:
+        print("  SMTP_USER/SMTP_PASSWORD not set — skipping staleness email alert.")
+        return
+
+    subject  = "CPM PIPELINE: PropertyMe rent file is stale — check download"
+    html_body = f"""
+<html><body style="font-family:Arial,sans-serif;color:#222;max-width:640px">
+<h2 style="color:#CC0000">PropertyMe Download Alert</h2>
+<p style="font-size:15px">{body_text}</p>
+<p>
+  <a href="https://github.com/Dmacb1apps/cpm-propertyme-dashboard/actions"
+     style="background:#CC0000;color:#fff;padding:10px 18px;
+     text-decoration:none;border-radius:5px;font-weight:bold">View GitHub Actions Logs</a>
+</p>
+</body></html>"""
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = smtp_user
+    msg["To"]      = ALERT_TO
+    msg.attach(MIMEText(body_text, "plain"))
+    msg.attach(MIMEText(html_body, "html"))
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, ALERT_TO, msg.as_string())
+        print(f"  Staleness alert sent to {ALERT_TO}.")
+    except Exception as e:
+        print(f"  WARNING: Failed to send staleness alert email: {e}")
+
+
 def main():
     print("=== CPM Portfolio Dashboard ===\n")
+
+    _check_rent_file_freshness()
 
     pdf_path  = latest_file("folio_ledger_*.pdf")
     xlsx_path = latest_file("monthly_rent_*.xlsx")

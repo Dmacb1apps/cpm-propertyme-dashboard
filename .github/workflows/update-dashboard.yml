@@ -55,6 +55,12 @@ jobs:
         run: |
           echo "=== Files in propertyme-automation/downloads/ ==="
           find propertyme-automation/downloads -name "*.pdf" -o -name "*.xlsx" 2>/dev/null || echo "(none found)"
+          # Fail loudly if the monthly rent Excel is missing — catches silent download failures
+          if ! ls propertyme-automation/downloads/monthly_rent_*.xlsx 1>/dev/null 2>&1; then
+            echo "ERROR: monthly_rent_*.xlsx not found in downloads/ — PropertyMe download failed!"
+            exit 1
+          fi
+          echo "Monthly rent file confirmed present."
 
       - name: Process data and push to Google Sheets
         env:

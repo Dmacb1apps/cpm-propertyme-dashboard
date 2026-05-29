@@ -286,7 +286,11 @@ def download_monthly_rent(page, start_date, end_date, iso_date, downloads_dir):
             new_file.rename(save_path)
             print(f"  Saved (moved from ~/Downloads): {save_path}")
         else:
-            print("  WARNING: File not found via either mechanism.")
+            raise RuntimeError(
+                f"Monthly rent download failed — file not found via Playwright "
+                f"expect_download OR ~/Downloads fallback. "
+                f"Expected: {save_path}"
+            )
 
     report.close()
 
