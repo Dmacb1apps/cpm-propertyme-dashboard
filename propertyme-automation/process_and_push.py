@@ -606,6 +606,9 @@ def fetch_xero_data():
             ep_m = _re.search(r"/Date\((\d+)\+\d+\)/", due_date)
             if ep_m:
                 due_date = _dt.datetime.fromtimestamp(int(ep_m.group(1)) / 1000).strftime("%Y-%m-%d")
+            # Client-side guard: Xero's DueDateTo filter is unreliable — enforce the boundary here
+            if due_date < month_start or due_date > month_end:
+                continue
             row = {
                 "contact_name": inv.get("Contact", {}).get("Name", "Unknown"),
                 "amount_due":   round(amount_due, 2),
@@ -613,7 +616,7 @@ def fetch_xero_data():
             }
             if inv.get("Type") == "ACCPAY":
                 payables.append(row)
-            else:
+            elif inv.get("Type") == "ACCREC" and inv.get("Status") != "PAID":
                 receivables.append(row)
 
     payables.sort(key=lambda x: x["due_date"])
