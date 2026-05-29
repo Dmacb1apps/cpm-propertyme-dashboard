@@ -602,10 +602,15 @@ def fetch_xero_data():
         invoices = inv_resp.json().get("Invoices", [])
         for inv in invoices:
             amount_due = float(inv.get("AmountDue", 0))
-            due_date   = inv.get("DueDate", "")
-            ep_m = _re.search(r"/Date\((\d+)\+\d+\)/", due_date)
+            due_date_raw = inv.get("DueDate", "")
+            # Xero returns /Date(epoch[+-]offset)/ — handle both + and - offsets
+            ep_m = _re.search(r"/Date\((\d+)[+-]\d+\)/", due_date_raw)
             if ep_m:
-                due_date = _dt.datetime.fromtimestamp(int(ep_m.group(1)) / 1000).strftime("%Y-%m-%d")
+                due_date = _dt.datetime.utcfromtimestamp(int(ep_m.group(1)) / 1000).strftime("%Y-%m-%d")
+            elif due_date_raw and due_date_raw[0].isdigit():
+                due_date = due_date_raw[:10]
+            else:
+                continue
             # Client-side guard: Xero's DueDateTo filter is unreliable — enforce the boundary here
             if due_date < month_start or due_date > month_end:
                 continue
