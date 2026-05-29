@@ -279,18 +279,17 @@ export default function CPMDashboard() {
             const nwc = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0) - (f.credit_card_don ?? 0) - (f.credit_card_duncan ?? 0);
             const nwcColor = nwc >= 0 ? "#1a7f37" : "#CC0000";
             const totalUnits = complexes.reduce((s, c) => s + c.owners, 0);
-            const weightedAvgRentWk = totalUnits > 0
-              ? complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalUnits
+            const weightedAvgRent = totalUnits > 0
+              ? Math.round(complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalUnits)
               : 0;
-            const weightedAvgRentMonth = Math.round(weightedAvgRentWk * 52 / 12);
             const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
             const lbl  = { color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8, fontWeight: 500 };
             const val  = { fontSize: valFz, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 8 };
 
             return (
               <div>
-                {/* Row 1: 6 stat cards — 2-col on mobile */}
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(6,1fr)", gap, marginBottom: gap }}>
+                {/* Row 1: 5 stat cards — 2-col on mobile */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap, marginBottom: gap }}>
 
                   <div style={{ ...card, borderTop: "3px solid #1a7f37", padding: cp }}>
                     <div style={lbl}>Cash in Bank</div>
@@ -319,14 +318,8 @@ export default function CPMDashboard() {
 
                   <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
                     <div style={lbl}>Avg Rent</div>
-                    <div style={{ ...val, color: t.text }}>${weightedAvgRentMonth.toLocaleString()}/month</div>
-                    <div style={{ color: t.muted, fontSize: 11 }}>per unit per month</div>
-                  </div>
-
-                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
-                    <div style={lbl}>Gross Rent Potential</div>
-                    <div style={{ ...val, color: t.text }}>${(totalUnits * weightedAvgRentMonth).toLocaleString()}/month</div>
-                    <div style={{ color: t.muted, fontSize: 11 }}>across {totalUnits} units</div>
+                    <div style={{ ...val, color: t.text }}>${weightedAvgRent}/week</div>
+                    <div style={{ color: t.muted, fontSize: 11 }}>per unit per week</div>
                   </div>
 
                   {(() => {
