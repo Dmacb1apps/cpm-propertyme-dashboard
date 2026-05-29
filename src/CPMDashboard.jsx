@@ -279,8 +279,8 @@ export default function CPMDashboard() {
 
             return (
               <div>
-                {/* Row 1: 5 stat cards — 2-col on mobile */}
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap, marginBottom: gap }}>
+                {/* Row 1: 6 stat cards — 2-col on mobile */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(6,1fr)", gap, marginBottom: gap }}>
 
                   <div style={{ ...card, borderTop: "3px solid #1a7f37", padding: cp }}>
                     <div style={lbl}>Cash in Bank</div>
@@ -311,6 +311,12 @@ export default function CPMDashboard() {
                     <div style={lbl}>Avg Rent</div>
                     <div style={{ ...val, color: t.text }}>${weightedAvgRent}/wk</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>per unit per week</div>
+                  </div>
+
+                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
+                    <div style={lbl}>Gross Rent Potential</div>
+                    <div style={{ ...val, color: t.text }}>${(totalUnits * weightedAvgRent).toLocaleString()}/wk</div>
+                    <div style={{ color: t.muted, fontSize: 11 }}>{totalUnits} units × ${weightedAvgRent}/wk</div>
                   </div>
 
                   {(() => {
