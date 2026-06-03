@@ -48,7 +48,7 @@ export default function CPMDashboard() {
   }, []);
 
   const t = dark
-    ? { bg: "#0d1117", surface: "#161b22", border: "#30363d", text: "#e6edf3", muted: "#8b949e", accent: "#58a6ff", danger: "#f85149", success: "#3fb950", warn: "#d29922" }
+    ? { bg: "linear-gradient(135deg, #0f1c2e 0%, #1a2a3d 50%, #0f1c2e 100%)", surface: "linear-gradient(160deg, #1e3048 0%, #162538 100%)", border: "rgba(255,255,255,0.08)", text: "#e6edf3", muted: "#4a6a84", accent: "#58a6ff", danger: "#f87171", success: "#4ade80", warn: "#d29922" }
     : { bg: "#f4f5f7", surface: "#ffffff",  border: "#dde1e7", text: "#1e2a3a", muted: "#656d76", accent: "#0969da", danger: "#CC0000", success: "#1a7f37", warn: "#9a6700" };
 
   const complexes      = data?.complexes    ?? [];
@@ -100,7 +100,8 @@ export default function CPMDashboard() {
       {/* ── Sidebar — desktop only ── */}
       {!isMobile && (
         <nav style={{
-          width: sidebarOpen ? 240 : 64, flexShrink: 0, background: t.surface,
+          width: sidebarOpen ? 240 : 64, flexShrink: 0,
+          background: dark ? "linear-gradient(180deg, #111e2e 0%, #0d1824 100%)" : t.surface,
           borderRight: `1px solid ${t.border}`, display: "flex", flexDirection: "column",
           transition: "width 0.25s ease", overflow: "hidden", position: "sticky", top: 0, height: "100vh"
         }}>
@@ -118,8 +119,10 @@ export default function CPMDashboard() {
                 <button key={item.id} onClick={() => setPage(item.id)} style={{
                   display: "flex", alignItems: "center", gap: 10, padding: "8px 10px",
                   borderRadius: 6, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
-                  background: active ? (dark ? "rgba(88,166,255,0.1)" : "rgba(9,105,218,0.08)") : "transparent",
-                  color: active ? t.accent : t.muted, fontFamily: "inherit", fontSize: 13, fontWeight: active ? 600 : 400,
+                  background: active ? (dark ? "rgba(204,0,0,0.15)" : "rgba(9,105,218,0.08)") : "transparent",
+                  color: active ? (dark ? "#ffffff" : t.accent) : t.muted,
+                  borderLeft: dark ? (active ? "3px solid #CC0000" : "3px solid transparent") : "none",
+                  fontFamily: "inherit", fontSize: 13, fontWeight: active ? 600 : 400,
                   transition: "all 0.15s", whiteSpace: "nowrap", overflow: "hidden"
                 }}>
                   <item.icon size={16} style={{ flexShrink: 0 }} />
@@ -277,12 +280,13 @@ export default function CPMDashboard() {
           {!loading && !error && page === "overview" && (() => {
             const f   = data?.financials ?? {};
             const nwc = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0) - (f.credit_card_don ?? 0) - (f.credit_card_duncan ?? 0);
-            const nwcColor = nwc >= 0 ? "#1a7f37" : "#CC0000";
+            const nwcColor = nwc >= 0 ? t.success : t.danger;
             const totalUnits = complexes.reduce((s, c) => s + c.owners, 0);
             const weightedAvgRent = totalUnits > 0
               ? Math.round(complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalUnits)
               : 0;
-            const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
+            const cardShadow = dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none";
+            const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: cardShadow };
             const lbl  = { color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8, fontWeight: 500 };
             const val  = { fontSize: valFz, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 8 };
 
@@ -291,32 +295,32 @@ export default function CPMDashboard() {
                 {/* Row 1: 5 stat cards — 2-col on mobile */}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap, marginBottom: gap }}>
 
-                  <div style={{ ...card, borderTop: "3px solid #1a7f37", padding: cp }}>
+                  <div style={{ ...card, borderTop: `3px solid ${t.success}`, padding: cp }}>
                     <div style={lbl}>Cash in Bank</div>
-                    <div style={{ ...val, color: "#1a7f37" }}>{fmt(Math.round(f.cash_balance ?? 0))}</div>
+                    <div style={{ ...val, color: t.success }}>{fmt(Math.round(f.cash_balance ?? 0))}</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>Bank accounts</div>
                   </div>
 
-                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
+                  <div style={{ ...card, border: dark ? "1px solid rgba(204,0,0,0.3)" : `1px solid ${t.border}`, boxShadow: dark ? "0 0 40px rgba(204,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.06)" : "none", padding: cp }}>
                     <div style={lbl}>Net Working Capital</div>
                     <div style={{ ...val, color: nwcColor }}>{fmt(Math.round(nwc))}</div>
                     {!isMobile && (
                       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash in bank</div>
-                        <div style={{ fontSize: 11, color: "#1a7f37" }}>+ {fmt(Math.round(f.receivables_total ?? 0))} due to CPM</div>
-                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round(f.payables_total ?? 0))} bills to pay</div>
-                        <div style={{ fontSize: 11, color: "#CC0000" }}>− {fmt(Math.round((f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0)))} credit cards</div>
+                        <div style={{ fontSize: 11, color: t.success }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash in bank</div>
+                        <div style={{ fontSize: 11, color: t.success }}>+ {fmt(Math.round(f.receivables_total ?? 0))} due to CPM</div>
+                        <div style={{ fontSize: 11, color: t.danger }}>− {fmt(Math.round(f.payables_total ?? 0))} bills to pay</div>
+                        <div style={{ fontSize: 11, color: t.danger }}>− {fmt(Math.round((f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0)))} credit cards</div>
                       </div>
                     )}
                   </div>
 
-                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
+                  <div style={{ ...card, borderTop: `3px solid ${t.border}`, padding: cp }}>
                     <div style={lbl}>Total Units</div>
                     <div style={{ ...val, color: t.text }}>{totalUnits}</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>across {complexes.length} complexes</div>
                   </div>
 
-                  <div style={{ ...card, borderTop: "3px solid #1e2a3a", padding: cp }}>
+                  <div style={{ ...card, borderTop: `3px solid ${t.border}`, padding: cp }}>
                     <div style={lbl}>Avg Rent</div>
                     <div style={{ ...val, color: t.text }}>${weightedAvgRent}/week</div>
                     <div style={{ color: t.muted, fontSize: 11 }}>per unit per week</div>
@@ -521,7 +525,7 @@ export default function CPMDashboard() {
                   </button>
                 ))}
               </div>
-              <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 }}>
+              <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
                 <div style={{ padding: "13px 16px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
                   {filteredFlagged.length} owners where bills exceed rent received — sorted worst first
                 </div>
@@ -564,13 +568,18 @@ export default function CPMDashboard() {
                 const pct = c.owners > 0 ? Math.round(c.flagged / c.owners * 100) : 0;
                 const net = c.totalRent - c.totalBills;
                 return (
-                  <div key={c.code} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, padding: 16 }}>
+                  <div key={c.code} style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, padding: 16, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 3 }}>{c.name}</div>
                         <div style={{ color: t.muted, fontSize: 11 }}>Complex {c.code} · {c.owners} owners</div>
                       </div>
-                      <span style={{ background: c.flagged > 8 ? "rgba(248,81,73,0.12)" : "rgba(63,185,80,0.12)", color: c.flagged > 8 ? t.danger : t.success, borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", marginLeft: 8 }}>
+                      <span style={{
+                        background: c.flagged > 8 ? "rgba(204,0,0,0.18)" : "rgba(26,127,55,0.18)",
+                        color: c.flagged > 8 ? t.danger : t.success,
+                        border: c.flagged > 8 ? "1px solid rgba(204,0,0,0.25)" : "1px solid rgba(26,127,55,0.25)",
+                        borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700, whiteSpace: "nowrap", marginLeft: 8
+                      }}>
                         {c.flagged} flagged
                       </span>
                     </div>
@@ -592,8 +601,8 @@ export default function CPMDashboard() {
                         <span style={{ color: t.muted, fontSize: 11 }}>Flagged rate</span>
                         <span style={{ color: pct > 40 ? t.danger : t.muted, fontSize: 11, fontWeight: 600 }}>{pct}%</span>
                       </div>
-                      <div style={{ height: 4, background: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)", borderRadius: 2 }}>
-                        <div style={{ height: 4, width: `${pct}%`, borderRadius: 2, background: pct > 40 ? t.danger : pct > 25 ? t.warn : t.success, transition: "width 0.4s ease" }} />
+                      <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
+                        <div style={{ height: 4, width: `${pct}%`, borderRadius: 2, background: pct > 40 ? "linear-gradient(90deg, #991000, #CC0000)" : pct > 25 ? "linear-gradient(90deg, #7a5800, #d29922)" : "linear-gradient(90deg, #1a7f37, #4ade80)", transition: "width 0.4s ease" }} />
                       </div>
                     </div>
                   </div>
@@ -608,7 +617,8 @@ export default function CPMDashboard() {
           {!loading && !error && page === "financials" && (() => {
             const f         = data?.financials ?? {};
             const netColor  = (f.net_profit ?? 0) >= 0 ? t.success : "#C00000";
-            const panel     = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8, overflow: "hidden" };
+            const panelShadow = dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none";
+            const panel     = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, overflow: "hidden", boxShadow: panelShadow };
             const panelHead = { padding: "13px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
 
             const donutData = [
@@ -637,7 +647,7 @@ export default function CPMDashboard() {
                     { label: "Net Profit MTD", value: f.net_profit     ?? 0, color: netColor,  sub: `Income ${fmt(Math.round(f.total_income ?? 0))} · Exp ${fmt(Math.round(f.total_expenses ?? 0))}` },
                     { label: "Bills to Pay",   value: f.payables_total ?? 0, color: "#C00000", sub: `${f.payables_count ?? 0} invoices · ${fmt(Math.round(f.payables_overdue ?? 0))} overdue` },
                   ].map((s) => (
-                    <div key={s.label} style={{ background: t.surface, borderTop: `3px solid ${s.color}`, border: `1px solid ${t.border}`, borderRadius: 8, padding: cp }}>
+                    <div key={s.label} style={{ background: t.surface, borderTop: `3px solid ${s.color}`, border: `1px solid ${t.border}`, borderRadius: 14, padding: cp, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
                       <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8 }}>{s.label}</div>
                       <div style={{ fontSize: isMobile ? 24 : 26, fontWeight: 700, color: s.color, letterSpacing: "-0.5px", marginBottom: 6 }}>{fmt(Math.round(s.value))}</div>
                       <div style={{ color: t.muted, fontSize: 11 }}>{s.sub}</div>
@@ -701,13 +711,13 @@ export default function CPMDashboard() {
                           </div>
                           <div style={{ textAlign: "right" }}>
                             <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 4 }}>Balance</div>
-                            <div style={{ color: card.balance > 0 ? "#f85149" : "#3fb950", fontWeight: 700, fontSize: 20 }}>{fmt(Math.round(card.balance))}</div>
+                            <div style={{ color: card.balance > 0 ? t.danger : t.success, fontWeight: 700, fontSize: 20 }}>{fmt(Math.round(card.balance))}</div>
                           </div>
                         </div>
                       ))}
                       <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 4px 0", borderTop: `1px solid ${t.border}` }}>
                         <span style={{ fontSize: 12, color: t.muted }}>Total Credit Card Balance</span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#f85149" }}>{fmt(Math.round((f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0)))}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: t.danger }}>{fmt(Math.round((f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0)))}</span>
                       </div>
                     </div>
                   </div>
@@ -720,15 +730,19 @@ export default function CPMDashboard() {
                     <div style={panelHead}>Wages Breakdown</div>
                     <div style={{ padding: "16px 16px" }}>
                       {wageRows.map((w) => {
-                        const pct = totalWages > 0 ? Math.round((w.value / totalWages) * 100) : 0;
+                        const pct    = totalWages > 0 ? Math.round((w.value / totalWages) * 100) : 0;
+                        const isMax  = w.value === Math.max(...wageRows.map(r => r.value));
+                        const barBg  = dark
+                          ? (isMax ? "linear-gradient(90deg, #1a7f37, #4ade80)" : "linear-gradient(90deg, #991000, #CC0000)")
+                          : w.color;
                         return (
                           <div key={w.label} style={{ marginBottom: 18 }}>
                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7, fontSize: 12 }}>
                               <span style={{ color: t.text }}>{w.label}</span>
                               <span style={{ color: t.muted }}>{fmt(Math.round(w.value))} · {pct}%</span>
                             </div>
-                            <div style={{ height: 6, borderRadius: 3, background: dark ? "#30363d" : "#e0e0e0" }}>
-                              <div style={{ height: "100%", width: `${pct}%`, borderRadius: 3, background: w.color, transition: "width 0.4s ease" }} />
+                            <div style={{ height: 6, borderRadius: 3, background: dark ? "rgba(255,255,255,0.06)" : "#e0e0e0" }}>
+                              <div style={{ height: "100%", width: `${pct}%`, borderRadius: 3, background: barBg, transition: "width 0.4s ease" }} />
                             </div>
                           </div>
                         );
@@ -759,14 +773,14 @@ export default function CPMDashboard() {
                         ].map(({ label, value, sign }) => (
                           <tr key={label} style={{ borderTop: `1px solid ${t.border}` }}>
                             <td style={{ padding: tp, color: t.muted, fontSize: 13 }}>{label}</td>
-                            <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: sign > 0 ? t.success : "#C00000", fontSize: 13, whiteSpace: "nowrap" }}>
+                            <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: sign > 0 ? t.success : t.danger, fontSize: 13, whiteSpace: "nowrap" }}>
                               {sign < 0 ? "−" : "+"} {fmt(Math.round(value))}
                             </td>
                           </tr>
                         ))}
                         <tr style={{ borderTop: `2px solid ${t.border}`, background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}>
                           <td style={{ padding: tp, fontWeight: 700, fontSize: 13, color: t.text }}>Net Working Capital</td>
-                          <td style={{ padding: tp, textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : "#C00000", whiteSpace: "nowrap" }}>
+                          <td style={{ padding: tp, textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : t.danger, whiteSpace: "nowrap" }}>
                             = {fmt(Math.round(netPosition))}
                           </td>
                         </tr>
@@ -845,7 +859,7 @@ export default function CPMDashboard() {
               ALL OWNERS
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "owners" && (
-            <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 }}>
+            <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
               <div style={{ padding: "13px 16px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
                 {allOwners.length} owners · {totalFlagged} flagged · sorted by complex
               </div>
@@ -884,7 +898,7 @@ export default function CPMDashboard() {
               INSPECTIONS
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "inspections" && (() => {
-            const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 8 };
+            const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" };
             const ph   = { padding: "13px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13 };
 
             if (!inspections) {
