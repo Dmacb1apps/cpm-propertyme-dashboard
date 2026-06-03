@@ -294,6 +294,11 @@ export default function CPMDashboard() {
             const unitsSpark   = sparkHistory.map((d, i) => ({ i, v: d.units }));
             const rentSpark    = sparkHistory.map((d, i) => ({ i, v: Math.round(d.avg_weekly_rent) }));
 
+            // Month-on-month change indicators — computed from last two rent_history entries
+            const hasTwo = rentHistory.length >= 2;
+            const unitsDiff = hasTwo ? rentHistory.at(-1).units - rentHistory.at(-2).units : 0;
+            const rentDiff  = hasTwo ? Math.round(rentHistory.at(-1).avg_weekly_rent - rentHistory.at(-2).avg_weekly_rent) : 0;
+
             // Shared card shadow
             const cShadow = dark
               ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)"
@@ -392,7 +397,15 @@ export default function CPMDashboard() {
                   <div style={{ ...cBase, background: t.surface, border: `1px solid ${t.border}`, padding: "20px 22px", display: "flex", flexDirection: "column" }}>
                     <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.8px", color: t.muted, margin: "0 0 8px" }}>Total Units</p>
                     <p style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700, letterSpacing: "-0.5px", color: t.text, margin: "0 0 4px" }}>{totalUnits}</p>
-                    <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>across {complexes.length} complexes</p>
+                    <p style={{ fontSize: 11, color: t.muted, margin: "0 0 4px" }}>across {complexes.length} complexes</p>
+                    {hasTwo && unitsDiff !== 0 && (
+                      <p style={{ fontSize: 11, fontWeight: 600, margin: "0 0 10px", color: unitsDiff > 0 ? t.success : t.danger }}>
+                        {unitsDiff > 0 ? "↑" : "↓"} {unitsDiff > 0 ? "+" : ""}{unitsDiff} from last month
+                      </p>
+                    )}
+                    {hasTwo && unitsDiff === 0 && (
+                      <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>no change from last month</p>
+                    )}
                     {unitsSpark.length > 0 && (
                       <div style={{ flex: 1, minHeight: 36 }}>
                         <MiniBar data={unitsSpark} color="#58a6ff" />
@@ -406,7 +419,15 @@ export default function CPMDashboard() {
                     <p style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700, letterSpacing: "-0.5px", color: t.text, margin: "0 0 4px" }}>
                       ${weightedAvgRent}<span style={{ fontSize: 13, fontWeight: 400, color: t.muted }}>/wk</span>
                     </p>
-                    <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>weighted portfolio avg</p>
+                    <p style={{ fontSize: 11, color: t.muted, margin: "0 0 4px" }}>weighted portfolio avg</p>
+                    {hasTwo && rentDiff !== 0 && (
+                      <p style={{ fontSize: 11, fontWeight: 600, margin: "0 0 10px", color: rentDiff > 0 ? t.success : t.danger }}>
+                        {rentDiff > 0 ? "↑" : "↓"} {rentDiff > 0 ? "+" : ""}${Math.abs(rentDiff)}/wk from last month
+                      </p>
+                    )}
+                    {hasTwo && rentDiff === 0 && (
+                      <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>no change from last month</p>
+                    )}
                     {rentSpark.length > 0 && (
                       <div style={{ flex: 1, minHeight: 36 }}>
                         <MiniBar data={rentSpark} color="#CC0000" />
