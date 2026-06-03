@@ -765,7 +765,7 @@ export default function CPMDashboard() {
                           </tr>
                         ))}
                         <tr style={{ borderTop: `2px solid ${t.border}`, background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}>
-                          <td style={{ padding: tp, fontWeight: 700, fontSize: 13, color: "#1e2a3a" }}>Net Working Capital</td>
+                          <td style={{ padding: tp, fontWeight: 700, fontSize: 13, color: t.text }}>Net Working Capital</td>
                           <td style={{ padding: tp, textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : "#C00000", whiteSpace: "nowrap" }}>
                             = {fmt(Math.round(netPosition))}
                           </td>
