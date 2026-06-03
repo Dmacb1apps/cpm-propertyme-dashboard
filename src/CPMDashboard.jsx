@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import {
-  Home, AlertTriangle, Building2, Users, ChevronRight,
-  Moon, Sun, RefreshCw, TrendingUp, DollarSign,
-  BarChart3, Loader, ClipboardList
+  Home, Building2, Users, ChevronRight,
+  Moon, Sun, RefreshCw, DollarSign,
+  Loader, ClipboardList
 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, BarChart, Bar, Area, ComposedChart, LabelList } from "recharts";
 
@@ -22,6 +22,8 @@ export default function CPMDashboard() {
   const [menuOpen, setMenuOpen]       = useState(false);
   const [rentHistory, setRentHistory] = useState([]);
   const [trendFilter, setTrendFilter] = useState("last12");
+  const [ownerSearch, setOwnerSearch] = useState("");
+  const [ownerSort,   setOwnerSort]   = useState("complex"); // "complex" | "worst"
 
   const loadData = () => {
     setLoading(true);
@@ -63,16 +65,11 @@ export default function CPMDashboard() {
     ? Math.round(complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalOwners)
     : 0;
 
-  const filteredFlagged = complexFilter === "all"
-    ? flaggedOwners
-    : flaggedOwners.filter((o) => o.complex === complexFilter);
-
   const navItems = [
     { id: "overview",     icon: Home,          label: "Overview"            },
-    { id: "flagged",      icon: AlertTriangle,  label: "Flagged Owners",    badge: totalFlagged || null },
     { id: "complexes",    icon: Building2,      label: "By Complex"          },
     { id: "financials",   icon: DollarSign,     label: "Business Financials" },
-    { id: "owners",       icon: Users,          label: "All Owners"          },
+    { id: "owners",       icon: Users,          label: "All Owners",         badge: totalFlagged || null },
     { id: "inspections",  icon: ClipboardList,  label: "Inspections",        badge: inspections?.summary?.total_overdue || null },
   ];
 
@@ -587,56 +584,6 @@ export default function CPMDashboard() {
           })()}
 
           {/* ══════════════════════════════════════════
-              FLAGGED OWNERS
-          ══════════════════════════════════════════ */}
-          {!loading && !error && page === "flagged" && (
-            <div>
-              <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-                {["all", ...complexes.map((c) => c.name)].map((f) => (
-                  <button key={f} onClick={() => setComplexFilter(f)} style={{
-                    padding: "5px 14px", borderRadius: 20, border: `1px solid ${t.border}`, cursor: "pointer",
-                    background: complexFilter === f ? t.accent : t.surface, color: complexFilter === f ? "#fff" : t.muted,
-                    fontFamily: "inherit", fontSize: 12
-                  }}>
-                    {f === "all" ? "All complexes" : f}
-                  </button>
-                ))}
-              </div>
-              <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
-                <div style={{ padding: "13px 16px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
-                  {filteredFlagged.length} owners where bills exceed rent received — sorted worst first
-                </div>
-                <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                  <table style={{ width: "100%", minWidth: 480, borderCollapse: "collapse" }}>
-                    <thead>
-                      <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                        {["#","Unit","Owner","Complex","Rent","Bills","Shortfall"].map((h) => (
-                          <th key={h} style={{ padding: tp, textAlign: ["#","Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredFlagged.map((o, i) => (
-                        <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)" }}>
-                          <td style={{ padding: tp, color: t.muted }}>{i + 1}</td>
-                          <td style={{ padding: tp, color: t.muted, fontFamily: "monospace", whiteSpace: "nowrap" }}>{o.code}</td>
-                          <td style={{ padding: tp, fontWeight: 500 }}>{o.name}</td>
-                          <td style={{ padding: tp, color: t.muted, fontSize: 12, whiteSpace: "nowrap" }}>{o.complex}</td>
-                          <td style={{ padding: tp, textAlign: "right", color: o.rent === 0 ? t.danger : t.text, whiteSpace: "nowrap" }}>
-                            {o.rent === 0 ? "—" : `$${o.rent.toLocaleString()}`}
-                          </td>
-                          <td style={{ padding: tp, textAlign: "right", color: t.muted, whiteSpace: "nowrap" }}>${o.bills.toLocaleString()}</td>
-                          <td style={{ padding: tp, textAlign: "right", fontWeight: 700, color: t.danger, whiteSpace: "nowrap" }}>{fmt(o.net)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ══════════════════════════════════════════
               BY COMPLEX
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "complexes" && (
@@ -1020,41 +967,121 @@ export default function CPMDashboard() {
           {/* ══════════════════════════════════════════
               ALL OWNERS
           ══════════════════════════════════════════ */}
-          {!loading && !error && page === "owners" && (
-            <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
-              <div style={{ padding: "13px 16px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12 }}>
-                {allOwners.length} owners · {totalFlagged} flagged · sorted by complex
-              </div>
-              <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                <table style={{ width: "100%", minWidth: 480, borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
-                      {["Unit","Owner","Complex","Rent","Bills","Net"].map((h) => (
-                        <th key={h} style={{ padding: tp, textAlign: ["Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allOwners.map((o, i) => (
-                      <tr key={i} style={{
-                        borderTop: `1px solid ${t.border}`,
-                        background: o.net < 0
-                          ? (dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)")
-                          : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"))
-                      }}>
-                        <td style={{ padding: tp, color: t.muted, fontFamily: "monospace", fontSize: 12, whiteSpace: "nowrap" }}>{o.code}</td>
-                        <td style={{ padding: tp, fontWeight: o.net < 0 ? 600 : 400 }}>{o.name}</td>
-                        <td style={{ padding: tp, color: t.muted, fontSize: 12, whiteSpace: "nowrap" }}>{o.complex}</td>
-                        <td style={{ padding: tp, textAlign: "right", whiteSpace: "nowrap" }}>{o.rent === 0 ? <span style={{ color: t.danger }}>$0</span> : `$${o.rent.toLocaleString()}`}</td>
-                        <td style={{ padding: tp, textAlign: "right", color: t.muted, whiteSpace: "nowrap" }}>${o.bills.toLocaleString()}</td>
-                        <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: o.net < 0 ? t.danger : t.success, whiteSpace: "nowrap" }}>{fmt(o.net)}</td>
-                      </tr>
+          {!loading && !error && page === "owners" && (() => {
+            const q = ownerSearch.trim().toLowerCase();
+            const displayOwners = allOwners
+              .filter((o) => {
+                const matchComplex = complexFilter === "all" || o.complex === complexFilter;
+                const matchSearch  = !q || o.name.toLowerCase().includes(q) || o.code.toLowerCase().includes(q);
+                return matchComplex && matchSearch;
+              })
+              .sort((a, b) => ownerSort === "worst" ? a.net - b.net : 0);
+
+            const pillBtn = (value, label, active) => ({
+              padding: "5px 14px", borderRadius: 20, border: `1px solid ${active ? "#CC0000" : t.border}`,
+              cursor: "pointer", fontFamily: "inherit", fontSize: 12,
+              background: active ? "#CC0000" : "transparent",
+              color: active ? "#fff" : t.muted, fontWeight: active ? 600 : 400,
+              transition: "all 0.15s",
+            });
+
+            return (
+              <div style={{ display: "flex", flexDirection: "column", gap }}>
+
+                {/* ── Search + sort controls ── */}
+                <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                  <input
+                    type="text"
+                    placeholder="Search owner name or unit code…"
+                    value={ownerSearch}
+                    onChange={(e) => setOwnerSearch(e.target.value)}
+                    style={{
+                      flex: 1, minWidth: 200,
+                      background: dark ? "rgba(255,255,255,0.05)" : "#fff",
+                      border: `1px solid ${t.border}`, borderRadius: 8,
+                      padding: "8px 14px", fontSize: 13, color: t.text,
+                      fontFamily: "inherit", outline: "none",
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    {[["complex","By Complex"],["worst","Worst First"]].map(([val, label]) => (
+                      <button key={val} onClick={() => setOwnerSort(val)} style={pillBtn(val, label, ownerSort === val)}>
+                        {label}
+                      </button>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
+
+                {/* ── Complex filter pills ── */}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {["all", ...complexes.map((c) => c.name)].map((f) => (
+                    <button key={f} onClick={() => setComplexFilter(f)} style={{
+                      padding: "5px 14px", borderRadius: 20, border: `1px solid ${t.border}`,
+                      cursor: "pointer", fontFamily: "inherit", fontSize: 12,
+                      background: complexFilter === f ? t.accent : "transparent",
+                      color: complexFilter === f ? "#fff" : t.muted,
+                      transition: "all 0.15s",
+                    }}>
+                      {f === "all" ? "All complexes" : f}
+                    </button>
+                  ))}
+                </div>
+
+                {/* ── Table ── */}
+                <div style={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
+                  <div style={{ padding: "13px 16px", borderBottom: `1px solid ${t.border}`, color: t.muted, fontSize: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>
+                      {displayOwners.length} of {allOwners.length} owners
+                      {ownerSort === "worst" ? " · worst net first" : " · by complex"}
+                    </span>
+                    {totalFlagged > 0 && (
+                      <span style={{ background: "rgba(204,0,0,0.18)", color: t.danger, border: "1px solid rgba(204,0,0,0.3)", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>
+                        {totalFlagged} flagged
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+                    <table style={{ width: "100%", minWidth: 480, borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                          {["Unit","Owner","Complex","Rent","Bills","Net"].map((h) => (
+                            <th key={h} style={{ padding: tp, textAlign: ["Unit","Owner","Complex"].includes(h) ? "left" : "right", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {displayOwners.length === 0
+                          ? (
+                            <tr>
+                              <td colSpan={6} style={{ padding: "24px 16px", textAlign: "center", color: t.muted, fontSize: 13 }}>
+                                No owners match your search.
+                              </td>
+                            </tr>
+                          )
+                          : displayOwners.map((o, i) => (
+                              <tr key={o.code + i} style={{
+                                borderTop: `1px solid ${t.border}`,
+                                background: o.net < 0
+                                  ? (dark ? "rgba(248,81,73,0.04)" : "rgba(207,34,46,0.03)")
+                                  : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"))
+                              }}>
+                                <td style={{ padding: tp, color: t.muted, fontFamily: "monospace", fontSize: 12, whiteSpace: "nowrap" }}>{o.code}</td>
+                                <td style={{ padding: tp, fontWeight: o.net < 0 ? 600 : 400 }}>{o.name}</td>
+                                <td style={{ padding: tp, color: t.muted, fontSize: 12, whiteSpace: "nowrap" }}>{o.complex}</td>
+                                <td style={{ padding: tp, textAlign: "right", whiteSpace: "nowrap" }}>{o.rent === 0 ? <span style={{ color: t.danger }}>$0</span> : `$${o.rent.toLocaleString()}`}</td>
+                                <td style={{ padding: tp, textAlign: "right", color: t.muted, whiteSpace: "nowrap" }}>${o.bills.toLocaleString()}</td>
+                                <td style={{ padding: tp, textAlign: "right", fontWeight: 600, color: o.net < 0 ? t.danger : t.success, whiteSpace: "nowrap" }}>{fmt(o.net)}</td>
+                              </tr>
+                            ))
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ══════════════════════════════════════════
               INSPECTIONS
