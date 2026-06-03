@@ -460,11 +460,11 @@ export default function CPMDashboard() {
                             const outside = complexes.find(c => c.code === "99");
                             const renderRow = (c, i, divider) => {
                               const pct = c.rentChangePct;
-                              const changeEl = pct == null
-                                ? <span style={{ color: t.muted }}>—</span>
-                                : pct >= 0
+                              const changeEl = pct == null || pct === 0
+                                ? <span style={{ color: "#d29922", fontWeight: 600 }}>{pct === 0 ? "0.0%" : "—"}</span>
+                                : pct > 0
                                   ? <span style={{ color: "#4ade80", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
-                                  : <span style={{ color: "#f87171", fontWeight: 600 }}>↓ {Math.abs(pct).toFixed(1)}%</span>;
+                                  : <span style={{ color: "#CC0000", fontWeight: 600 }}>↓ {Math.abs(pct).toFixed(1)}%</span>;
                               return (
                                 <tr key={c.code} style={{
                                   borderTop: divider ? `2px solid ${t.border}` : `1px solid ${t.border}`,
