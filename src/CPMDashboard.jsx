@@ -4,7 +4,7 @@ import {
   Moon, Sun, RefreshCw, TrendingUp, DollarSign,
   BarChart3, Loader, ClipboardList
 } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, BarChart, Bar, Area, ComposedChart } from "recharts";
 
 const fmt = (n) => n < 0
   ? `-$${Math.abs(n).toLocaleString()}`
@@ -275,99 +275,164 @@ export default function CPMDashboard() {
           )}
 
           {/* ══════════════════════════════════════════
-              OVERVIEW
+              OVERVIEW  (redesigned)
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "overview" && (() => {
-            const f   = data?.financials ?? {};
-            const nwc = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0) - (f.credit_card_don ?? 0) - (f.credit_card_duncan ?? 0);
+            const f = data?.financials ?? {};
+
+            // NWC matches the Financial Position breakdown in Business Financials tab
+            const nwc = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) + (f.cpm_fees_mtd ?? 0) - (f.payables_total ?? 0);
             const nwcColor = nwc >= 0 ? t.success : t.danger;
+
             const totalUnits = complexes.reduce((s, c) => s + c.owners, 0);
             const weightedAvgRent = totalUnits > 0
               ? Math.round(complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalUnits)
               : 0;
-            const cardShadow = dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none";
-            const card = { background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, boxShadow: cardShadow };
-            const lbl  = { color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8, fontWeight: 500 };
-            const val  = { fontSize: valFz, fontWeight: 700, letterSpacing: "-0.5px", marginBottom: 8 };
+
+            // Bar sparkline data — last 6 months from rent_history
+            const sparkHistory = rentHistory.slice(-6);
+            const unitsSpark   = sparkHistory.map((d, i) => ({ i, v: d.units }));
+            const rentSpark    = sparkHistory.map((d, i) => ({ i, v: Math.round(d.avg_weekly_rent) }));
+
+            // Shared card shadow
+            const cShadow = dark
+              ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)"
+              : "none";
+            const cBase = { borderRadius: 16, boxShadow: cShadow };
+
+            // Portfolio chart data
+            const now         = new Date();
+            const curYr       = now.getFullYear();
+            const curMo       = now.getMonth();
+            const fyStartYear = curMo >= 6 ? curYr : curYr - 1;
+            const fyStartKey  = `${fyStartYear}-07`;
+            const MLABELS     = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+            const filteredHistory = rentHistory.filter((d) => {
+              if (trendFilter === "last12") {
+                const [y, m] = d.month.split("-").map(Number);
+                return ((curYr - y) * 12 + (curMo + 1 - m)) >= 0 &&
+                       ((curYr - y) * 12 + (curMo + 1 - m)) < 12;
+              }
+              if (trendFilter === "fy") return d.month >= fyStartKey;
+              return true;
+            });
+            const chartData = filteredHistory.map((d) => {
+              const [y, m] = d.month.split("-");
+              return { label: `${MLABELS[parseInt(m,10)-1]} ${y.slice(2)}`, units: d.units, rent: Math.round(d.avg_weekly_rent) };
+            });
+
+            // ── Inline bar sparkline ─────────────────────────────────────────
+            const MiniBar = ({ data: sd, color }) => (
+              <ResponsiveContainer width="100%" height={36}>
+                <BarChart data={sd} margin={{ top: 0, right: 0, left: 0, bottom: 0 }} barCategoryGap="18%">
+                  <Bar dataKey="v" radius={[2,2,0,0]}>
+                    {sd.map((_, idx) => (
+                      <Cell key={idx} fill={color} fillOpacity={idx === sd.length - 1 ? 0.95 : 0.35} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            );
 
             return (
-              <div>
-                {/* Row 1: 5 stat cards — 2-col on mobile */}
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5,1fr)", gap, marginBottom: gap }}>
+              <div style={{ display: "flex", flexDirection: "column", gap }}>
 
-                  <div style={{ ...card, borderTop: `3px solid ${t.success}`, padding: cp }}>
-                    <div style={lbl}>Cash in Bank</div>
-                    <div style={{ ...val, color: t.success }}>{fmt(Math.round(f.cash_balance ?? 0))}</div>
-                    <div style={{ color: t.muted, fontSize: 11 }}>Bank accounts</div>
+                {/* ── Row 1: Stat cards ─────────────────────────────────── */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1.5fr 1fr 1fr", gap }}>
+
+                  {/* Cash in Bank */}
+                  <div style={{ ...cBase, background: t.surface, border: `1px solid ${t.border}`, borderTop: `3px solid ${t.success}`, padding: "20px 22px" }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.8px", color: t.muted, margin: "0 0 8px" }}>Cash in Bank</p>
+                    <p style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700, letterSpacing: "-0.5px", color: t.success, margin: "0 0 4px" }}>{fmt(Math.round(f.cash_balance ?? 0))}</p>
+                    <p style={{ fontSize: 11, color: t.muted, margin: 0 }}>Bank accounts</p>
                   </div>
 
-                  <div style={{ ...card, border: dark ? "1px solid rgba(204,0,0,0.3)" : `1px solid ${t.border}`, boxShadow: dark ? "0 0 40px rgba(204,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.06)" : "none", padding: cp }}>
-                    <div style={lbl}>Net Working Capital</div>
-                    <div style={{ ...val, color: nwcColor }}>{fmt(Math.round(nwc))}</div>
-                    {!isMobile && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                        <div style={{ fontSize: 11, color: t.success }}>+ {fmt(Math.round(f.cash_balance ?? 0))} cash in bank</div>
-                        <div style={{ fontSize: 11, color: t.success }}>+ {fmt(Math.round(f.receivables_total ?? 0))} due to CPM</div>
-                        <div style={{ fontSize: 11, color: t.danger }}>− {fmt(Math.round(f.payables_total ?? 0))} bills to pay</div>
-                        <div style={{ fontSize: 11, color: t.danger }}>− {fmt(Math.round((f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0)))} credit cards</div>
+                  {/* Net Working Capital — hero card */}
+                  <div style={{
+                    ...cBase,
+                    position: "relative", overflow: "hidden",
+                    background: dark
+                      ? "linear-gradient(135deg, rgba(153,0,0,0.2) 0%, rgba(30,48,72,0.97) 55%, rgba(22,37,56,0.99) 100%)"
+                      : "#ffffff",
+                    border: dark ? "1px solid rgba(204,0,0,0.35)" : "1px solid #dde1e7",
+                    boxShadow: dark ? "0 0 52px rgba(204,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.07)" : "none",
+                    padding: "20px 22px",
+                  }}>
+                    {/* Ambient glow orb */}
+                    {dark && <div style={{ position: "absolute", right: -48, top: -48, width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(204,0,0,0.14) 0%, transparent 70%)", pointerEvents: "none" }} />}
+                    <div style={{ position: "relative" }}>
+                      <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.8px", color: t.muted, margin: "0 0 8px" }}>Net Working Capital</p>
+                      <p style={{ fontSize: isMobile ? 26 : 36, fontWeight: 700, letterSpacing: "-1px", color: nwcColor, margin: "0 0 12px" }}>{fmt(Math.round(nwc))}</p>
+                      {!isMobile && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          {[
+                            { label: "Cash in Bank",    val: f.cash_balance      ?? 0, sign:  1 },
+                            { label: "Due to CPM",      val: f.receivables_total ?? 0, sign:  1 },
+                            { label: "Fees Accrued MTD",val: f.cpm_fees_mtd      ?? 0, sign:  1 },
+                            { label: "Bills to Pay",    val: f.payables_total    ?? 0, sign: -1 },
+                          ].map(({ label, val, sign }) => (
+                            <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                              <span style={{ fontSize: 11, color: t.muted }}>{sign > 0 ? "+" : "−"} {label}</span>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: sign > 0 ? t.success : t.danger, fontVariantNumeric: "tabular-nums" }}>
+                                {fmt(Math.round(Math.abs(val)))}
+                              </span>
+                            </div>
+                          ))}
+                          <div style={{ borderTop: `1px solid ${t.border}`, marginTop: 4, paddingTop: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: 11, color: t.muted }}>= Net Working Capital</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: nwcColor, fontVariantNumeric: "tabular-nums" }}>{fmt(Math.round(nwc))}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Total Units + bar sparkline */}
+                  <div style={{ ...cBase, background: t.surface, border: `1px solid ${t.border}`, padding: "20px 22px", display: "flex", flexDirection: "column" }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.8px", color: t.muted, margin: "0 0 8px" }}>Total Units</p>
+                    <p style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700, letterSpacing: "-0.5px", color: t.text, margin: "0 0 4px" }}>{totalUnits}</p>
+                    <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>across {complexes.length} complexes</p>
+                    {unitsSpark.length > 0 && (
+                      <div style={{ flex: 1, minHeight: 36 }}>
+                        <MiniBar data={unitsSpark} color="#58a6ff" />
                       </div>
                     )}
                   </div>
 
-                  <div style={{ ...card, borderTop: `3px solid ${t.border}`, padding: cp }}>
-                    <div style={lbl}>Total Units</div>
-                    <div style={{ ...val, color: t.text }}>{totalUnits}</div>
-                    <div style={{ color: t.muted, fontSize: 11 }}>across {complexes.length} complexes</div>
-                  </div>
-
-                  <div style={{ ...card, borderTop: `3px solid ${t.border}`, padding: cp }}>
-                    <div style={lbl}>Avg Rent</div>
-                    <div style={{ ...val, color: t.text }}>${weightedAvgRent}/week</div>
-                    <div style={{ color: t.muted, fontSize: 11 }}>per unit per week</div>
-                  </div>
-
-                  {(() => {
-                    const od  = inspections?.summary?.total_overdue  ?? null;
-                    const ffl = inspections?.summary?.total_frequency_flags ?? 0;
-                    const color = od === null ? t.muted : od > 0 ? "#CC0000" : ffl > 0 ? t.warn : "#1a7f37";
-                    return (
-                      <div
-                        onClick={() => navigate("inspections")}
-                        style={{ ...card, borderTop: `3px solid ${color}`, padding: cp, cursor: "pointer" }}
-                      >
-                        <div style={lbl}>Inspections Overdue</div>
-                        <div style={{ ...val, color }}>
-                          {od === null ? "—" : od}
-                        </div>
-                        <div style={{ color: t.muted, fontSize: 11 }}>
-                          {od === null
-                            ? "no data yet"
-                            : od === 0 && ffl === 0
-                              ? "all clear ✓"
-                              : od === 0
-                                ? `${ffl} frequency flag${ffl !== 1 ? "s" : ""}`
-                                : `${od === 1 ? "property" : "properties"} overdue`}
-                        </div>
+                  {/* Portfolio Avg Rent + bar sparkline */}
+                  <div style={{ ...cBase, background: t.surface, border: `1px solid ${t.border}`, padding: "20px 22px", display: "flex", flexDirection: "column" }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.8px", color: t.muted, margin: "0 0 8px" }}>Portfolio Avg Rent</p>
+                    <p style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700, letterSpacing: "-0.5px", color: t.text, margin: "0 0 4px" }}>
+                      ${weightedAvgRent}<span style={{ fontSize: 13, fontWeight: 400, color: t.muted }}>/wk</span>
+                    </p>
+                    <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>weighted portfolio avg</p>
+                    {rentSpark.length > 0 && (
+                      <div style={{ flex: 1, minHeight: 36 }}>
+                        <MiniBar data={rentSpark} color="#CC0000" />
                       </div>
-                    );
-                  })()}
+                    )}
+                  </div>
                 </div>
 
-                {/* Middle: Complex table + Needs Attention — stacked on mobile */}
+                {/* ── Row 2: Complex table + Needs Attention ────────────── */}
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "3fr 2fr", gap }}>
 
                   {/* Complex performance table */}
-                  <div style={{ ...card, overflow: "hidden" }}>
-                    <div style={{ padding: "14px 16px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span>Complex Performance — {data?.month}</span>
-                      <span style={{ color: t.muted, fontWeight: 400, fontSize: 12 }}>{totalUnits} units</span>
+                  <div style={{ ...cBase, background: t.surface, border: `1px solid ${t.border}`, overflow: "hidden" }}>
+                    <div style={{ padding: "16px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <h3 style={{ fontSize: 14, fontWeight: 600, color: t.text, margin: 0 }}>Complex Performance</h3>
+                        <p style={{ fontSize: 11, color: t.muted, margin: "2px 0 0" }}>{data?.month}</p>
+                      </div>
+                      <span style={{ fontSize: 12, color: t.muted }}>{totalUnits} units</span>
                     </div>
                     <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                      <table style={{ width: "100%", minWidth: 320, borderCollapse: "collapse" }}>
+                      <table style={{ width: "100%", minWidth: 340, borderCollapse: "collapse" }}>
                         <thead>
-                          <tr style={{ color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                          <tr style={{ borderTop: `1px solid ${t.border}` }}>
                             {["Complex", "Units", "Avg Rent", "Rent Change"].map((h) => (
-                              <th key={h} style={{ padding: tp, textAlign: h === "Complex" ? "left" : "right", fontWeight: 500, whiteSpace: "nowrap" }}>{h}</th>
+                              <th key={h} style={{ padding: tp, textAlign: h === "Complex" ? "left" : "right", fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: t.muted, whiteSpace: "nowrap" }}>{h}</th>
                             ))}
                           </tr>
                         </thead>
@@ -380,16 +445,14 @@ export default function CPMDashboard() {
                               const changeEl = pct == null
                                 ? <span style={{ color: t.muted }}>—</span>
                                 : pct >= 0
-                                  ? <span style={{ color: "#1a7f37", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
-                                  : <span style={{ color: "#CC0000", fontWeight: 600 }}>↓ {pct.toFixed(1)}%</span>;
+                                  ? <span style={{ color: "#4ade80", fontWeight: 600 }}>↑ +{pct.toFixed(1)}%</span>
+                                  : <span style={{ color: "#f87171", fontWeight: 600 }}>↓ {Math.abs(pct).toFixed(1)}%</span>;
                               return (
                                 <tr key={c.code} style={{
                                   borderTop: divider ? `2px solid ${t.border}` : `1px solid ${t.border}`,
-                                  background: divider
-                                    ? (dark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)")
-                                    : (i % 2 === 0 ? "transparent" : (dark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.015)"))
+                                  background: divider ? (dark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)") : "transparent",
                                 }}>
-                                  <td style={{ padding: tp, fontWeight: 600, color: divider ? t.muted : t.text, whiteSpace: "nowrap" }}>{c.name}</td>
+                                  <td style={{ padding: tp, fontWeight: 500, color: divider ? t.muted : t.text, whiteSpace: "nowrap" }}>{c.name}</td>
                                   <td style={{ padding: tp, textAlign: "right", color: t.muted }}>{c.owners}</td>
                                   <td style={{ padding: tp, textAlign: "right", color: divider ? t.muted : t.text, whiteSpace: "nowrap" }}>${c.avgRent}/wk</td>
                                   <td style={{ padding: tp, textAlign: "right", whiteSpace: "nowrap" }}>{changeEl}</td>
@@ -407,28 +470,37 @@ export default function CPMDashboard() {
                   </div>
 
                   {/* Needs Attention panel */}
-                  <div style={{ ...card, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                    <div style={{ padding: "14px 16px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: 600, fontSize: 13 }}>
-                      <span>Needs Attention</span>
+                  <div style={{ ...cBase, background: t.surface, border: `1px solid ${t.border}`, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                    <div style={{ padding: "16px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <h3 style={{ fontSize: 14, fontWeight: 600, color: t.text, margin: 0 }}>Needs Attention</h3>
                       {totalFlagged > 0 && (
-                        <span style={{ background: "#CC0000", color: "#fff", borderRadius: 12, padding: "2px 9px", fontSize: 11, fontWeight: 700 }}>{totalFlagged}</span>
+                        <span style={{ background: "rgba(204,0,0,0.18)", color: "#f87171", border: "1px solid rgba(204,0,0,0.3)", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>
+                          {totalFlagged}
+                        </span>
                       )}
                     </div>
                     <div style={{ flex: 1 }}>
-                      {flaggedOwners.length === 0 && (
-                        <div style={{ padding: "20px 16px", color: t.muted, fontSize: 12 }}>No flagged owners this month.</div>
-                      )}
-                      {flaggedOwners.slice(0, 5).map((o, i) => (
-                        <div key={i} style={{ padding: `13px 16px`, borderTop: i > 0 ? `1px solid ${t.border}` : "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                          <div style={{ minWidth: 0 }}>
-                            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.name}</div>
-                            <div style={{ fontFamily: "monospace", fontSize: 11, color: t.muted }}>{o.code} · {o.complex}</div>
-                          </div>
-                          <div style={{ color: "#CC0000", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>{fmt(Math.round(o.net))}</div>
-                        </div>
-                      ))}
+                      {flaggedOwners.length === 0
+                        ? <div style={{ padding: "24px 20px", color: t.muted, fontSize: 12, textAlign: "center" }}>No flagged owners this month ✓</div>
+                        : flaggedOwners.slice(0, 5).map((o, i) => (
+                            <div key={i} style={{
+                              padding: "12px 20px",
+                              borderBottom: i < Math.min(flaggedOwners.length, 5) - 1 ? `1px solid ${t.border}` : "none",
+                              borderLeft: "3px solid rgba(204,0,0,0.4)",
+                              display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12,
+                            }}>
+                              <div style={{ minWidth: 0, flex: 1 }}>
+                                <p style={{ fontSize: 13, fontWeight: 600, color: t.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.name}</p>
+                                <p style={{ fontSize: 11, color: t.muted, margin: "3px 0 0" }}>
+                                  <span style={{ color: "#CC0000", fontWeight: 500 }}>{o.code}</span> · {o.complex}
+                                </p>
+                              </div>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "#f87171", flexShrink: 0 }}>{fmt(Math.round(o.net))}</span>
+                            </div>
+                          ))
+                      }
                     </div>
-                    <div style={{ padding: "12px 16px", borderTop: `1px solid ${t.border}` }}>
+                    <div style={{ padding: "12px 20px", borderTop: `1px solid ${t.border}` }}>
                       <button onClick={() => navigate("flagged")} style={{ background: "transparent", border: "none", color: "#CC0000", cursor: "pointer", fontSize: 12, fontFamily: "inherit", fontWeight: 600, padding: 0 }}>
                         View all {flaggedOwners.length} flagged →
                       </button>
@@ -436,74 +508,58 @@ export default function CPMDashboard() {
                   </div>
                 </div>
 
-                {/* Portfolio Trend chart */}
-                {rentHistory.length > 0 && (() => {
-                  const now   = new Date();
-                  const curYr = now.getFullYear();
-                  const curMo = now.getMonth(); // 0-indexed
-
-                  // Financial year runs Jul–Jun; find the start of the current FY
-                  const fyStartYear = curMo >= 6 ? curYr : curYr - 1;
-                  const fyStartKey  = `${fyStartYear}-07`;
-
-                  const filtered = rentHistory.filter((d) => {
-                    if (trendFilter === "last12") {
-                      const [y, m] = d.month.split("-").map(Number);
-                      const diffMonths = (curYr - y) * 12 + (curMo + 1 - m);
-                      return diffMonths >= 0 && diffMonths < 12;
-                    }
-                    if (trendFilter === "fy") return d.month >= fyStartKey;
-                    return true; // "all"
-                  });
-
-                  const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-                  const chartData = filtered.map((d) => {
-                    const [y, m] = d.month.split("-");
-                    return {
-                      label: `${MONTH_LABELS[parseInt(m, 10) - 1]} ${y.slice(2)}`,
-                      units: d.units,
-                      rent:  Math.round(d.avg_weekly_rent),
-                    };
-                  });
-
-                  const btnStyle = (active) => ({
-                    padding: "5px 14px", borderRadius: 20, border: `1px solid ${t.border}`,
-                    cursor: "pointer", fontFamily: "inherit", fontSize: 12,
-                    background: active ? "#CC0000" : t.surface,
-                    color:      active ? "#fff"    : t.muted,
-                  });
-
-                  return (
-                    <div style={{ ...card, marginTop: gap, padding: 0, overflow: "hidden" }}>
-                      <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                        <span style={{ fontWeight: 600, fontSize: 13 }}>Portfolio Trend</span>
-                        <div style={{ display: "flex", gap: 6 }}>
-                          {[["last12","Last 12 Months"],["fy","This Financial Year"],["all","All Time"]].map(([key, label]) => (
-                            <button key={key} onClick={() => setTrendFilter(key)} style={btnStyle(trendFilter === key)}>{label}</button>
-                          ))}
-                        </div>
-                      </div>
-                      <div style={{ padding: "20px 8px 12px 0" }}>
-                        <ResponsiveContainer width="100%" height={260}>
-                          <LineChart data={chartData} margin={{ top: 4, right: 32, left: 8, bottom: 4 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke={dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)"} vertical={false} />
-                            <XAxis dataKey="label" tick={{ fontSize: 11, fill: t.muted }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
-                            <YAxis yAxisId="units" orientation="left"  tick={{ fontSize: 11, fill: "#58a6ff" }} tickLine={false} axisLine={false} width={38} />
-                            <YAxis yAxisId="rent"  orientation="right" tick={{ fontSize: 11, fill: "#CC0000"  }} tickLine={false} axisLine={false} width={48} tickFormatter={(v) => `$${v}`} />
-                            <Tooltip
-                              contentStyle={{ background: t.surface, border: `1px solid ${t.border}`, borderRadius: 6, fontSize: 12 }}
-                              labelStyle={{ color: t.text, fontWeight: 600, marginBottom: 4 }}
-                              formatter={(value, name) => name === "Units" ? [value, "Units in Pool"] : [`$${value}/wk`, "Avg Weekly Rent"]}
-                            />
-                            <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                            <Line yAxisId="units" type="monotone" dataKey="units" name="Units" stroke="#58a6ff" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-                            <Line yAxisId="rent"  type="monotone" dataKey="rent"  name="Avg Rent" stroke="#CC0000" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-                          </LineChart>
-                        </ResponsiveContainer>
+                {/* ── Row 3: Portfolio Trend chart ──────────────────────── */}
+                {rentHistory.length > 0 && (
+                  <div style={{ ...cBase, background: t.surface, border: `1px solid ${t.border}`, overflow: "hidden" }}>
+                    <div style={{ padding: "16px 20px", borderBottom: `1px solid ${t.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                      <h3 style={{ fontSize: 14, fontWeight: 600, color: t.text, margin: 0 }}>Portfolio Trend</h3>
+                      <div style={{ display: "flex", gap: 6 }}>
+                        {[["all","All Time"],["fy","This Financial Year"],["last12","Last 12 Months"]].map(([key, label]) => (
+                          <button key={key} onClick={() => setTrendFilter(key)} style={{
+                            padding: "5px 12px", borderRadius: 20,
+                            border: `1px solid ${trendFilter === key ? "#CC0000" : t.border}`,
+                            cursor: "pointer", fontFamily: "inherit", fontSize: 11,
+                            background: trendFilter === key ? "#CC0000" : "transparent",
+                            color:      trendFilter === key ? "#fff"    : t.muted,
+                            fontWeight: trendFilter === key ? 600 : 400,
+                            transition: "all 0.15s",
+                          }}>{label}</button>
+                        ))}
                       </div>
                     </div>
-                  );
-                })()}
+                    <div style={{ padding: "16px 0 8px 0" }}>
+                      <ResponsiveContainer width="100%" height={260}>
+                        <ComposedChart data={chartData} margin={{ top: 10, right: 40, left: 8, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="unitsAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%"   stopColor="#58a6ff" stopOpacity={0.18} />
+                              <stop offset="100%" stopColor="#58a6ff" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke={dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)"} vertical={false} />
+                          <XAxis dataKey="label" tick={{ fontSize: 11, fill: t.muted }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                          <YAxis yAxisId="left"  orientation="left"  tick={{ fontSize: 11, fill: "#58a6ff" }} tickLine={false} axisLine={false} width={38} />
+                          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: "#CC0000" }} tickLine={false} axisLine={false} width={52} tickFormatter={(v) => `$${v}`} />
+                          <Tooltip
+                            contentStyle={{ background: dark ? "#111d32" : "#fff", border: `1px solid ${t.border}`, borderRadius: 10, fontSize: 12, color: t.text }}
+                            labelStyle={{ color: t.muted, marginBottom: 4 }}
+                            formatter={(value, name) => name === "Units" ? [value, "Units in Pool"] : [`$${value}/wk`, "Avg Weekly Rent"]}
+                          />
+                          <Area yAxisId="left"  type="monotone" dataKey="units" name="Units"    stroke="#58a6ff" strokeWidth={2} fill="url(#unitsAreaGrad)" dot={false} activeDot={{ r: 4 }} />
+                          <Line yAxisId="right" type="monotone" dataKey="rent"  name="Avg Rent" stroke="#CC0000" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                        </ComposedChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div style={{ padding: "0 20px 16px", display: "flex", justifyContent: "center", gap: 24 }}>
+                      {[["#58a6ff","Units in Pool"],["#CC0000","Avg Weekly Rent"]].map(([color, label]) => (
+                        <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div style={{ width: 10, height: 10, borderRadius: "50%", background: color }} />
+                          <span style={{ fontSize: 11, color: t.muted }}>{label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
               </div>
             );
