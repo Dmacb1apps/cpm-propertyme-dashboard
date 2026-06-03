@@ -4,7 +4,7 @@ import {
   Moon, Sun, RefreshCw, TrendingUp, DollarSign,
   BarChart3, Loader, ClipboardList
 } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, BarChart, Bar, Area, ComposedChart } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, BarChart, Bar, Area, ComposedChart, LabelList } from "recharts";
 
 const fmt = (n) => n < 0
   ? `-$${Math.abs(n).toLocaleString()}`
@@ -640,7 +640,55 @@ export default function CPMDashboard() {
               BY COMPLEX
           ══════════════════════════════════════════ */}
           {!loading && !error && page === "complexes" && (
-            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap }}>
+            <div style={{ display: "flex", flexDirection: "column", gap }}>
+
+              {/* ── Avg Rent horizontal bar chart ── */}
+              {complexes.length > 0 && (() => {
+                const chartData = [...complexes]
+                  .sort((a, b) => b.avgRent - a.avgRent)
+                  .map(c => ({ name: c.name, avgRent: c.avgRent }));
+                const chartHeight = complexes.length * 44;
+                return (
+                  <div style={{
+                    background: t.surface, border: `1px solid ${t.border}`, borderRadius: 14, overflow: "hidden",
+                    boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none",
+                  }}>
+                    <div style={{ padding: "14px 20px", borderBottom: `1px solid ${t.border}`, fontWeight: 600, fontSize: 13, color: t.text }}>
+                      Avg Rent by Complex
+                    </div>
+                    <div style={{ padding: "16px 0 12px 0" }}>
+                      <ResponsiveContainer width="100%" height={chartHeight}>
+                        <BarChart
+                          data={chartData}
+                          layout="vertical"
+                          margin={{ top: 0, right: 72, left: 0, bottom: 0 }}
+                        >
+                          <XAxis type="number" hide />
+                          <YAxis
+                            type="category"
+                            dataKey="name"
+                            width={isMobile ? 120 : 170}
+                            tick={{ fontSize: isMobile ? 10 : 12, fill: t.muted }}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+                          <Bar dataKey="avgRent" fill="#CC0000" radius={[0, 4, 4, 0]} maxBarSize={20}>
+                            <LabelList
+                              dataKey="avgRent"
+                              position="right"
+                              formatter={(v) => `$${v}/wk`}
+                              style={{ fontSize: 11, fill: t.muted, fontWeight: 600 }}
+                            />
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* ── Existing complex cards grid (unchanged) ── */}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap }}>
               {complexes.map((c) => {
                 const pct = c.owners > 0 ? Math.round(c.flagged / c.owners * 100) : 0;
                 const net = c.totalRent - c.totalBills;
@@ -685,6 +733,8 @@ export default function CPMDashboard() {
                   </div>
                 );
               })}
+              </div>
+
             </div>
           )}
 
