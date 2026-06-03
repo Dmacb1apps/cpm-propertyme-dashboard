@@ -33,7 +33,7 @@ HEADLESS         = os.environ.get("CI") == "true"
 
 def this_month_range():
     today = date.today()
-    start = today.replace(day=1)
+    start = today.replace(day=2)
     display = start.strftime("%d/%m/%Y"), today.strftime("%d/%m/%Y")
     iso_today = today.strftime("%Y-%m-%d")
     return display[0], display[1], iso_today

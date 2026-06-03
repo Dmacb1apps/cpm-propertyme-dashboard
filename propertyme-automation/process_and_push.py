@@ -35,6 +35,18 @@ load_dotenv(Path(__file__).parent / ".env")
 # Config
 # ---------------------------------------------------------------------------
 
+# Known early payers — invoices technically due next month
+# but reliably paid within the current month.
+# Edit or remove entries here if payment behaviour changes.
+KNOWN_EARLY_PAYERS = [
+    {
+        "contact": "Body Corporate for Everton Breeze CTS 52780",
+        "due_day_next_month": 4,
+        "typical_payment_day": 28,
+        "note": "Consistently pays on 28th of current month despite due date of 4th following month. Pattern confirmed over 4 years."
+    }
+]
+
 COMPLEX_MAP = {
     "01": "Everton Ridge",
     "02": "Upper West Arana Hills",
@@ -223,6 +235,77 @@ def parse_folio_ledger(pdf_path):
         d["flagged"]       = d["bills"] > d["rent_received"]
         result.append(d)
     return result
+
+
+# ---------------------------------------------------------------------------
+# CPM supplier folio fee extractor
+# ---------------------------------------------------------------------------
+
+def extract_cpm_fees(pdf_path):
+    """
+    Finds the "Consolidated Property Management Qld Pty Ltd (SUP00001)" entry
+    within the Supplier folios section of the folio ledger PDF and returns the
+    net fees received into CPM's account this period.
+
+    Only "Receipt (EFT)" lines represent new money in (letting fees, break lease
+    fees, etc. paid into the trust after the monthly disbursement). "Payment"
+    lines are the accumulated fees disbursed from owner folios to CPM — they
+    belong to the prior period and are not counted here.
+
+    Reversal lines cancel a preceding receipt (e.g. a corrected break lease fee)
+    and are subtracted so the net is correct.
+    """
+    CPM_SUPPLIER = "Consolidated Property Management Qld Pty Ltd"
+
+    in_supplier_section = False
+    in_cpm_section = False
+    total = 0.0
+
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            text = page.extract_text()
+            if not text:
+                continue
+
+            for line in text.split("\n"):
+                line = line.strip()
+                if not line:
+                    continue
+
+                if re.search(r"^Supplier folios", line, re.IGNORECASE):
+                    in_supplier_section = True
+                    in_cpm_section = False
+                    continue
+
+                if not in_supplier_section:
+                    continue
+
+                if CPM_SUPPLIER in line and re.search(r"\(SUP\d+\)", line):
+                    in_cpm_section = True
+                    continue
+
+                if not in_cpm_section:
+                    continue
+
+                if re.search(r"\(SUP\d+\)", line) and CPM_SUPPLIER not in line:
+                    in_cpm_section = False
+                    in_supplier_section = False
+                    break
+
+                if "Closing Balance" in line:
+                    in_cpm_section = False
+                    continue
+
+                amounts = re.findall(r"\$([\d,]+\.\d{2})", line)
+                if not amounts:
+                    continue
+
+                if "Receipt (EFT)" in line:
+                    total += float(amounts[0].replace(",", ""))
+                elif re.match(r"^\d+\s+\d{1,2}/\d{2}/\d{4}\s+Reversal", line):
+                    total -= float(amounts[0].replace(",", ""))
+
+    return round(total, 2)
 
 
 # ---------------------------------------------------------------------------
@@ -624,6 +707,49 @@ def fetch_xero_data():
                 payables.append(row)
             elif inv.get("Type") == "ACCREC" and inv.get("Status") != "PAID":
                 receivables.append(row)
+
+    # Early payer exception — only runs from the 25th onward
+    # To test locally, temporarily replace `today.day >= 25` with `True`; revert before pushing.
+    if today.day >= 25:
+        import calendar as _cal
+        next_month_first = (today.replace(day=1) + _dt.timedelta(days=32)).replace(day=1)
+        next_month_7     = next_month_first.replace(day=7)
+        ep_start_str     = next_month_first.strftime("%Y-%m-%d")
+        ep_end_str       = next_month_7.strftime("%Y-%m-%d")
+
+        ep_resp = requests.get(
+            "https://api.xero.com/api.xro/2.0/Invoices",
+            headers=headers,
+            params={"Statuses": "AUTHORISED", "DueDateFrom": ep_start_str, "DueDateTo": ep_end_str},
+        )
+        if ep_resp.ok:
+            for inv in ep_resp.json().get("Invoices", []):
+                if inv.get("Type") != "ACCREC" or inv.get("Status") == "PAID":
+                    continue
+                contact_name = inv.get("Contact", {}).get("Name", "")
+                matched_ep = next(
+                    (ep for ep in KNOWN_EARLY_PAYERS if ep["contact"].lower() in contact_name.lower() or contact_name.lower() in ep["contact"].lower()),
+                    None,
+                )
+                if not matched_ep:
+                    continue
+                amount_due = float(inv.get("AmountDue", 0))
+                due_date_raw = inv.get("DueDate", "")
+                ep_m = _re.search(r"/Date\((\d+)[+-]\d+\)/", due_date_raw)
+                if ep_m:
+                    due_date = _dt.datetime.utcfromtimestamp(int(ep_m.group(1)) / 1000).strftime("%Y-%m-%d")
+                elif due_date_raw and due_date_raw[0].isdigit():
+                    due_date = due_date_raw[:10]
+                else:
+                    continue
+                row = {
+                    "contact_name": contact_name,
+                    "amount_due":   round(amount_due, 2),
+                    "due_date":     due_date,
+                    "early_pay":    True,
+                }
+                receivables.append(row)
+                print(f"Early payer match: {contact_name} — ${amount_due:,.2f} included in working capital")
 
     payables.sort(key=lambda x: x["due_date"])
     receivables.sort(key=lambda x: x["due_date"])
@@ -1047,6 +1173,10 @@ def main():
     flagged    = [o for o in owner_data if o["flagged"]]
     print(f"  {len(owner_data)} owners, {len(flagged)} flagged\n")
 
+    print("Extracting CPM fees from supplier folios...")
+    cpm_fees_mtd = extract_cpm_fees(pdf_path)
+    print(f"  CPM fees accrued MTD: ${cpm_fees_mtd:.2f}\n")
+
     print("Running inspection analysis...")
     _EMPTY_INSPECTIONS = {
         "overdue": [], "scheduled": [], "frequency_flags": [],
@@ -1077,6 +1207,15 @@ def main():
     if financials:
         print(f"  Net profit: ${financials['net_profit']:,.2f}")
         print(f"  Cash balance: ${financials['cash_balance']:,.2f}")
+        financials["cpm_fees_mtd"] = cpm_fees_mtd
+        financials["working_capital"] = round(
+            financials["cash_balance"]
+            + financials["invoices_due_this_month"]
+            + cpm_fees_mtd
+            - financials["payables_total"],
+            2,
+        )
+        print(f"  Working capital (incl. fees MTD): ${financials['working_capital']:,.2f}")
     print()
 
     print("Saving dashboard_data.json...")

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-02T22:58:42+00:00",
+  "updated": "2026-06-03T11:47:06+00:00",
   "month": "June 2026",
   "complexes": [
     {
@@ -3332,15 +3332,15 @@
     }
   ],
   "financials": {
-    "cash_balance": 10964.66,
-    "total_income": 5035.22,
-    "total_expenses": 17809.13,
-    "net_profit": -12871.39,
+    "cash_balance": 7292.89,
+    "total_income": 7556.1,
+    "total_expenses": 35816.68,
+    "net_profit": -28358.06,
     "management_fees": 7421.58,
     "wages": 0.0,
     "wages_employee": 0.0,
     "wages_management": 0.0,
-    "loan_interest": 8961.53,
+    "loan_interest": 27214.08,
     "credit_card_don": 5054.97,
     "credit_card_duncan": 4953.24,
     "payables_total": 8387.4,
@@ -3414,7 +3414,9 @@
       }
     ],
     "invoices_due_this_month": 39099.69,
-    "invoices_due_count": 7
+    "invoices_due_count": 7,
+    "cpm_fees_mtd": 72.86,
+    "working_capital": 38078.04
   },
   "inspections": {
     "overdue": [],
@@ -3424,7 +3426,7 @@
         "property": "11.13 13/114 Bunya Road, Everton Hills",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-05-30",
-        "days_overdue": 3,
+        "days_overdue": 4,
         "booked_date": "2026-06-09"
       },
       {
@@ -3432,7 +3434,7 @@
         "property": "15.15 15 / 47 Abbeywood Street, Taigum Q 4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-05-19",
-        "days_overdue": 14,
+        "days_overdue": 15,
         "booked_date": "2026-06-17"
       }
     ],
@@ -3441,9 +3443,9 @@
         "unit_code": "11.03",
         "property": "11.03 03 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 12.3,
+        "tenancy_months": 12.4,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 98,
+        "days_since_last_routine": 99,
         "flag": "LOW COUNT"
       }
     ],

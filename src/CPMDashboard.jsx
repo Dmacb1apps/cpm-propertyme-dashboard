@@ -626,7 +626,7 @@ export default function CPMDashboard() {
               ...(wageOther > 0 ? [{ label: "Other Wages",   value: wageOther, color: "#8b949e" }] : []),
             ];
             const totalWages  = wageEmp + wageMgmt + wageOther;   // super excluded
-            const netPosition = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) - (f.payables_total ?? 0) - (f.credit_card_don ?? 0) - (f.credit_card_duncan ?? 0);
+            const netPosition = (f.cash_balance ?? 0) + (f.receivables_total ?? 0) + (f.cpm_fees_mtd ?? 0) - (f.payables_total ?? 0);
 
             return (
               <div>
@@ -752,10 +752,10 @@ export default function CPMDashboard() {
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                       <tbody>
                         {[
-                          { label: "Cash in Bank",          value: f.cash_balance      ?? 0,                                                sign: 1  },
-                          { label: "Due to CPM (incoming)", value: f.receivables_total ?? 0,                                                sign: 1  },
-                          { label: "Bills to Pay",          value: f.payables_total    ?? 0,                                                sign: -1 },
-                          { label: "Credit Cards",          value: (f.credit_card_don ?? 0) + (f.credit_card_duncan ?? 0),                  sign: -1 },
+                          { label: "Cash in Bank",        value: f.cash_balance      ?? 0, sign: 1  },
+                          { label: "Due to CPM (invoiced)", value: f.receivables_total ?? 0, sign: 1  },
+                          { label: "Fees accrued MTD",    value: f.cpm_fees_mtd      ?? 0, sign: 1  },
+                          { label: "Bills to Pay",        value: f.payables_total    ?? 0, sign: -1 },
                         ].map(({ label, value, sign }) => (
                           <tr key={label} style={{ borderTop: `1px solid ${t.border}` }}>
                             <td style={{ padding: tp, color: t.muted, fontSize: 13 }}>{label}</td>
@@ -765,9 +765,14 @@ export default function CPMDashboard() {
                           </tr>
                         ))}
                         <tr style={{ borderTop: `2px solid ${t.border}`, background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)" }}>
-                          <td style={{ padding: tp, fontWeight: 700, fontSize: 13 }}>Net Working Capital</td>
+                          <td style={{ padding: tp, fontWeight: 700, fontSize: 13, color: "#1e2a3a" }}>Net Working Capital</td>
                           <td style={{ padding: tp, textAlign: "right", fontWeight: 700, fontSize: 16, color: netPosition >= 0 ? t.success : "#C00000", whiteSpace: "nowrap" }}>
                             = {fmt(Math.round(netPosition))}
+                          </td>
+                        </tr>
+                        <tr style={{ borderTop: `1px solid ${t.border}` }}>
+                          <td colSpan={2} style={{ padding: `6px ${tp.split(" ")[1] ?? "11px"}`, fontSize: 11, color: t.muted, fontStyle: "italic" }}>
+                            Fees accrued MTD are PropertyMe fees transferred to Xero at month end
                           </td>
                         </tr>
                         <tr style={{ borderTop: `1px solid ${t.border}` }}>
@@ -813,7 +818,12 @@ export default function CPMDashboard() {
                                   const od = inv.due_date < new Date().toISOString().slice(0, 10);
                                   return (
                                     <tr key={i} style={{ borderTop: `1px solid ${t.border}`, background: od ? (dark ? "rgba(192,0,0,0.06)" : "rgba(192,0,0,0.04)") : "transparent" }}>
-                                      <td style={{ padding: tp, color: od ? "#C00000" : t.text, fontWeight: od ? 600 : 400 }}>{inv.contact_name}</td>
+                                      <td style={{ padding: tp, color: od ? "#C00000" : t.text, fontWeight: od ? 600 : 400 }}>
+                                        {inv.contact_name}
+                                        {inv.early_pay && (
+                                          <span style={{ marginLeft: 6, fontSize: 10, color: t.muted, fontWeight: 400, fontStyle: "italic" }}>early pay</span>
+                                        )}
+                                      </td>
                                       <td style={{ padding: tp, textAlign: "right", whiteSpace: "nowrap" }}>{fmt(inv.amount_due)}</td>
                                       <td style={{ padding: tp, textAlign: "right", color: od ? "#C00000" : t.muted, fontWeight: od ? 600 : 400, whiteSpace: "nowrap" }}>{inv.due_date}</td>
                                     </tr>
