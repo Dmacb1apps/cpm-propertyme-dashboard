@@ -4,7 +4,7 @@ import {
   Moon, Sun, RefreshCw, DollarSign,
   Loader, ClipboardList
 } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, BarChart, Bar, Area, ComposedChart, LabelList } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, BarChart, Bar, Area, AreaChart, ComposedChart, LabelList } from "recharts";
 
 const fmt = (n) => n < 0
   ? `-$${Math.abs(n).toLocaleString()}`
@@ -286,10 +286,8 @@ export default function CPMDashboard() {
               ? Math.round(complexes.reduce((s, c) => s + c.avgRent * c.owners, 0) / totalUnits)
               : 0;
 
-            // Bar sparkline data — last 6 months from rent_history
+            // Sparkline source — last 6 months from rent_history
             const sparkHistory = rentHistory.slice(-6);
-            const unitsSpark   = sparkHistory.map((d, i) => ({ i, v: d.units }));
-            const rentSpark    = sparkHistory.map((d, i) => ({ i, v: Math.round(d.avg_weekly_rent) }));
 
             // Month-on-month change indicators — computed from last two rent_history entries
             const hasTwo = rentHistory.length >= 2;
@@ -324,18 +322,6 @@ export default function CPMDashboard() {
               return { label: `${MLABELS[parseInt(m,10)-1]} ${y.slice(2)}`, units: d.units, rent: Math.round(d.avg_weekly_rent) };
             });
 
-            // ── Inline bar sparkline ─────────────────────────────────────────
-            const MiniBar = ({ data: sd, color }) => (
-              <ResponsiveContainer width="100%" height={36}>
-                <BarChart data={sd} margin={{ top: 0, right: 0, left: 0, bottom: 0 }} barCategoryGap="18%">
-                  <Bar dataKey="v" radius={[2,2,0,0]}>
-                    {sd.map((_, idx) => (
-                      <Cell key={idx} fill={color} fillOpacity={idx === sd.length - 1 ? 0.95 : 0.35} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            );
 
             return (
               <div style={{ display: "flex", flexDirection: "column", gap }}>
@@ -403,11 +389,32 @@ export default function CPMDashboard() {
                     {hasTwo && unitsDiff === 0 && (
                       <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>no change from last month</p>
                     )}
-                    {unitsSpark.length > 0 && (
-                      <div style={{ flex: 1, minHeight: 36 }}>
-                        <MiniBar data={unitsSpark} color="#58a6ff" />
-                      </div>
-                    )}
+                    {sparkHistory.length > 1 && (() => {
+                      const uData   = sparkHistory.map((d, i) => ({ i, v: d.units }));
+                      const uVals   = uData.map(d => d.v);
+                      const uMin    = Math.min(...uVals);
+                      const uMax    = Math.max(...uVals);
+                      const uBuf    = Math.max(Math.ceil((uMax - uMin) * 0.4), 1);
+                      return (
+                        <div style={{ flex: 1, minHeight: 44 }}>
+                          <ResponsiveContainer width="100%" height={44}>
+                            <AreaChart data={uData} margin={{ top: 4, right: 2, left: 2, bottom: 0 }}>
+                              <YAxis domain={[uMin - uBuf, uMax + uBuf]} hide />
+                              <Area
+                                type="monotone"
+                                dataKey="v"
+                                stroke="#378ADD"
+                                strokeWidth={2}
+                                fill="#378ADD22"
+                                dot={{ r: 3, fill: "#378ADD", strokeWidth: 0 }}
+                                activeDot={false}
+                                isAnimationActive={false}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Portfolio Avg Rent + bar sparkline */}
@@ -425,11 +432,27 @@ export default function CPMDashboard() {
                     {hasTwo && rentDiff === 0 && (
                       <p style={{ fontSize: 11, color: t.muted, margin: "0 0 10px" }}>no change from last month</p>
                     )}
-                    {rentSpark.length > 0 && (
-                      <div style={{ flex: 1, minHeight: 36 }}>
-                        <MiniBar data={rentSpark} color="#CC0000" />
-                      </div>
-                    )}
+                    {sparkHistory.length > 1 && (() => {
+                      const deltaData = sparkHistory.slice(1).map((d, i) => ({
+                        i,
+                        delta: d.avg_weekly_rent - sparkHistory[i].avg_weekly_rent,
+                      }));
+                      const maxD = Math.max(...deltaData.map(d => Math.abs(d.delta)), 0.5);
+                      return (
+                        <div style={{ flex: 1, minHeight: 44 }}>
+                          <ResponsiveContainer width="100%" height={44}>
+                            <BarChart data={deltaData} margin={{ top: 4, right: 2, left: 2, bottom: 0 }} barCategoryGap="25%">
+                              <YAxis domain={[-maxD, maxD]} hide />
+                              <Bar dataKey="delta" isAnimationActive={false} radius={[2,2,0,0]}>
+                                {deltaData.map((d, idx) => (
+                                  <Cell key={idx} fill={d.delta > 0 ? "#4ade80" : d.delta < 0 ? "#CC0000" : "#d29922"} />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
 
