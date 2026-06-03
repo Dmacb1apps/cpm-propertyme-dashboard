@@ -767,16 +767,24 @@ export default function CPMDashboard() {
 
             return (
               <div>
-                {/* Row 1: 3 stat cards — single col on mobile */}
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap, marginBottom: gap }}>
+                {/* Row 1: stat cards — Net Profit MTD hero (2fr), Cash Balance + Bills to Pay (1fr each) */}
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr 1fr", gap, marginBottom: gap }}>
                   {[
+                    { label: "Net Profit MTD", value: f.net_profit     ?? 0, color: netColor,  sub: `Income ${fmt(Math.round(f.total_income ?? 0))} · Exp ${fmt(Math.round(f.total_expenses ?? 0))}`, hero: true },
                     { label: "Cash Balance",   value: f.cash_balance   ?? 0, color: "#1a7f37", sub: "Bank accounts" },
-                    { label: "Net Profit MTD", value: f.net_profit     ?? 0, color: netColor,  sub: `Income ${fmt(Math.round(f.total_income ?? 0))} · Exp ${fmt(Math.round(f.total_expenses ?? 0))}` },
                     { label: "Bills to Pay",   value: f.payables_total ?? 0, color: "#C00000", sub: `${f.payables_count ?? 0} invoices · ${fmt(Math.round(f.payables_overdue ?? 0))} overdue` },
                   ].map((s) => (
-                    <div key={s.label} style={{ background: t.surface, borderTop: `3px solid ${s.color}`, border: `1px solid ${t.border}`, borderRadius: 14, padding: cp, boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none" }}>
+                    <div key={s.label} style={{
+                      background: s.hero && dark
+                        ? `linear-gradient(160deg, ${(f.net_profit ?? 0) >= 0 ? "rgba(26,127,55,0.08)" : "rgba(192,0,0,0.08)"} 0%, transparent 70%), linear-gradient(160deg, #1e3048 0%, #162538 100%)`
+                        : t.surface,
+                      borderTop: `${s.hero ? 4 : 3}px solid ${s.color}`,
+                      border: `1px solid ${t.border}`,
+                      borderRadius: 14, padding: cp,
+                      boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,0.07), 0 4px 24px rgba(0,0,0,0.3)" : "none",
+                    }}>
                       <div style={{ color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 8 }}>{s.label}</div>
-                      <div style={{ fontSize: isMobile ? 24 : 26, fontWeight: 700, color: s.color, letterSpacing: "-0.5px", marginBottom: 6 }}>{fmt(Math.round(s.value))}</div>
+                      <div style={{ fontSize: s.hero ? (isMobile ? 28 : 34) : (isMobile ? 24 : 26), fontWeight: 700, color: s.color, letterSpacing: "-0.5px", marginBottom: 6 }}>{fmt(Math.round(s.value))}</div>
                       <div style={{ color: t.muted, fontSize: 11 }}>{s.sub}</div>
                     </div>
                   ))}
@@ -856,25 +864,52 @@ export default function CPMDashboard() {
                   <div style={panel}>
                     <div style={panelHead}>Wages Breakdown</div>
                     <div style={{ padding: "16px 16px" }}>
-                      {wageRows.map((w) => {
-                        const pct    = totalWages > 0 ? Math.round((w.value / totalWages) * 100) : 0;
-                        const isMax  = w.value === Math.max(...wageRows.map(r => r.value));
-                        const barBg  = dark
-                          ? (isMax ? "linear-gradient(90deg, #1a7f37, #4ade80)" : "linear-gradient(90deg, #991000, #CC0000)")
-                          : w.color;
-                        return (
-                          <div key={w.label} style={{ marginBottom: 18 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7, fontSize: 12 }}>
-                              <span style={{ color: t.text }}>{w.label}</span>
-                              <span style={{ color: t.muted }}>{fmt(Math.round(w.value))} · {pct}%</span>
-                            </div>
-                            <div style={{ height: 6, borderRadius: 3, background: dark ? "rgba(255,255,255,0.06)" : "#e0e0e0" }}>
-                              <div style={{ height: "100%", width: `${pct}%`, borderRadius: 3, background: barBg, transition: "width 0.4s ease" }} />
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {wageRows.length === 0 && <div style={{ color: t.muted, fontSize: 12 }}>No wage data this month.</div>}
+                      {totalWages === 0
+                        ? <div style={{ color: t.muted, fontSize: 12, marginBottom: 12 }}>No wage data this month.</div>
+                        : (() => {
+                            const stackColors = { "Staff Wages": "#1a7f37", "Director Fees": "#CC0000", "Other Wages": "#8b949e" };
+                            const chartObj    = Object.fromEntries(wageRows.map(w => [w.label, w.value]));
+                            return (
+                              <>
+                                <ResponsiveContainer width="100%" height={52}>
+                                  <BarChart data={[chartObj]} layout="vertical" margin={{ top: 12, right: 0, left: 0, bottom: 0 }}>
+                                    <XAxis type="number" hide domain={[0, totalWages]} />
+                                    <YAxis type="category" hide />
+                                    {wageRows.map((w) => (
+                                      <Bar key={w.label} dataKey={w.label} stackId="wages" fill={stackColors[w.label] || w.color} isAnimationActive={false}>
+                                        <LabelList
+                                          position="center"
+                                          content={({ x, y, width, height, value }) => {
+                                            if (!value || !width || width < 44) return null;
+                                            const pct = Math.round((value / totalWages) * 100);
+                                            return (
+                                              <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="middle" fill="#fff" fontSize={10} fontWeight="600">
+                                                {pct}%
+                                              </text>
+                                            );
+                                          }}
+                                        />
+                                      </Bar>
+                                    ))}
+                                  </BarChart>
+                                </ResponsiveContainer>
+                                <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 10, marginBottom: 4 }}>
+                                  {wageRows.map((w) => {
+                                    const pct = Math.round((w.value / totalWages) * 100);
+                                    return (
+                                      <div key={w.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                        <div style={{ width: 8, height: 8, borderRadius: 2, background: stackColors[w.label] || w.color, flexShrink: 0 }} />
+                                        <span style={{ fontSize: 11, color: t.muted }}>{w.label}</span>
+                                        <span style={{ fontSize: 11, color: t.text, fontWeight: 600 }}>{fmt(Math.round(w.value))}</span>
+                                        <span style={{ fontSize: 11, color: t.muted }}>· {pct}%</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </>
+                            );
+                          })()
+                      }
                       <div style={{ borderTop: `1px solid ${t.border}`, paddingTop: 12, marginTop: 2, display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 700 }}>
                         <span>Total Wages</span>
                         <span>{fmt(Math.round(totalWages))}</span>
