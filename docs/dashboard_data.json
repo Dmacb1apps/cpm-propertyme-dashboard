@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-05T22:17:32+00:00",
+  "updated": "2026-06-06T22:01:24+00:00",
   "month": "June 2026",
   "complexes": [
     {
@@ -2629,9 +2629,9 @@
   ],
   "financials": {
     "cash_balance": 7292.89,
-    "total_income": 8640.1,
+    "total_income": 11025.99,
     "total_expenses": 43134.34,
-    "net_profit": -35087.52,
+    "net_profit": -32701.63,
     "management_fees": 7421.58,
     "wages": 7254.6,
     "wages_employee": 5017.14,
@@ -2675,7 +2675,7 @@
       }
     ],
     "receivables_total": 43016.57,
-    "receivables_overdue": 250.0,
+    "receivables_overdue": 350.0,
     "receivables_count": 12,
     "top_receivables": [
       {
@@ -2722,7 +2722,7 @@
         "property": "11.13 13/114 Bunya Road, Everton Hills",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-05-30",
-        "days_overdue": 6,
+        "days_overdue": 7,
         "booked_date": "2026-06-09"
       },
       {
@@ -2730,15 +2730,31 @@
         "property": "15.15 15 / 47 Abbeywood Street, Taigum Q 4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-05-19",
-        "days_overdue": 17,
+        "days_overdue": 18,
         "booked_date": "2026-06-17"
+      },
+      {
+        "unit_code": "03.21",
+        "property": "03.21 21/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-06-05",
+        "days_overdue": 1,
+        "booked_date": "2026-06-18"
+      },
+      {
+        "unit_code": "03.47",
+        "property": "03.47 47/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-06-05",
+        "days_overdue": 1,
+        "booked_date": "2026-06-18"
       },
       {
         "unit_code": "02.15",
         "property": "02.15 15/1141 South Pine Road, Arana Hills, QLD 40",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-04",
-        "days_overdue": 1,
+        "days_overdue": 2,
         "booked_date": "2026-06-23"
       }
     ],
@@ -2749,7 +2765,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 37.2,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 121,
+        "days_since_last_routine": 122,
         "flag": "LONG GAP"
       },
       {
@@ -2758,16 +2774,16 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 17.8,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 120,
+        "days_since_last_routine": 121,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "02.15",
         "property": "02.15 15/1141 South Pine Road, Arana Hills, QLD 40",
         "manager": "Lorelei Lipczynski",
-        "tenancy_months": 29.5,
+        "tenancy_months": 29.6,
         "routine_inspections_done": 7,
-        "days_since_last_routine": 120,
+        "days_since_last_routine": 121,
         "flag": "LONG GAP"
       },
       {
@@ -2776,22 +2792,22 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 30.4,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 120,
+        "days_since_last_routine": 121,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "11.03",
         "property": "11.03 03 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 12.4,
+        "tenancy_months": 12.5,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 101,
+        "days_since_last_routine": 102,
         "flag": "LOW COUNT"
       }
     ],
     "summary": {
       "total_overdue": 0,
-      "total_scheduled": 3,
+      "total_scheduled": 5,
       "total_frequency_flags": 5,
       "by_manager": {
         "Tammy-lee Barritt": {
@@ -2801,7 +2817,7 @@
         },
         "Lorelei Lipczynski": {
           "overdue": 0,
-          "scheduled": 1,
+          "scheduled": 3,
           "frequency_flags": 4
         }
       }
