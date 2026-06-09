@@ -400,6 +400,13 @@ export default function CPMDashboard() {
                           <ResponsiveContainer width="100%" height={44}>
                             <AreaChart data={uData} margin={{ top: 4, right: 2, left: 2, bottom: 0 }}>
                               <YAxis domain={[uMin - uBuf, uMax + uBuf]} hide />
+                              <Tooltip
+                                formatter={(value) => [value, "Units"]}
+                                labelFormatter={() => ""}
+                                contentStyle={{ fontSize: 13, padding: "4px 10px", background: "#1e3048", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, color: "#e6edf3" }}
+                                itemStyle={{ color: "#378ADD", fontWeight: 600 }}
+                                cursor={false}
+                              />
                               <Area
                                 type="monotone"
                                 dataKey="v"
@@ -407,7 +414,7 @@ export default function CPMDashboard() {
                                 strokeWidth={2}
                                 fill="#378ADD22"
                                 dot={{ r: 3, fill: "#378ADD", strokeWidth: 0 }}
-                                activeDot={false}
+                                activeDot={{ r: 4, fill: "#378ADD", strokeWidth: 0 }}
                                 isAnimationActive={false}
                               />
                             </AreaChart>
