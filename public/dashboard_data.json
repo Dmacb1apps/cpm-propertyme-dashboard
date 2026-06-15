@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-14T22:07:22+00:00",
+  "updated": "2026-06-15T23:01:52+00:00",
   "month": "June 2026",
   "complexes": [
     {
@@ -8,7 +8,7 @@
       "owners": 26,
       "flagged": 0,
       "avgRent": 718,
-      "totalRent": 37080.0,
+      "totalRent": 40040.0,
       "totalBills": 9317.23,
       "rentChangePct": 0.0
     },
@@ -18,7 +18,7 @@
       "owners": 11,
       "flagged": 0,
       "avgRent": 766,
-      "totalRent": 17380.78,
+      "totalRent": 18920.78,
       "totalBills": 6706.4,
       "rentChangePct": 0.2
     },
@@ -36,9 +36,9 @@
       "code": "09",
       "name": "Kingsbury Estate",
       "owners": 50,
-      "flagged": 6,
+      "flagged": 5,
       "avgRent": 660,
-      "totalRent": 64780.5,
+      "totalRent": 71060.5,
       "totalBills": 31681.65,
       "rentChangePct": 0.4
     },
@@ -48,7 +48,7 @@
       "owners": 15,
       "flagged": 0,
       "avgRent": 701,
-      "totalRent": 21140.0,
+      "totalRent": 22540.0,
       "totalBills": 4394.23,
       "rentChangePct": 0.0
     },
@@ -58,8 +58,8 @@
       "owners": 24,
       "flagged": 4,
       "avgRent": 743,
-      "totalRent": 40052.96,
-      "totalBills": 19808.06,
+      "totalRent": 40792.96,
+      "totalBills": 20160.06,
       "rentChangePct": 0.5
     },
     {
@@ -68,7 +68,7 @@
       "owners": 25,
       "flagged": 3,
       "avgRent": 713,
-      "totalRent": 33460.0,
+      "totalRent": 35580.0,
       "totalBills": 8982.02,
       "rentChangePct": 0.5
     },
@@ -76,9 +76,9 @@
       "code": "14",
       "name": "Trend Everton Park",
       "owners": 22,
-      "flagged": 4,
+      "flagged": 3,
       "avgRent": 766,
-      "totalRent": 39406.0,
+      "totalRent": 40186.0,
       "totalBills": 12948.64,
       "rentChangePct": 0.4
     },
@@ -86,9 +86,9 @@
       "code": "15",
       "name": "Vue Taigum",
       "owners": 26,
-      "flagged": 7,
+      "flagged": 6,
       "avgRent": 716,
-      "totalRent": 34972.0,
+      "totalRent": 37802.0,
       "totalBills": 21584.73,
       "rentChangePct": 0.1
     },
@@ -159,14 +159,6 @@
       "rent": 700.0,
       "bills": 1376.94,
       "net": -676.94
-    },
-    {
-      "code": "09.21",
-      "complex": "Kingsbury Estate",
-      "name": "Wairau Investments Pty Ltd",
-      "rent": 0.0,
-      "bills": 611.39,
-      "net": -611.39
     },
     {
       "code": "12.28",
@@ -329,14 +321,6 @@
       "net": -111.69
     },
     {
-      "code": "14.01",
-      "complex": "Trend Everton Park",
-      "name": "Shefali Amin",
-      "rent": 1530.0,
-      "bills": 1620.69,
-      "net": -90.69
-    },
-    {
       "code": "14.29",
       "complex": "Trend Everton Park",
       "name": "Paul & Maggie - Gempas Unit Trust",
@@ -375,14 +359,6 @@
       "rent": 1560.0,
       "bills": 1587.91,
       "net": -27.91
-    },
-    {
-      "code": "15.19",
-      "complex": "Vue Taigum",
-      "name": "Chmobbie Property Nominee Pty Ltd",
-      "rent": 1380.0,
-      "bills": 1396.19,
-      "net": -16.19
     },
     {
       "code": "15.40",
@@ -462,17 +438,17 @@
       "code": "01.12",
       "complex": "Everton Ridge",
       "name": "Cameron Daryl Fish",
-      "rent": 1480.0,
+      "rent": 2220.0,
       "bills": 261.36,
-      "net": 1218.64
+      "net": 1958.64
     },
     {
       "code": "01.15",
       "complex": "Everton Ridge",
       "name": "Anna Morrison & Glenn Morrison",
-      "rent": 1500.0,
+      "rent": 3000.0,
       "bills": 272.76,
-      "net": 1227.24
+      "net": 2727.24
     },
     {
       "code": "01.16",
@@ -598,17 +574,17 @@
       "code": "01.39",
       "complex": "Everton Ridge",
       "name": "Superannuation",
-      "rent": 1440.0,
+      "rent": 2160.0,
       "bills": 262.24,
-      "net": 1177.76
+      "net": 1897.76
     },
     {
       "code": "02.03",
       "complex": "Upper West Arana Hills",
       "name": "Seavlin Chhin",
-      "rent": 1540.0,
+      "rent": 3080.0,
       "bills": 644.61,
-      "net": 895.39
+      "net": 2435.39
     },
     {
       "code": "02.04",
@@ -894,9 +870,9 @@
       "code": "09.18",
       "complex": "Kingsbury Estate",
       "name": "Derek Young & Averil Tse",
-      "rent": 1300.0,
+      "rent": 1950.0,
       "bills": 540.09,
-      "net": 759.91
+      "net": 1409.91
     },
     {
       "code": "09.20",
@@ -910,9 +886,9 @@
       "code": "09.21",
       "complex": "Kingsbury Estate",
       "name": "Wairau Investments Pty Ltd",
-      "rent": 0.0,
+      "rent": 2890.0,
       "bills": 611.39,
-      "net": -611.39
+      "net": 2278.61
     },
     {
       "code": "09.23",
@@ -998,9 +974,9 @@
       "code": "09.36",
       "complex": "Kingsbury Estate",
       "name": "Matthew Francis Bonar",
-      "rent": 1380.0,
+      "rent": 2070.0,
       "bills": 665.75,
-      "net": 714.25
+      "net": 1404.25
     },
     {
       "code": "09.37",
@@ -1022,9 +998,9 @@
       "code": "09.43",
       "complex": "Kingsbury Estate",
       "name": "Gregory O'Reilly",
-      "rent": 1380.0,
+      "rent": 2070.0,
       "bills": 625.31,
-      "net": 754.69
+      "net": 1444.69
     },
     {
       "code": "09.44",
@@ -1070,9 +1046,9 @@
       "code": "09.52",
       "complex": "Kingsbury Estate",
       "name": "09.52Scott Michael Bailey & Natalie Margaret Bailey",
-      "rent": 1360.0,
+      "rent": 2040.0,
       "bills": 599.57,
-      "net": 760.43
+      "net": 1440.43
     },
     {
       "code": "09.54",
@@ -1222,9 +1198,9 @@
       "code": "09.87",
       "complex": "Kingsbury Estate",
       "name": "Michael David McCabe",
-      "rent": 1503.93,
+      "rent": 2183.93,
       "bills": 727.53,
-      "net": 776.4
+      "net": 1456.4
     },
     {
       "code": "09.89",
@@ -1286,9 +1262,9 @@
       "code": "11.12",
       "complex": "Bunya Heights",
       "name": "Conor KELLY & Samantha CRAWFORD",
-      "rent": 1420.0,
+      "rent": 2130.0,
       "bills": 258.72,
-      "net": 1161.28
+      "net": 1871.28
     },
     {
       "code": "11.13",
@@ -1358,9 +1334,9 @@
       "code": "11.25",
       "complex": "Bunya Heights",
       "name": "Stephen KEAST & Elham JALILZADEH",
-      "rent": 1380.0,
+      "rent": 2070.0,
       "bills": 221.28,
-      "net": 1158.72
+      "net": 1848.72
     },
     {
       "code": "12.01",
@@ -1406,9 +1382,9 @@
       "code": "12.12",
       "complex": "Treetops at Everton",
       "name": "Maddison Lee BULL",
-      "rent": 1480.0,
+      "rent": 2220.0,
       "bills": 811.76,
-      "net": 668.24
+      "net": 1408.24
     },
     {
       "code": "12.14",
@@ -1479,8 +1455,8 @@
       "complex": "Treetops at Everton",
       "name": "SUBEA HOLDINGS PTY LTD (TTE) & Beatrice",
       "rent": 2160.0,
-      "bills": 741.26,
-      "net": 1418.74
+      "bills": 917.26,
+      "net": 1242.74
     },
     {
       "code": "12.28",
@@ -1543,8 +1519,8 @@
       "complex": "Treetops at Everton",
       "name": "Christian Ricci & Veronica Zabala",
       "rent": 3433.68,
-      "bills": 258.94,
-      "net": 3174.74
+      "bills": 434.94,
+      "net": 2998.74
     },
     {
       "code": "12.45",
@@ -1630,9 +1606,9 @@
       "code": "13.13",
       "complex": "Everton Breeze",
       "name": "Caffieri Property Pty Ltd TTE",
-      "rent": 1360.0,
+      "rent": 2040.0,
       "bills": 248.12,
-      "net": 1111.88
+      "net": 1791.88
     },
     {
       "code": "13.14",
@@ -1694,9 +1670,9 @@
       "code": "13.25",
       "complex": "Everton Breeze",
       "name": "Steven Bull & Tracie Bull",
-      "rent": 1440.0,
+      "rent": 2880.0,
       "bills": 262.22,
-      "net": 1177.78
+      "net": 2617.78
     },
     {
       "code": "13.26",
@@ -1758,9 +1734,9 @@
       "code": "14.01",
       "complex": "Trend Everton Park",
       "name": "Shefali Amin",
-      "rent": 1530.0,
+      "rent": 2310.0,
       "bills": 1620.69,
-      "net": -90.69
+      "net": 689.31
     },
     {
       "code": "14.03",
@@ -1950,9 +1926,9 @@
       "code": "15.04",
       "complex": "Vue Taigum",
       "name": "Tracy Ryan",
-      "rent": 1440.0,
+      "rent": 2160.0,
       "bills": 253.44,
-      "net": 1186.56
+      "net": 1906.56
     },
     {
       "code": "15.05",
@@ -2006,9 +1982,9 @@
       "code": "15.19",
       "complex": "Vue Taigum",
       "name": "Chmobbie Property Nominee Pty Ltd",
-      "rent": 1380.0,
+      "rent": 2070.0,
       "bills": 1396.19,
-      "net": -16.19
+      "net": 673.81
     },
     {
       "code": "15.20",
@@ -2054,9 +2030,9 @@
       "code": "15.29",
       "complex": "Vue Taigum",
       "name": "Rony Chowdhury & Priyanka Chowdhury",
-      "rent": 1440.0,
+      "rent": 2160.0,
       "bills": 221.46,
-      "net": 1218.54
+      "net": 1938.54
     },
     {
       "code": "15.30",
@@ -2134,16 +2110,16 @@
       "code": "15.53",
       "complex": "Vue Taigum",
       "name": "Nikki Brownlie",
-      "rent": 1400.0,
+      "rent": 2100.0,
       "bills": 246.4,
-      "net": 1153.6
+      "net": 1853.6
     }
   ],
   "financials": {
-    "cash_balance": 15727.05,
-    "total_income": 29865.59,
-    "total_expenses": 51017.56,
-    "net_profit": -21907.67,
+    "cash_balance": 12109.5,
+    "total_income": 39489.65,
+    "total_expenses": 51172.56,
+    "net_profit": -12658.61,
     "management_fees": 7421.58,
     "wages": 14375.55,
     "wages_employee": 9900.63,
@@ -2151,9 +2127,9 @@
     "loan_interest": 27214.08,
     "credit_card_don": 496.51,
     "credit_card_duncan": 1179.0,
-    "payables_total": 7450.62,
+    "payables_total": 7621.12,
     "payables_overdue": 0,
-    "payables_count": 2,
+    "payables_count": 3,
     "top_payables": [
       {
         "contact_name": "ATO",
@@ -2164,47 +2140,42 @@
         "contact_name": "Body Corporate for Treetops at Everton CTS 50668",
         "amount_due": 944.62,
         "due_date": "2026-06-30"
+      },
+      {
+        "contact_name": "Holmans Pty Ltd",
+        "amount_due": 170.5,
+        "due_date": "2026-06-30"
       }
     ],
-    "receivables_total": 31792.25,
-    "receivables_overdue": 1542.4,
-    "receivables_count": 9,
+    "receivables_total": 30249.85,
+    "receivables_overdue": 0,
+    "receivables_count": 4,
     "top_receivables": [
-      {
-        "contact_name": "Locality Planning Energy Pty Ltd",
-        "amount_due": 314.6,
-        "due_date": "2026-06-11"
-      },
-      {
-        "contact_name": "Locality Planning Energy Pty Ltd",
-        "amount_due": 633.6,
-        "due_date": "2026-06-11"
-      },
-      {
-        "contact_name": "Locality Planning Energy Pty Ltd",
-        "amount_due": 244.2,
-        "due_date": "2026-06-11"
-      },
-      {
-        "contact_name": "Lorelei Lipczynski",
-        "amount_due": 250.0,
-        "due_date": "2026-06-11"
-      },
-      {
-        "contact_name": "Tammy-Lee Everingham",
-        "amount_due": 100.0,
-        "due_date": "2026-06-12"
-      },
       {
         "contact_name": "PropertyME",
         "amount_due": 3087.96,
         "due_date": "2026-06-15"
+      },
+      {
+        "contact_name": "Body Corporate for Kingsbury Taigum CTS 50055",
+        "amount_due": 13336.26,
+        "due_date": "2026-06-18"
+      },
+      {
+        "contact_name": "Body Corporate for Treetops at Everton CTS 50668",
+        "amount_due": 6217.12,
+        "due_date": "2026-06-19"
+      },
+      {
+        "contact_name": "Body Corporate for Vue Taigum CTS 53523",
+        "amount_due": 7608.51,
+        "due_date": "2026-06-22"
       }
     ],
-    "invoices_due_this_month": 31792.25,
-    "invoices_due_count": 9,
+    "invoices_due_this_month": 30249.85,
+    "invoices_due_count": 4,
     "cpm_fees_mtd": 4191.62,
-    "working_capital": 44260.3
+    "working_capital": 38929.85
   },
   "inspections": {
     "overdue": [
@@ -2213,13 +2184,20 @@
         "property": "11.13 13/114 Bunya Road, Everton Hills",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-05-30",
-        "days_overdue": 15
+        "days_overdue": 16
       },
       {
         "unit_code": "99.SOAMES",
         "property": "99.SOAMES 16/111 Soames St, Everton Park",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-06-11",
+        "days_overdue": 4
+      },
+      {
+        "unit_code": "12.16",
+        "property": "12.16 16 / 36 Bunya Road, Everton Hills Q 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-06-12",
         "days_overdue": 3
       },
       {
@@ -2227,38 +2205,30 @@
         "property": "11.14 14 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-06-12",
-        "days_overdue": 2
+        "days_overdue": 3
       },
       {
         "unit_code": "11.23",
         "property": "11.23 23 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-06-12",
-        "days_overdue": 2
+        "days_overdue": 3
       },
       {
         "unit_code": "11.24",
         "property": "11.24 24 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-06-12",
-        "days_overdue": 2
+        "days_overdue": 3
       }
     ],
     "scheduled": [
-      {
-        "unit_code": "12.16",
-        "property": "12.16 16 / 36 Bunya Road, Everton Hills Q 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-06-12",
-        "days_overdue": 2,
-        "booked_date": "2026-06-16"
-      },
       {
         "unit_code": "12.20",
         "property": "12.20 20 / 36 Bunya Road, Everton Hills Q 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-11",
-        "days_overdue": 3,
+        "days_overdue": 4,
         "booked_date": "2026-06-16"
       },
       {
@@ -2266,7 +2236,7 @@
         "property": "12.25 25 / 36 Bunya Road, Everton Hills Q 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-12",
-        "days_overdue": 2,
+        "days_overdue": 3,
         "booked_date": "2026-06-16"
       },
       {
@@ -2274,7 +2244,7 @@
         "property": "15.15 15 / 47 Abbeywood Street, Taigum Q 4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-05-19",
-        "days_overdue": 26,
+        "days_overdue": 27,
         "booked_date": "2026-06-17"
       },
       {
@@ -2282,7 +2252,7 @@
         "property": "03.21 21/8 Russell Str Everton Park QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-05",
-        "days_overdue": 9,
+        "days_overdue": 10,
         "booked_date": "2026-06-18"
       },
       {
@@ -2290,7 +2260,7 @@
         "property": "03.47 47/8 Russell Str Everton Park QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-05",
-        "days_overdue": 9,
+        "days_overdue": 10,
         "booked_date": "2026-06-18"
       },
       {
@@ -2298,7 +2268,7 @@
         "property": "03.49 49/8 Russell Str Everton Park QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-18"
       },
       {
@@ -2306,7 +2276,7 @@
         "property": "02.25 25/1141 South Pine Rd, Arana Hills QLD 4054",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-19"
       },
       {
@@ -2314,7 +2284,7 @@
         "property": "02.15 15/1141 South Pine Road, Arana Hills, QLD 40",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-04",
-        "days_overdue": 10,
+        "days_overdue": 11,
         "booked_date": "2026-06-23"
       },
       {
@@ -2322,7 +2292,7 @@
         "property": "02.16 16/1141 South Pine Road, Arana Hills, QLD 40",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-23"
       },
       {
@@ -2330,7 +2300,7 @@
         "property": "02.17 17/1141 South Pine Road, Arana Hills QLD4035",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-23"
       },
       {
@@ -2338,7 +2308,7 @@
         "property": "02.21 21/1141 South Pine Road, Arana Hills QLD4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-23"
       },
       {
@@ -2346,7 +2316,7 @@
         "property": "02.22 22/1141 South Pine Road, Arana Hills QLD4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-23"
       },
       {
@@ -2354,7 +2324,7 @@
         "property": "02.08 08/1141 S Pine Rd, Arana Hills, QLD 4054 Aus",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-12",
-        "days_overdue": 2,
+        "days_overdue": 3,
         "booked_date": "2026-06-25"
       },
       {
@@ -2362,7 +2332,7 @@
         "property": "02.04 4/1141 South Pine Road, Arana Hills Q 4054",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-25"
       },
       {
@@ -2370,7 +2340,7 @@
         "property": "02.05 05/1141 South Pine Road, Arana Hills Q",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-25"
       },
       {
@@ -2378,7 +2348,7 @@
         "property": "02.06 06/1141 South Pine Road, Arana Hills Q",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-10",
-        "days_overdue": 4,
+        "days_overdue": 5,
         "booked_date": "2026-06-25"
       },
       {
@@ -2386,7 +2356,7 @@
         "property": "12.24 24 / 36 Bunya Road, Everton Hills Q 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-11",
-        "days_overdue": 3,
+        "days_overdue": 4,
         "booked_date": "2026-06-30"
       },
       {
@@ -2394,7 +2364,7 @@
         "property": "02.13 13/1141 South Pine Road, Arana Hills",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-06-09",
-        "days_overdue": 5,
+        "days_overdue": 6,
         "booked_date": "2026-07-08"
       }
     ],
@@ -2405,7 +2375,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 37.5,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 130,
+        "days_since_last_routine": 131,
         "flag": "LONG GAP"
       },
       {
@@ -2414,16 +2384,16 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 18.1,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 129,
+        "days_since_last_routine": 130,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "02.15",
         "property": "02.15 15/1141 South Pine Road, Arana Hills, QLD 40",
         "manager": "Lorelei Lipczynski",
-        "tenancy_months": 29.8,
+        "tenancy_months": 29.9,
         "routine_inspections_done": 7,
-        "days_since_last_routine": 129,
+        "days_since_last_routine": 130,
         "flag": "LONG GAP"
       },
       {
@@ -2432,16 +2402,16 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 30.7,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 129,
+        "days_since_last_routine": 130,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "02.16",
         "property": "02.16 16/1141 South Pine Road, Arana Hills, QLD 40",
         "manager": "Lorelei Lipczynski",
-        "tenancy_months": 41.9,
+        "tenancy_months": 42.0,
         "routine_inspections_done": 10,
-        "days_since_last_routine": 124,
+        "days_since_last_routine": 125,
         "flag": "LONG GAP"
       },
       {
@@ -2450,7 +2420,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 27.6,
         "routine_inspections_done": 6,
-        "days_since_last_routine": 122,
+        "days_since_last_routine": 123,
         "flag": "LONG GAP"
       },
       {
@@ -2459,16 +2429,16 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 46.3,
         "routine_inspections_done": 10,
-        "days_since_last_routine": 122,
+        "days_since_last_routine": 123,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "99.SOAMES",
         "property": "99.SOAMES 16/111 Soames St, Everton Park",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 47.9,
+        "tenancy_months": 48.0,
         "routine_inspections_done": 7,
-        "days_since_last_routine": 122,
+        "days_since_last_routine": 123,
         "flag": "LONG GAP"
       },
       {
@@ -2477,7 +2447,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 42.6,
         "routine_inspections_done": 10,
-        "days_since_last_routine": 121,
+        "days_since_last_routine": 122,
         "flag": "LONG GAP"
       },
       {
@@ -2486,16 +2456,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 42.6,
         "routine_inspections_done": 9,
-        "days_since_last_routine": 121,
+        "days_since_last_routine": 122,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "12.16",
         "property": "12.16 16 / 36 Bunya Road, Everton Hills Q 4053",
         "manager": "Lorelei Lipczynski",
-        "tenancy_months": 51.0,
+        "tenancy_months": 51.1,
         "routine_inspections_done": 9,
-        "days_since_last_routine": 121,
+        "days_since_last_routine": 122,
         "flag": "LONG GAP"
       },
       {
@@ -2504,16 +2474,16 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 13.2,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 121,
+        "days_since_last_routine": 122,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "15.40",
         "property": "15.40 40 / 42 Abbeywood Street, Taigum Q 4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 12.0,
+        "tenancy_months": 12.1,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 115,
+        "days_since_last_routine": 116,
         "flag": "LOW COUNT"
       },
       {
@@ -2522,7 +2492,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 12.7,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 110,
+        "days_since_last_routine": 111,
         "flag": "LOW COUNT"
       },
       {
@@ -2531,13 +2501,13 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 12.1,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 108,
+        "days_since_last_routine": 109,
         "flag": "LOW COUNT"
       }
     ],
     "summary": {
-      "total_overdue": 5,
-      "total_scheduled": 19,
+      "total_overdue": 6,
+      "total_scheduled": 18,
       "total_frequency_flags": 15,
       "by_manager": {
         "Tammy-lee Barritt": {
@@ -2546,8 +2516,8 @@
           "frequency_flags": 5
         },
         "Lorelei Lipczynski": {
-          "overdue": 0,
-          "scheduled": 18,
+          "overdue": 1,
+          "scheduled": 17,
           "frequency_flags": 10
         }
       }
