@@ -90,3 +90,14 @@ jobs:
           git add docs/ public/
           git commit -m "Dashboard update $(date +%Y-%m-%d)" || true
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Dmacb1apps/cpm-propertyme-dashboard.git
+           name: Sync contacts to Google Contacts
+        env:
+          PROPERTYME_EMAIL: ${{ secrets.PROPERTYME_EMAIL }}
+          PROPERTYME_PASSWORD: ${{ secrets.PROPERTYME_PASSWORD }}
+          PROPERTYME_TOTP_SECRET: ${{ secrets.PROPERTYME_TOTP_SECRET }}
+          GOOGLE_CONTACTS_CLIENT_ID: ${{ secrets.GOOGLE_CONTACTS_CLIENT_ID }}
+          GOOGLE_CONTACTS_CLIENT_SECRET: ${{ secrets.GOOGLE_CONTACTS_CLIENT_SECRET }}
+          GOOGLE_CONTACTS_REFRESH_TOKEN: ${{ secrets.GOOGLE_CONTACTS_REFRESH_TOKEN }}
+        run: |
+          cd propertyme-automation
+          python sync_contacts.py
