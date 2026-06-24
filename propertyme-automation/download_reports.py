@@ -61,7 +61,10 @@ def login(page):
 
     print(f"Navigating to {MANAGER_URL} (will redirect to login)...")
     page.goto(MANAGER_URL)
-    page.wait_for_load_state("networkidle", timeout=20000)
+    try:
+        page.wait_for_load_state("networkidle", timeout=20000)
+    except Exception:
+        page.wait_for_load_state("domcontentloaded")
     print(f"  Landed on: {page.url}")
 
     screenshot_path = SCRIPT_DIR / "debug_login_page.png"
