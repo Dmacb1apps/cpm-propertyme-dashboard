@@ -13,11 +13,10 @@ Required GitHub Secrets:
   GOOGLE_CONTACTS_CLIENT_SECRET
   GOOGLE_CONTACTS_REFRESH_TOKEN
 
-Required packages (add to workflow pip install step):
+Required packages (in requirements.txt):
   playwright openpyxl google-api-python-client google-auth pyotp
 
-Set DEBUG_SCREENSHOTS=1 in the environment to capture screenshots
-on each step — useful when troubleshooting Playwright navigation.
+Set DEBUG_SCREENSHOTS=1 to capture screenshots at each navigation step.
 """
 
 import os
@@ -33,7 +32,7 @@ import pyotp
 import openpyxl  # NOTE: use data_only=True but NOT read_only=True — PropertyMe's
                  # xlsx exports omit the dimension record, which causes read_only
                  # mode to report max_row=1 and return only the header row.
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
+from playwright.async_api import async_playwright
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
@@ -56,6 +55,7 @@ GC_REFRESH_TOKEN = os.environ['GOOGLE_CONTACTS_REFRESH_TOKEN']
 
 DOWNLOAD_DIR = Path('/tmp/cpx_contacts')
 DEBUG        = os.environ.get('DEBUG_SCREENSHOTS') == '1'
+MANAGER_URL  = 'https://manager.propertyme.com'
 
 REPORT_NAMES = {
     'tenant':   'Contact Details - Tenant',
@@ -69,8 +69,6 @@ GROUP_LABELS = {
     'supplier': 'CPM Suppliers',
 }
 
-# Corporate suffixes to strip from owner/supplier names.
-# Order matters: longest/most specific must come first.
 COMPANY_STRIP = [
     'Pty. Ltd.', 'Pty Ltd', 'PTY LTD', 'P/L',
     'as Trustee for', 'as Trustee',
@@ -84,20 +82,16 @@ SCOPES = ['https://www.googleapis.com/auth/contacts']
 # ── Data model ───────────────────────────────────────────────────────────────────
 @dataclass
 class CPMContact:
-    contact_type: str       # 'tenant' | 'owner' | 'supplier'
-    display_name: str       # final formatted name shown in Google Contacts
+    contact_type: str
+    display_name: str
     first_name: str
     last_name: str
-    mobile: Optional[str]   # normalised 10-digit number or None
+    mobile: Optional[str]
     email: Optional[str]
-    ref_code: Optional[str] # '01.02' for tenant/owner; None for most suppliers
+    ref_code: Optional[str]
 
     @property
     def cpx_id(self) -> str:
-        """
-        Stable unique ID used to match contacts across sync runs.
-        Stored in Google Contacts as an externalId of type CPM_ID.
-        """
         t = self.contact_type[0].upper()
         if self.ref_code:
             fn = re.sub(r'\s+', '-', self.first_name.lower().strip())
@@ -107,12 +101,8 @@ class CPMContact:
         return f"CPM-S-{slug[:60]}"
 
 
-# ── Phone normalisation ──────────────────────────────────────────────────────────
+# ── Utilities ────────────────────────────────────────────────────────────────────
 def normalise_phone(raw) -> Optional[str]:
-    """
-    Returns a 10-digit Australian number or None.
-    Handles spaces, hyphens, international +61 format.
-    """
     if not raw:
         return None
     s = str(raw).strip()
@@ -124,13 +114,7 @@ def normalise_phone(raw) -> Optional[str]:
     return s if re.fullmatch(r'0\d{9}', s) else None
 
 
-# ── Company name stripping ────────────────────────────────────────────────────────
 def strip_corporate(name: str) -> str:
-    """
-    Remove corporate identifiers from a name field.
-    'V & T Scarso Pty Ltd ABN 23...'          → 'V & T Scarso'
-    'Michael O Dell Property Pty Ltd ACN 643' → 'Michael O Dell Property'
-    """
     for kw in COMPANY_STRIP:
         idx = name.find(kw)
         if idx > 0:
@@ -139,60 +123,31 @@ def strip_corporate(name: str) -> str:
     return name
 
 
-# ── Display name builder ─────────────────────────────────────────────────────────
-def build_display_name(
-    first: str,
-    last: str,
-    ref_code: Optional[str],
-    business_header: Optional[str],
-    contact_type: str,
-) -> str:
-    """
-    Build the contact name as it will appear on iPhone caller ID.
-
-    Tenants:  'Queenie Coombes T01.02'
-    Owners:   'Mahzabin Anindita O01.02'
-    Suppliers (person + business): 'Aaron Werner - AKI Electrical (CPM)'
-    Suppliers (business only):     'ABC Locksmiths (CPM)'
-    """
+def build_display_name(first, last, ref_code, business_header, contact_type) -> str:
     t    = {'tenant': 'T', 'owner': 'O', 'supplier': 'S'}[contact_type]
     full = ' '.join(p for p in [first, last] if p).strip()
 
     if contact_type == 'supplier':
         if not business_header:
             return f"{full} (CPM)" if full else "(CPM Supplier)"
-
-        # Edge case: supplier with a numeric ref (e.g. '12.12 Colin & Michele Cramp')
         m = re.match(r'^(\d{2}\.\d{2})\s+(.*)', business_header)
         if m:
             biz = m.group(2).strip()
             if full and full.lower() not in biz.lower():
                 return f"{full} - {biz} (CPM)"
             return f"{(full or biz)} (CPM)"
-
-        # Normal supplier
         if full and full.lower() not in business_header.lower():
             return f"{full} - {business_header} (CPM)"
         elif business_header:
             return f"{business_header} (CPM)"
         return f"{full} (CPM)"
 
-    # Tenant or Owner
     suffix = f"{t}{ref_code}" if ref_code else f"({t})"
     return f"{full} {suffix}" if full else suffix
 
 
 # ── Excel Parsing ─────────────────────────────────────────────────────────────────
 def parse_report(filepath: Path, contact_type: str) -> List[CPMContact]:
-    """
-    Parse a PropertyMe Contact Details Excel report.
-
-    The file has a two-level structure:
-      Group header row:  col A has '{ref} {names}', all other cols are empty.
-      Individual rows:   col A is empty, cols B-E have first, last, mobile, email.
-
-    For suppliers, the group header is the business name (no numeric ref code).
-    """
     wb = openpyxl.load_workbook(filepath, data_only=True)
     ws = wb.active
 
@@ -202,8 +157,6 @@ def parse_report(filepath: Path, contact_type: str) -> List[CPMContact]:
     header_seen                        = False
 
     for row in ws.iter_rows(values_only=True):
-
-        # Locate and skip the column header row (First Name, Last Name…)
         if not header_seen:
             if row and row[1] == 'First Name':
                 header_seen = True
@@ -215,36 +168,25 @@ def parse_report(filepath: Path, contact_type: str) -> List[CPMContact]:
         mobile_raw = row[3]
         email_raw  = str(row[4]).strip() if row[4] not in (None, '') else ''
 
-        # ── Group header: col A has content, First Name is empty ──────────────
         if col_a and not first_raw:
             ref_m = re.match(r'^(\d{2}\.\d{2})', col_a)
             if ref_m:
-                current_ref      = ref_m.group(1)
-                current_business = None
+                current_ref = ref_m.group(1); current_business = None
             else:
-                current_ref      = None
-                current_business = col_a
+                current_ref = None; current_business = col_a
             continue
 
-        # Skip entirely blank rows
         if not first_raw and not last_raw:
             continue
 
-        # Strip corporate suffixes from name fields
         first = strip_corporate(first_raw)
         last  = strip_corporate(last_raw)
-
-        # Handle: company name landed entirely in last_name column, first_name blank
         if not first and last:
-            first = strip_corporate(last)
-            last  = ''
+            first = strip_corporate(last); last = ''
 
         mobile = normalise_phone(mobile_raw)
         email  = email_raw if '@' in email_raw else None
-
-        display = build_display_name(
-            first, last, current_ref, current_business, contact_type
-        )
+        display = build_display_name(first, last, current_ref, current_business, contact_type)
 
         contacts.append(CPMContact(
             contact_type=contact_type,
@@ -261,15 +203,87 @@ def parse_report(filepath: Path, contact_type: str) -> List[CPMContact]:
     return contacts
 
 
-# ── PropertyMe Download ───────────────────────────────────────────────────────────
+# ── PropertyMe Login ──────────────────────────────────────────────────────────────
+async def login(page):
+    """
+    Login to PropertyMe. Mirrors download_reports.py exactly so selectors
+    are guaranteed to match the live UI.
+    """
+    log.info(f"Navigating to {MANAGER_URL}...")
+    await page.goto(MANAGER_URL)
+    try:
+        await page.wait_for_load_state('networkidle', timeout=20000)
+    except Exception:
+        await page.wait_for_load_state('domcontentloaded')
+
+    log.info(f"  Landed on: {page.url}")
+
+    if DEBUG:
+        await page.screenshot(path='/tmp/pm_login_page.png', full_page=True)
+
+    # Wait for email field then fill credentials
+    await page.wait_for_selector("input[type='email']", timeout=15000)
+
+    email_input = page.locator("input[type='email']")
+    await email_input.click()
+    await email_input.fill(PM_EMAIL)
+    await page.wait_for_timeout(800)
+
+    password_input = page.locator("input[type='password']")
+    await password_input.click()
+    await password_input.fill(PM_PASSWORD)
+    await page.wait_for_timeout(800)
+
+    btn = page.locator("button:has-text('Log in')")
+    await btn.wait_for(state='visible')
+    await btn.scroll_into_view_if_needed()
+    await page.wait_for_timeout(500)
+    await btn.click()
+
+    await page.wait_for_timeout(2000)
+    log.info(f"  URL after login click: {page.url}")
+
+    if DEBUG:
+        await page.screenshot(path='/tmp/pm_after_submit.png', full_page=True)
+
+    await page.wait_for_load_state('networkidle', timeout=20000)
+    log.info(f"  URL after networkidle: {page.url}")
+
+    if '/auth/verify' in page.url:
+        log.info("  2FA page detected, entering TOTP code...")
+        if DEBUG:
+            await page.screenshot(path='/tmp/pm_2fa_page.png', full_page=True)
+
+        code = pyotp.TOTP(PM_TOTP).now()
+        log.info(f"  Entering TOTP code: {code}")
+        otp_boxes = page.locator("input[type='text']")
+        await otp_boxes.first.click()
+        await page.keyboard.type(code)
+        await page.wait_for_timeout(500)
+        await page.get_by_role('button', name='Log in').click()
+
+        await page.wait_for_function(
+            "() => !window.location.href.includes('id.propertyme.com')",
+            timeout=30000,
+        )
+    else:
+        log.info("  No 2FA page — waiting for manager redirect...")
+        await page.wait_for_function(
+            "() => !window.location.href.includes('id.propertyme.com')",
+            timeout=20000,
+        )
+
+    log.info(f"  Login complete — current URL: {page.url}")
+
+    if DEBUG:
+        await page.screenshot(path='/tmp/pm_post_login.png', full_page=True)
+
+
+# ── PropertyMe Report Download ────────────────────────────────────────────────────
 async def download_contact_reports() -> Dict[str, Path]:
     """
     Log in to PropertyMe and download the three Contact Details reports as Excel.
-    Returns dict mapping contact_type → local file path.
-
-    NOTE: The Playwright selectors below use text-based matching for stability.
-    If navigation fails on first run, set DEBUG_SCREENSHOTS=1 and check the
-    captured images in /tmp/ to identify the correct element text/structure.
+    Returns dict mapping contact_type to local file path.
     """
     DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
     downloaded: Dict[str, Path] = {}
@@ -280,34 +294,8 @@ async def download_contact_reports() -> Dict[str, Path]:
         page    = await ctx.new_page()
 
         try:
-            # ── Login ──────────────────────────────────────────────────────────
-            log.info("Logging in to PropertyMe...")
-            await page.goto('https://app.propertyme.com', wait_until='domcontentloaded')
-            await page.wait_for_timeout(2000)
+            await login(page)
 
-            await page.locator('input[type="email"], input[name="email"]').first.fill(PM_EMAIL)
-            await page.locator('input[type="password"], input[name="password"]').first.fill(PM_PASSWORD)
-            await page.locator('button[type="submit"]').first.click()
-            await page.wait_for_timeout(2500)
-
-            # Handle TOTP 2FA if prompted
-            totp_input = page.locator(
-                'input[placeholder*="code" i], input[name*="code" i], '
-                'input[name*="otp" i], input[placeholder*="verification" i]'
-            )
-            if await totp_input.count() > 0:
-                log.info("Entering TOTP code...")
-                totp_code = pyotp.TOTP(PM_TOTP).now()
-                await totp_input.first.fill(totp_code)
-                await page.locator('button[type="submit"]').first.click()
-                await page.wait_for_load_state('networkidle')
-
-            if DEBUG:
-                await page.screenshot(path='/tmp/pm_post_login.png', full_page=True)
-
-            log.info("Logged in successfully.")
-
-            # ── Download each of the three reports ─────────────────────────────
             for contact_type, report_name in REPORT_NAMES.items():
                 log.info(f"Downloading '{report_name}'...")
                 filepath = await _download_single_report(page, contact_type, report_name)
@@ -323,35 +311,25 @@ async def _download_single_report(page, contact_type: str, report_name: str) -> 
     """
     Navigate to a Contact Details report and download as Excel.
 
-    ⚠️  These selectors are based on PropertyMe's report UI as understood at
-    time of writing. If any step fails, enable DEBUG_SCREENSHOTS=1 and inspect
-    the saved /tmp/ images to find the correct text or element to target.
+    PropertyMe navigation: Reports section -> find report by name -> Generate -> Export Excel
 
-    PropertyMe navigation path:
-      Main nav → Reports → Contacts category → {report_name} → Generate → Export Excel
+    If this step fails, set DEBUG_SCREENSHOTS=1 and check /tmp/ images to see
+    what's on screen and adjust selectors accordingly.
     """
-
-    # Navigate to the Reports section
-    await page.goto('https://app.propertyme.com/reports', wait_until='domcontentloaded')
+    await page.goto(f'{MANAGER_URL}/reports', wait_until='domcontentloaded')
     await page.wait_for_timeout(2500)
 
     if DEBUG:
         await page.screenshot(path=f'/tmp/pm_reports_{contact_type}.png', full_page=True)
 
-    # Find and click the report — try exact match first, then partial
+    # Find report by text
     report_link = page.get_by_text(report_name, exact=True)
     if await report_link.count() == 0:
         report_link = page.get_by_text(report_name)
     if await report_link.count() == 0:
-        # Fallback: try the short form without the dash
-        short = report_name.replace(' - ', ' ')
-        report_link = page.get_by_text(short)
-
-    if await report_link.count() == 0:
         raise RuntimeError(
-            f"Report '{report_name}' not found on the Reports page. "
-            f"Set DEBUG_SCREENSHOTS=1 and check /tmp/pm_reports_{contact_type}.png "
-            f"to see what's on screen."
+            f"Report '{report_name}' not found on the reports page. "
+            f"Set DEBUG_SCREENSHOTS=1 and check /tmp/pm_reports_{contact_type}.png."
         )
 
     await report_link.first.click()
@@ -399,7 +377,6 @@ async def _download_single_report(page, contact_type: str, report_name: str) -> 
 
 # ── Google Contacts Sync ──────────────────────────────────────────────────────────
 def get_google_service():
-    """Authenticate to the People API using the stored refresh token."""
     creds = Credentials(
         token=None,
         refresh_token=GC_REFRESH_TOKEN,
@@ -413,7 +390,6 @@ def get_google_service():
 
 
 def get_or_create_group(service, name: str) -> str:
-    """Return the resourceName of a Google contact group, creating it if missing."""
     groups = service.contactGroups().list().execute().get('contactGroups', [])
     for g in groups:
         if g.get('name') == name:
@@ -426,11 +402,6 @@ def get_or_create_group(service, name: str) -> str:
 
 
 def fetch_existing_cpx_contacts(service) -> Dict[str, dict]:
-    """
-    Return all Google contacts that carry a CPM_ID externalId.
-    Dict key is the cpx_id string; value is the full person dict from the API.
-    Only touches contacts CPM created — never personal contacts.
-    """
     existing: Dict[str, dict] = {}
     page_token = None
 
@@ -460,7 +431,6 @@ def fetch_existing_cpx_contacts(service) -> Dict[str, dict]:
 
 
 def _person_body(contact: CPMContact, group_resource: str) -> dict:
-    """Build the request body for a People API create or update call."""
     body: dict = {
         'names': [{
             'displayName': contact.display_name,
@@ -478,8 +448,6 @@ def _person_body(contact: CPMContact, group_resource: str) -> dict:
 
 
 def _needs_update(existing_person: dict, contact: CPMContact) -> bool:
-    """Return True if the Google contact differs from the current CPM data."""
-    # Check display name
     current_display = ''
     for n in existing_person.get('names', []):
         if n.get('metadata', {}).get('primary'):
@@ -487,37 +455,22 @@ def _needs_update(existing_person: dict, contact: CPMContact) -> bool:
             break
     if current_display != contact.display_name:
         return True
-
-    # Check mobile
     google_mobiles = {p['value'] for p in existing_person.get('phoneNumbers', [])}
     if contact.mobile and contact.mobile not in google_mobiles:
         return True
-
-    # Check email
     google_emails = {e['value'].lower() for e in existing_person.get('emailAddresses', [])}
     if contact.email and contact.email.lower() not in google_emails:
         return True
-
     return False
 
 
 def _api_pause():
-    """Stay within the People API rate limit of 90 requests/minute."""
     time.sleep(0.7)
 
 
 def sync_to_google_contacts(contacts: List[CPMContact]):
-    """
-    Full create/update/delete sync.
-
-    - Creates contacts that don't exist in Google yet.
-    - Updates contacts whose name, mobile, or email has changed.
-    - Deletes contacts that are no longer in the PropertyMe reports
-      (i.e. they've been archived). Only ever touches CPM_ID-tagged contacts.
-    """
     service = get_google_service()
 
-    # Ensure all three contact groups exist
     group_resources = {
         ct: get_or_create_group(service, label)
         for ct, label in GROUP_LABELS.items()
@@ -527,7 +480,6 @@ def sync_to_google_contacts(contacts: List[CPMContact]):
     current_ids = {c.cpx_id for c in contacts}
     created = updated = deleted = skipped = 0
 
-    # ── Create or update ─────────────────────────────────────────────────────────
     for contact in contacts:
         group_res = group_resources[contact.contact_type]
 
@@ -559,7 +511,6 @@ def sync_to_google_contacts(contacts: List[CPMContact]):
             except HttpError as e:
                 log.warning(f"Create failed for {contact.display_name}: {e}")
 
-    # ── Delete archived contacts ──────────────────────────────────────────────────
     for cpx_id, person in existing.items():
         if cpx_id not in current_ids:
             try:
@@ -583,11 +534,9 @@ def sync_to_google_contacts(contacts: List[CPMContact]):
 async def main():
     log.info("=== CPM Contact Sync starting ===")
 
-    # 1. Download reports from PropertyMe
     log.info("Step 1: Downloading contact reports from PropertyMe...")
     report_files = await download_contact_reports()
 
-    # 2. Parse all three reports
     log.info("Step 2: Parsing reports...")
     all_contacts: List[CPMContact] = []
     for contact_type, filepath in report_files.items():
@@ -595,7 +544,6 @@ async def main():
 
     log.info(f"Total contacts to sync: {len(all_contacts)}")
 
-    # 3. Sync to Google Contacts
     log.info("Step 3: Syncing to Google Contacts...")
     sync_to_google_contacts(all_contacts)
 
