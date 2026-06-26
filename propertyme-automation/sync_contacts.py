@@ -292,6 +292,8 @@ async def download_contact_reports() -> Dict[str, Path]:
         browser = await pw.chromium.launch(headless=True)
         ctx     = await browser.new_context(accept_downloads=True)
         page    = await ctx.new_page()
+      from playwright_stealth import stealth_async
+      await stealth_async(page)
 
         try:
             await login(page)
