@@ -355,6 +355,8 @@ def main():
             viewport={"width": 1280, "height": 800},
         )
         page    = context.new_page()
+        from playwright_stealth import stealth_sync
+        stealth_sync(page)
 
         try:
             login(page)
