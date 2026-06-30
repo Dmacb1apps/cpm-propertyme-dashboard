@@ -3,8 +3,9 @@ Downloads two PropertyMe reports for the current month:
   - Folio Ledger (PDF)
   - Monthly Property/Rent (Excel)
 
-Logs in on every run using PROPERTYME_EMAIL, PROPERTYME_PASSWORD, and
-PROPERTYME_TOTP_SECRET environment variables. No session file required.
+Authenticates using stored session cookies (PROPERTYME_COOKIES env var)
+instead of email/password/TOTP, since Cloudflare Turnstile blocks headless
+login. Run extract_cookies.py locally to generate/renew cookies.
 
 Usage:
     python3 download_reports.py
@@ -12,7 +13,6 @@ Usage:
 
 import os
 import time
-import pyotp
 from datetime import date
 from pathlib import Path
 from dotenv import load_dotenv
@@ -48,114 +48,54 @@ def set_date_field(page, selector, value):
     field.press("Tab")
 
 
-def login(page):
+def login(context, page):
     """
-    Drive to manager.propertyme.com which redirects to login when unauthenticated.
-    Fills credentials, handles 2FA if prompted, then waits for redirect back.
+    Load stored PropertyMe session cookies and navigate to the dashboard.
+
+    Replaces the old email/password/TOTP login flow, which is blocked by
+    Cloudflare Turnstile in headless browsers.
+
+    Requires PROPERTYME_COOKIES env var (JSON array of cookie dicts).
+    Run extract_cookies.py locally to generate it, store as a GitHub secret.
+    Renew roughly monthly.
     """
-    email    = os.environ["PROPERTYME_EMAIL"]
-    password = os.environ["PROPERTYME_PASSWORD"]
+    import json
 
-    print(f"  Email being used: {email[:5]}...")
-    print(f"  Password loaded: {'yes' if password else 'NO - EMPTY'}")
+    cookies_raw = os.environ.get("PROPERTYME_COOKIES")
+    if not cookies_raw:
+        raise RuntimeError(
+            "PROPERTYME_COOKIES is not set. "
+            "Run extract_cookies.py locally and store the output as a GitHub secret."
+        )
 
-    print(f"Navigating to {MANAGER_URL} (will redirect to login)...")
+    try:
+        cookies = json.loads(cookies_raw)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"PROPERTYME_COOKIES is not valid JSON: {exc}") from exc
+
+    print(f"  Loading {len(cookies)} cookies into browser context...")
+    context.add_cookies(cookies)
+
+    print(f"  Navigating to {MANAGER_URL}...")
     page.goto(MANAGER_URL)
     try:
         page.wait_for_load_state("networkidle", timeout=20000)
     except Exception:
         page.wait_for_load_state("domcontentloaded")
-    print(f"  Landed on: {page.url}")
 
-    screenshot_path = SCRIPT_DIR / "debug_login_page.png"
-    page.screenshot(path=str(screenshot_path))
-    print(f"  Screenshot saved: {screenshot_path}")
+    page.wait_for_timeout(3000)
+    current_url = page.url
+    print(f"  Landed on: {current_url}")
 
-    inputs = page.query_selector_all("input")
-    print(f"  Found {len(inputs)} input field(s):")
-    for inp in inputs:
-        print("  INPUT:",
-              inp.get_attribute("type"),
-              inp.get_attribute("name"),
-              inp.get_attribute("id"),
-              inp.get_attribute("placeholder"))
-
-    # Wait for the form to fully load
-    page.wait_for_selector("input[type='email']", timeout=15000)
-
-    inputs = page.query_selector_all("input")
-    print(f"  Found {len(inputs)} input field(s):")
-    for inp in inputs:
-        print("  INPUT found:",
-              inp.get_attribute("type"),
-              inp.get_attribute("name"),
-              inp.get_attribute("id"))
-
-    # Fill email
-    email_input = page.locator("input[type='email']")
-    email_input.click()
-    email_input.fill(email)
-    page.wait_for_timeout(800)
-
-    # Fill password
-    password_input = page.locator("input[type='password']")
-    password_input.click()
-    password_input.fill(password)
-    page.wait_for_timeout(800)
-
-    # Submit
-    btn = page.locator("button:has-text('Log in')")
-    btn.wait_for(state="visible")
-    btn.scroll_into_view_if_needed()
-    page.wait_for_timeout(500)
-    btn.click()
-    print(f"  URL immediately after Log in click: {page.url}")
-
-    page.wait_for_timeout(2000)
-    page.screenshot(path=str(SCRIPT_DIR / "debug_after_submit.png"))
-    print(f"  URL after 2s wait: {page.url}")
-
-    # Handle 2FA — PropertyMe redirects to /auth/verify
-    page.wait_for_load_state("networkidle", timeout=20000)
-    print(f"  URL after networkidle: {page.url}")
-    if "/auth/verify" in page.url:
-        print("  2FA page detected.")
-        page.screenshot(path=str(SCRIPT_DIR / "debug_2fa_page.png"))
-        print(f"  Screenshot saved: debug_2fa_page.png")
-
-        inputs = page.query_selector_all("input")
-        print(f"  Found {len(inputs)} input(s) on 2FA page:")
-        for inp in inputs:
-            print("  2FA INPUT:",
-                  inp.get_attribute("type"),
-                  inp.get_attribute("name"),
-                  inp.get_attribute("id"))
-
-        code = pyotp.TOTP(os.environ["PROPERTYME_TOTP_SECRET"]).now()
-        print(f"  Entering 2FA code: {code}")
-
-        otp_boxes = page.locator("input[type='text']")
-        otp_boxes.first.click()
-        page.keyboard.type(code)
-        page.wait_for_timeout(500)
-
-        page.get_by_role("button", name="Log in").click()
-        print(f"  URL immediately after 2FA submit: {page.url}")
-        # manager.propertyme.com uses hash-based routing so no load event fires —
-        # poll the href directly until we've left the auth domain
-        page.wait_for_function(
-            "() => !window.location.href.includes('id.propertyme.com')",
-            timeout=30000,
-        )
-        print(f"  Redirected to: {page.url}")
-    else:
-        print("  No 2FA page detected — waiting for manager redirect...")
-        page.wait_for_function(
-            "() => !window.location.href.includes('id.propertyme.com')",
-            timeout=20000,
+    if "id.propertyme.com" in current_url:
+        screenshot_path = SCRIPT_DIR / "debug_session_expired.png"
+        page.screenshot(path=str(screenshot_path))
+        raise RuntimeError(
+            "PropertyMe session cookies have expired — redirected to login. "
+            "Run extract_cookies.py locally and update the PROPERTYME_COOKIES GitHub secret."
         )
 
-    print(f"  Login complete — current URL: {page.url}")
+    print(f"  Session valid — current URL: {current_url}")
 
 
 def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
@@ -355,11 +295,9 @@ def main():
             viewport={"width": 1280, "height": 800},
         )
         page    = context.new_page()
-        from playwright_stealth import stealth_sync
-        stealth_sync(page)
 
         try:
-            login(page)
+            login(context, page)
 
             # login() already landed us on manager.propertyme.com after redirect —
             # wait for the reports menu to appear without navigating again.
