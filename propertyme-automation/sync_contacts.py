@@ -6,15 +6,13 @@ Downloads Contact Details reports from PropertyMe (Tenant, Owner, Supplier),
 parses them, and syncs to Google Contacts daily.
 
 Required GitHub Secrets:
-  PROPERTYME_EMAIL
-  PROPERTYME_PASSWORD
-  PROPERTYME_TOTP_SECRET
+  PROPERTYME_COOKIES
   GOOGLE_CONTACTS_CLIENT_ID
   GOOGLE_CONTACTS_CLIENT_SECRET
   GOOGLE_CONTACTS_REFRESH_TOKEN
 
 Required packages (in requirements.txt):
-  playwright openpyxl google-api-python-client google-auth pyotp
+  playwright openpyxl google-api-python-client google-auth
 
 Set DEBUG_SCREENSHOTS=1 to capture screenshots at each navigation step.
 """
@@ -28,7 +26,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 
-import pyotp
+import json
 import openpyxl  # NOTE: use data_only=True but NOT read_only=True — PropertyMe's
                  # xlsx exports omit the dimension record, which causes read_only
                  # mode to report max_row=1 and return only the header row.
@@ -46,9 +44,6 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # ── Config ───────────────────────────────────────────────────────────────────────
-PM_EMAIL    = os.environ['PROPERTYME_EMAIL']
-PM_PASSWORD = os.environ['PROPERTYME_PASSWORD']
-PM_TOTP     = os.environ['PROPERTYME_TOTP_SECRET']
 GC_CLIENT_ID     = os.environ['GOOGLE_CONTACTS_CLIENT_ID']
 GC_CLIENT_SECRET = os.environ['GOOGLE_CONTACTS_CLIENT_SECRET']
 GC_REFRESH_TOKEN = os.environ['GOOGLE_CONTACTS_REFRESH_TOKEN']
@@ -204,76 +199,52 @@ def parse_report(filepath: Path, contact_type: str) -> List[CPMContact]:
 
 
 # ── PropertyMe Login ──────────────────────────────────────────────────────────────
-async def login(page):
+async def login(context, page):
     """
-    Login to PropertyMe. Mirrors download_reports.py exactly so selectors
-    are guaranteed to match the live UI.
+    Load stored PropertyMe session cookies and navigate to the dashboard.
+
+    Replaces the old email/password/TOTP login flow, which is blocked by
+    Cloudflare Turnstile in headless browsers.
+
+    Requires PROPERTYME_COOKIES env var (JSON array of cookie dicts).
+    Run extract_cookies.py locally to generate it, store as a GitHub secret.
+    Renew roughly monthly.
     """
-    log.info(f"Navigating to {MANAGER_URL}...")
+    cookies_raw = os.environ.get("PROPERTYME_COOKIES")
+    if not cookies_raw:
+        raise RuntimeError(
+            "PROPERTYME_COOKIES is not set. "
+            "Run extract_cookies.py locally and store the output as a GitHub secret."
+        )
+
+    try:
+        cookies = json.loads(cookies_raw)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"PROPERTYME_COOKIES is not valid JSON: {exc}") from exc
+
+    log.info(f"  Loading {len(cookies)} cookies into browser context...")
+    await context.add_cookies(cookies)
+
+    log.info(f"  Navigating to {MANAGER_URL}...")
     await page.goto(MANAGER_URL)
     try:
         await page.wait_for_load_state('networkidle', timeout=20000)
     except Exception:
         await page.wait_for_load_state('domcontentloaded')
 
-    log.info(f"  Landed on: {page.url}")
+    await page.wait_for_timeout(3000)
+    current_url = page.url
+    log.info(f"  Landed on: {current_url}")
 
-    if DEBUG:
-        await page.screenshot(path='/tmp/pm_login_page.png', full_page=True)
-
-    # Wait for email field then fill credentials
-    await page.wait_for_selector("input[type='email']", timeout=15000)
-
-    email_input = page.locator("input[type='email']")
-    await email_input.click()
-    await email_input.fill(PM_EMAIL)
-    await page.wait_for_timeout(800)
-
-    password_input = page.locator("input[type='password']")
-    await password_input.click()
-    await password_input.fill(PM_PASSWORD)
-    await page.wait_for_timeout(800)
-
-    btn = page.locator("button:has-text('Log in')")
-    await btn.wait_for(state='visible')
-    await btn.scroll_into_view_if_needed()
-    await page.wait_for_timeout(500)
-    await btn.click()
-
-    await page.wait_for_timeout(2000)
-    log.info(f"  URL after login click: {page.url}")
-
-    if DEBUG:
-        await page.screenshot(path='/tmp/pm_after_submit.png', full_page=True)
-
-    await page.wait_for_load_state('networkidle', timeout=20000)
-    log.info(f"  URL after networkidle: {page.url}")
-
-    if '/auth/verify' in page.url:
-        log.info("  2FA page detected, entering TOTP code...")
+    if 'id.propertyme.com' in current_url:
         if DEBUG:
-            await page.screenshot(path='/tmp/pm_2fa_page.png', full_page=True)
-
-        code = pyotp.TOTP(PM_TOTP).now()
-        log.info(f"  Entering TOTP code: {code}")
-        otp_boxes = page.locator("input[type='text']")
-        await otp_boxes.first.click()
-        await page.keyboard.type(code)
-        await page.wait_for_timeout(500)
-        await page.get_by_role('button', name='Log in').click()
-
-        await page.wait_for_function(
-            "() => !window.location.href.includes('id.propertyme.com')",
-            timeout=30000,
-        )
-    else:
-        log.info("  No 2FA page — waiting for manager redirect...")
-        await page.wait_for_function(
-            "() => !window.location.href.includes('id.propertyme.com')",
-            timeout=20000,
+            await page.screenshot(path='/tmp/pm_session_expired.png', full_page=True)
+        raise RuntimeError(
+            "PropertyMe session cookies have expired — redirected to login. "
+            "Run extract_cookies.py locally and update the PROPERTYME_COOKIES GitHub secret."
         )
 
-    log.info(f"  Login complete — current URL: {page.url}")
+    log.info(f"  Session valid — current URL: {current_url}")
 
     if DEBUG:
         await page.screenshot(path='/tmp/pm_post_login.png', full_page=True)
@@ -292,11 +263,9 @@ async def download_contact_reports() -> Dict[str, Path]:
         browser = await pw.chromium.launch(headless=True)
         ctx     = await browser.new_context(accept_downloads=True)
         page    = await ctx.new_page()
-      from playwright_stealth import stealth_async
-      await stealth_async(page)
 
         try:
-            await login(page)
+            await login(ctx, page)
 
             for contact_type, report_name in REPORT_NAMES.items():
                 log.info(f"Downloading '{report_name}'...")
