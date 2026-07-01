@@ -351,29 +351,38 @@ async def _download_single_report(page, contact_type: str, report_name: str) -> 
     if DEBUG:
         await report.screenshot(path=f'/tmp/pm_report_generated_{contact_type}.png', full_page=True)
 
-    # Download as Excel
+    # Download as Excel.
+    # Export button opens a dropdown — click Export first, then Export Excel from the dropdown.
+    # Both clicks must be inside the same expect_download context.
     xlsx_path = DOWNLOAD_DIR / f"{contact_type}_contacts.xlsx"
 
-    for btn_text in ['Export to Excel', 'Excel', 'Export', 'Download']:
-        btn = report.get_by_role('button', name=btn_text)
-        if await btn.count() == 0:
-            btn = report.get_by_text(btn_text, exact=True)
-        if await btn.count() > 0:
-            log.info(f"  Clicking '{btn_text}' to download...")
-            async with report.expect_download(timeout=30_000) as dl_info:
-                await btn.first.click()
-            dl = await dl_info.value
-            await dl.save_as(xlsx_path)
-            log.info(f"  Saved to {xlsx_path}")
-            await report.close()
-            return xlsx_path
+    export_btn = report.locator("button:has-text('Export'), a:has-text('Export')")
+    try:
+        await export_btn.first.wait_for(state='visible', timeout=10000)
+    except Exception:
+        await report.close()
+        raise RuntimeError(
+            f"No Export button found for '{report_name}'. "
+            f"Set DEBUG_SCREENSHOTS=1 and check /tmp/pm_report_generated_{contact_type}.png."
+        )
 
+    log.info("  Clicking 'Export' to open dropdown...")
+    async with report.expect_download(timeout=30_000) as dl_info:
+        await export_btn.first.click()
+        # Wait for dropdown to appear then click Export Excel
+        await report.wait_for_timeout(500)
+        for excel_text in ['Export Excel', 'Excel', 'Export to Excel']:
+            excel_opt = report.get_by_text(excel_text, exact=True)
+            if await excel_opt.count() > 0:
+                log.info(f"  Clicking '{excel_text}'...")
+                await excel_opt.first.click()
+                break
+
+    dl = await dl_info.value
+    await dl.save_as(xlsx_path)
+    log.info(f"  Saved to {xlsx_path}")
     await report.close()
-    raise RuntimeError(
-        f"No download button found for '{report_name}'. "
-        f"Tried: 'Export to Excel', 'Excel', 'Export', 'Download'. "
-        f"Set DEBUG_SCREENSHOTS=1 and check /tmp/pm_report_generated_{contact_type}.png."
-    )
+    return xlsx_path
 
 
 # ── Google Contacts Sync ──────────────────────────────────────────────────────────
