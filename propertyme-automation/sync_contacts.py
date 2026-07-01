@@ -441,11 +441,15 @@ def fetch_existing_cpx_contacts(service) -> Dict[str, dict]:
 
 
 def _person_body(contact: CPMContact, group_resource: str) -> dict:
+    # iOS reconstructs the displayed name from givenName + familyName,
+    # ignoring displayName entirely. To ensure the suffix (T01.02, O01.02)
+    # appears on the phone, put the full display_name into givenName and
+    # leave familyName empty.
     body: dict = {
         'names': [{
             'displayName': contact.display_name,
-            'givenName':   contact.first_name or contact.display_name,
-            'familyName':  contact.last_name or '',
+            'givenName':   contact.display_name,
+            'familyName':  '',
         }],
         'externalIds': [{'value': contact.cpx_id, 'type': 'CPM_ID'}],
         'memberships': [{'contactGroupMembership': {'contactGroupResourceName': group_resource}}],
