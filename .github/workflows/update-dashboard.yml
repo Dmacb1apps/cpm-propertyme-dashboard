@@ -94,6 +94,14 @@ jobs:
           GOOGLE_CONTACTS_CLIENT_ID: ${{ secrets.GOOGLE_CONTACTS_CLIENT_ID }}
           GOOGLE_CONTACTS_CLIENT_SECRET: ${{ secrets.GOOGLE_CONTACTS_CLIENT_SECRET }}
           GOOGLE_CONTACTS_REFRESH_TOKEN: ${{ secrets.GOOGLE_CONTACTS_REFRESH_TOKEN }}
+          DEBUG_SCREENSHOTS: "1"
         run: |
           cd propertyme-automation
-          python sync_contacts.py
+          python sync_contacts.py || true
+      - name: Upload debug screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-debug-screenshots
+          path: /tmp/pm_*.png
+          if-no-files-found: ignore
