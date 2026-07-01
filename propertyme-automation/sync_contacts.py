@@ -321,42 +321,54 @@ async def _download_single_report(page, contact_type: str, report_name: str) -> 
             f"Set DEBUG_SCREENSHOTS=1 and check /tmp/pm_reports_{contact_type}.png."
         )
 
-    await report_link.first.click()
-    await page.wait_for_load_state('domcontentloaded')
-    await page.wait_for_timeout(2000)
+    # Report links open in a popup window — wrap click in expect_popup
+    async with page.expect_popup() as popup_info:
+        await report_link.first.click()
+    report = await popup_info.value
+
+    try:
+        await report.wait_for_load_state('networkidle', timeout=15000)
+    except Exception:
+        await report.wait_for_load_state('domcontentloaded')
+    await report.wait_for_timeout(2000)
 
     if DEBUG:
-        await page.screenshot(path=f'/tmp/pm_report_open_{contact_type}.png', full_page=True)
+        await report.screenshot(path=f'/tmp/pm_report_open_{contact_type}.png', full_page=True)
 
     # Click Generate / Run if required
     for btn_text in ['Generate', 'Run Report', 'Run', 'Search']:
-        btn = page.get_by_role('button', name=btn_text)
+        btn = report.get_by_role('button', name=btn_text)
         if await btn.count() > 0:
             log.info(f"  Clicking '{btn_text}'...")
             await btn.first.click()
-            await page.wait_for_load_state('networkidle')
-            await page.wait_for_timeout(2500)
+            try:
+                await report.wait_for_load_state('networkidle', timeout=15000)
+            except Exception:
+                pass
+            await report.wait_for_timeout(2500)
             break
 
     if DEBUG:
-        await page.screenshot(path=f'/tmp/pm_report_generated_{contact_type}.png', full_page=True)
+        await report.screenshot(path=f'/tmp/pm_report_generated_{contact_type}.png', full_page=True)
 
     # Download as Excel
     xlsx_path = DOWNLOAD_DIR / f"{contact_type}_contacts.xlsx"
 
     for btn_text in ['Export to Excel', 'Excel', 'Export', 'Download']:
-        btn = page.get_by_role('button', name=btn_text)
+        btn = report.get_by_role('button', name=btn_text)
         if await btn.count() == 0:
-            btn = page.get_by_text(btn_text, exact=True)
+            btn = report.get_by_text(btn_text, exact=True)
         if await btn.count() > 0:
             log.info(f"  Clicking '{btn_text}' to download...")
-            async with page.expect_download(timeout=30_000) as dl_info:
+            async with report.expect_download(timeout=30_000) as dl_info:
                 await btn.first.click()
             dl = await dl_info.value
             await dl.save_as(xlsx_path)
             log.info(f"  Saved to {xlsx_path}")
+            await report.close()
             return xlsx_path
 
+    await report.close()
     raise RuntimeError(
         f"No download button found for '{report_name}'. "
         f"Tried: 'Export to Excel', 'Excel', 'Export', 'Download'. "
