@@ -282,12 +282,30 @@ async def _download_single_report(page, contact_type: str, report_name: str) -> 
     """
     Navigate to a Contact Details report and download as Excel.
 
-    PropertyMe navigation: Reports section -> find report by name -> Generate -> Export Excel
+    PropertyMe navigation: Dashboard -> click Reports in left sidebar ->
+    find report by name -> Generate -> Export Excel
 
     If this step fails, set DEBUG_SCREENSHOTS=1 and check /tmp/ images to see
     what's on screen and adjust selectors accordingly.
     """
-    await page.goto(f'{MANAGER_URL}/reports', wait_until='domcontentloaded')
+    # Navigate to dashboard first, then click Reports in the left sidebar.
+    # PropertyMe uses hash-based routing so /reports is a dead URL.
+    await page.goto(MANAGER_URL, wait_until='domcontentloaded')
+    await page.wait_for_timeout(2000)
+
+    # Click Reports in the left nav sidebar
+    reports_nav = page.locator("a:has-text('Reports'), [href*='report' i]").first
+    try:
+        await reports_nav.wait_for(state='visible', timeout=10000)
+        await reports_nav.click()
+    except Exception:
+        # Fallback: try by role
+        await page.get_by_role('link', name='Reports').click()
+
+    try:
+        await page.wait_for_load_state('networkidle', timeout=15000)
+    except Exception:
+        await page.wait_for_load_state('domcontentloaded')
     await page.wait_for_timeout(2500)
 
     if DEBUG:
