@@ -12,3 +12,12 @@ propertyme-automation/debug_*.json
 propertyme-automation/debug_*.png
 propertyme-automation/xero_tokens.json
 propertyme-automation/propertyme_cookies.json
+propertyme-automation/test_screenshots/
+
+# One-off local inspection scripts/screenshots (e.g. ad hoc DOM/selector
+# debugging against a live login) should never be committed - these are
+# throwaway and may capture on-screen credentials or MFA codes.
+scratch_*.py
+inspect_*.py
+spinner_t*.png
+otp_filled.png
