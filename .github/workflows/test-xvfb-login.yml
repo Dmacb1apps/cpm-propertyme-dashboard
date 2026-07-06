@@ -1,0 +1,41 @@
+name: Test xvfb Non-Headless Login
+
+on:
+  workflow_dispatch:   # manual trigger only — no schedule
+
+jobs:
+  test-login:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r propertyme-automation/requirements.txt
+
+      - name: Install Playwright browsers
+        run: python -m playwright install --with-deps chromium
+
+      - name: Install xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Run non-headless login test under xvfb
+        env:
+          PROPERTYME_EMAIL: ${{ secrets.PROPERTYME_EMAIL }}
+          PROPERTYME_PASSWORD: ${{ secrets.PROPERTYME_PASSWORD }}
+          PROPERTYME_TOTP_SECRET: ${{ secrets.PROPERTYME_TOTP_SECRET }}
+        run: xvfb-run -a python propertyme-automation/test_xvfb_login.py
+
+      - name: Upload login screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xvfb-login-screenshots
+          path: propertyme-automation/test_screenshots/*.png
+          if-no-files-found: ignore
