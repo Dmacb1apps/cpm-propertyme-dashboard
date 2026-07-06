@@ -22,6 +22,13 @@ from playwright.sync_api import sync_playwright
 SCRIPT_DIR = Path(__file__).parent
 SCREENSHOT_DIR = SCRIPT_DIR / "test_screenshots"
 MANAGER_URL = "https://manager.propertyme.com"
+# Same selector download_reports.py waits on post-login to confirm the
+# dashboard shell (not just the branded loading spinner) has rendered.
+DASHBOARD_READY_SELECTOR = "[data-test-id='reports-menu']"
+# angular-loading-bar element PropertyMe shows during the branded splash
+# screen (login_success.png) and on subsequent XHRs; hidden once real
+# dashboard content has rendered. Confirmed by live inspection.
+LOADING_OVERLAY_SELECTOR = "#loading-bar-spinner"
 
 
 def looks_like_turnstile(page) -> bool:
@@ -131,7 +138,39 @@ def login(page):
         print("FAILED — still on id.propertyme.com after login flow completed.")
         return "failed"
 
-    print(f"  Login complete — current URL: {page.url}")
+    # Stage 2: leaving the login domain only means the redirect fired, not that
+    # the dashboard has rendered — a stuck spinner or silent load failure looks
+    # identical to a real success at this point. Confirm the dashboard shell
+    # itself appeared before calling this a success.
+    print(f"  URL left login domain — waiting for dashboard shell ('{DASHBOARD_READY_SELECTOR}')...")
+    try:
+        page.wait_for_selector(DASHBOARD_READY_SELECTOR, state="visible", timeout=15000)
+    except Exception:
+        print(
+            f"STUCK LOADING — URL left id.propertyme.com but "
+            f"'{DASHBOARD_READY_SELECTOR}' never appeared within timeout. "
+            f"Current URL: {page.url}"
+        )
+        return "stuck"
+
+    print(f"Dashboard selector {DASHBOARD_READY_SELECTOR} found and visible")
+
+    # Stage 3: the dashboard-shell selector can be present in the DOM while the
+    # branded loading spinner still covers it (login_success.png showed exactly
+    # this). Confirm the spinner overlay has actually gone before calling this
+    # a success.
+    print(f"  Waiting for loading overlay ('{LOADING_OVERLAY_SELECTOR}') to disappear...")
+    try:
+        page.wait_for_selector(LOADING_OVERLAY_SELECTOR, state="hidden", timeout=15000)
+    except Exception:
+        print(
+            f"STUCK LOADING — '{DASHBOARD_READY_SELECTOR}' is visible but "
+            f"'{LOADING_OVERLAY_SELECTOR}' never disappeared within timeout. "
+            f"Current URL: {page.url}"
+        )
+        return "stuck"
+
+    print(f"  Loading overlay gone — dashboard shell confirmed loaded — current URL: {page.url}")
     return "success"
 
 
@@ -167,12 +206,32 @@ def main():
             screenshot_path = SCREENSHOT_DIR / f"login_{result}.png"
             page.screenshot(path=str(screenshot_path))
             print(f"Screenshot saved: {screenshot_path}")
+
+            if result == "success":
+                page.wait_for_timeout(2000)
+                confirm_path = SCREENSHOT_DIR / "login_success_confirmed.png"
+                page.screenshot(path=str(confirm_path))
+                print(f"Confirmation screenshot saved: {confirm_path}")
+
             context.close()
             browser.close()
 
-    print(f"\nRESULT: {result.upper()}")
+    result_labels = {
+        "success": "SUCCESS",
+        "turnstile": "TURNSTILE",
+        "failed": "FAILED",
+        "stuck": "STUCK_LOADING",
+    }
+    print(f"\nRESULT: {result_labels.get(result, result.upper())}")
     if result == "turnstile":
         print("Turnstile challenge blocked the non-headless run — hypothesis disproved.")
+        sys.exit(1)
+    elif result == "stuck":
+        print(
+            "URL left the login domain but the dashboard shell never rendered — "
+            "possible stuck spinner, slow API call, or silent load failure. "
+            "This is NOT a confirmed success."
+        )
         sys.exit(1)
     elif result == "failed":
         print("Login failed for a reason other than Turnstile — see log above.")
