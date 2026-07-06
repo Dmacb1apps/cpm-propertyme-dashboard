@@ -1,7 +1,16 @@
 name: Test xvfb Non-Headless Login
 
 on:
-  workflow_dispatch:   # manual trigger only — no schedule
+  workflow_dispatch:   # manual trigger — keep this available
+  schedule:
+    # TEMPORARY: every 30 min to gather repeated Turnstile pass/fail data.
+    # Remove this schedule block once enough runs are collected — see
+    # instructions in the task/PR description for how to revert.
+    - cron: '*/30 * * * *'
+
+concurrency:
+  group: xvfb-login-test
+  cancel-in-progress: false
 
 jobs:
   test-login:
