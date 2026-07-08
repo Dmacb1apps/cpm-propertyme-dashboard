@@ -14,6 +14,7 @@ Usage (must run non-headless under a virtual display):
 """
 
 import os
+import random
 import sys
 import pyotp
 from pathlib import Path
@@ -174,6 +175,17 @@ def login(page):
     return "success"
 
 
+MAX_ATTEMPTS = 3
+RETRY_WAIT_RANGE_SECONDS = (60, 90)
+
+RESULT_LABELS = {
+    "success": "SUCCESS",
+    "turnstile": "TURNSTILE",
+    "failed": "FAILED",
+    "stuck": "STUCK_LOADING",
+}
+
+
 def main():
     SCREENSHOT_DIR.mkdir(exist_ok=True)
 
@@ -198,33 +210,54 @@ def main():
 
         result = "failed"
         try:
-            result = login(page)
-        except Exception as e:
-            print(f"ERROR during login: {e}")
-            result = "failed"
+            for attempt in range(1, MAX_ATTEMPTS + 1):
+                print(f"\n=== Login attempt {attempt} of {MAX_ATTEMPTS} ===")
+                try:
+                    result = login(page)
+                except Exception as e:
+                    print(f"ERROR during login: {e}")
+                    result = "failed"
+
+                screenshot_path = SCREENSHOT_DIR / f"login_attempt{attempt}_{result}.png"
+                page.screenshot(path=str(screenshot_path))
+                print(f"Screenshot saved: {screenshot_path}")
+
+                if result == "success":
+                    print(f"SUCCESS on attempt {attempt} of {MAX_ATTEMPTS}")
+                    page.wait_for_timeout(2000)
+                    confirm_path = SCREENSHOT_DIR / "login_success_confirmed.png"
+                    page.screenshot(path=str(confirm_path))
+                    print(f"Confirmation screenshot saved: {confirm_path}")
+                    break
+
+                if result != "turnstile":
+                    # "stuck" or generic "failed" indicate a script/selector bug,
+                    # not a transient block — retrying would hide a real problem.
+                    print(
+                        f"FAILED after attempt {attempt} of {MAX_ATTEMPTS}, "
+                        f"final result: {RESULT_LABELS.get(result, result.upper())} "
+                        "— not a Turnstile block, not retrying."
+                    )
+                    break
+
+                if attempt == MAX_ATTEMPTS:
+                    print(f"FAILED after {MAX_ATTEMPTS} attempts, final result: TURNSTILE")
+                    break
+
+                wait_s = random.uniform(*RETRY_WAIT_RANGE_SECONDS)
+                print(
+                    f"TURNSTILE on attempt {attempt} of {MAX_ATTEMPTS} — "
+                    f"waiting {wait_s:.0f}s, then retrying from scratch "
+                    "(fresh navigation, fresh TOTP code)..."
+                )
+                page.wait_for_timeout(wait_s * 1000)
         finally:
-            screenshot_path = SCREENSHOT_DIR / f"login_{result}.png"
-            page.screenshot(path=str(screenshot_path))
-            print(f"Screenshot saved: {screenshot_path}")
-
-            if result == "success":
-                page.wait_for_timeout(2000)
-                confirm_path = SCREENSHOT_DIR / "login_success_confirmed.png"
-                page.screenshot(path=str(confirm_path))
-                print(f"Confirmation screenshot saved: {confirm_path}")
-
             context.close()
             browser.close()
 
-    result_labels = {
-        "success": "SUCCESS",
-        "turnstile": "TURNSTILE",
-        "failed": "FAILED",
-        "stuck": "STUCK_LOADING",
-    }
-    print(f"\nRESULT: {result_labels.get(result, result.upper())}")
+    print(f"\nRESULT: {RESULT_LABELS.get(result, result.upper())}")
     if result == "turnstile":
-        print("Turnstile challenge blocked the non-headless run — hypothesis disproved.")
+        print("Turnstile challenge blocked every attempt — hypothesis disproved for this run.")
         sys.exit(1)
     elif result == "stuck":
         print(
