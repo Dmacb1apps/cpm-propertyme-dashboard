@@ -3,9 +3,11 @@ Downloads two PropertyMe reports for the current month:
   - Folio Ledger (PDF)
   - Monthly Property/Rent (Excel)
 
-Authenticates using stored session cookies (PROPERTYME_COOKIES env var)
-instead of email/password/TOTP, since Cloudflare Turnstile blocks headless
-login. Run extract_cookies.py locally to generate/renew cookies.
+Authenticates via full email/password/TOTP login under a non-headless
+Chromium browser (via xvfb in CI), with Turnstile-retry logic shared with
+test_xvfb_login.py. Session cookies (PROPERTYME_COOKIES, extract_cookies.py)
+expired every 18-24h and required manual renewal — no longer used here, but
+left in place as a manual rollback option.
 
 Usage:
     python3 download_reports.py
@@ -19,6 +21,7 @@ from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 
 from download_active_inspections import download_active_inspections_excel
+from propertyme_login import login_with_retry
 
 load_dotenv(Path(__file__).parent / ".env")
 
@@ -28,7 +31,6 @@ SYSTEM_DOWNLOADS = Path.home() / "Downloads"
 # Navigating to manager.propertyme.com redirects to login when unauthenticated,
 # then redirects back after successful login — keeping session cookies on the right domain.
 MANAGER_URL      = "https://manager.propertyme.com"
-HEADLESS         = os.environ.get("CI") == "true"
 
 
 def this_month_range():
@@ -48,54 +50,24 @@ def set_date_field(page, selector, value):
     field.press("Tab")
 
 
-def login(context, page):
+def login(page):
     """
-    Load stored PropertyMe session cookies and navigate to the dashboard.
+    Full email/password/TOTP login, reusing the same Turnstile-detection
+    and retry logic validated in test_xvfb_login.py (see propertyme_login.py).
 
-    Replaces the old email/password/TOTP login flow, which is blocked by
-    Cloudflare Turnstile in headless browsers.
-
-    Requires PROPERTYME_COOKIES env var (JSON array of cookie dicts).
-    Run extract_cookies.py locally to generate it, store as a GitHub secret.
-    Renew roughly monthly.
+    Requires PROPERTYME_EMAIL, PROPERTYME_PASSWORD, PROPERTYME_TOTP_SECRET
+    env vars.
     """
-    import json
-
-    cookies_raw = os.environ.get("PROPERTYME_COOKIES")
-    if not cookies_raw:
-        raise RuntimeError(
-            "PROPERTYME_COOKIES is not set. "
-            "Run extract_cookies.py locally and store the output as a GitHub secret."
-        )
-
-    try:
-        cookies = json.loads(cookies_raw)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"PROPERTYME_COOKIES is not valid JSON: {exc}") from exc
-
-    print(f"  Loading {len(cookies)} cookies into browser context...")
-    context.add_cookies(cookies)
-
-    print(f"  Navigating to {MANAGER_URL}...")
-    page.goto(MANAGER_URL)
-    try:
-        page.wait_for_load_state("networkidle", timeout=20000)
-    except Exception:
-        page.wait_for_load_state("domcontentloaded")
-
-    page.wait_for_timeout(3000)
-    current_url = page.url
-    print(f"  Landed on: {current_url}")
-
-    if "id.propertyme.com" in current_url:
-        screenshot_path = SCRIPT_DIR / "debug_session_expired.png"
+    result = login_with_retry(page)
+    if result != "success":
+        screenshot_path = SCRIPT_DIR / "debug_login_failed.png"
         page.screenshot(path=str(screenshot_path))
         raise RuntimeError(
-            "PropertyMe session cookies have expired — redirected to login. "
-            "Run extract_cookies.py locally and update the PROPERTYME_COOKIES GitHub secret."
+            f"PropertyMe login failed — final result: {result}. "
+            f"Screenshot saved to {screenshot_path}"
         )
 
-    print(f"  Session valid — current URL: {current_url}")
+    print(f"  Login succeeded — current URL: {page.url}")
 
 
 def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
@@ -274,12 +246,13 @@ def main():
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     start_date, end_date, iso_date = this_month_range()
     print(f"Downloads dir: {DOWNLOADS_DIR.resolve()}")
-    print(f"Headless     : {HEADLESS}")
     print(f"Date range   : {start_date} → {end_date}")
 
     with sync_playwright() as p:
+        # Must run non-headless (Cloudflare Turnstile blocks headless login) —
+        # in CI this requires the workflow to wrap this script with xvfb-run.
         browser = p.chromium.launch(
-            headless=HEADLESS,
+            headless=False,
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--disable-dev-shm-usage",
@@ -297,7 +270,7 @@ def main():
         page    = context.new_page()
 
         try:
-            login(context, page)
+            login(page)
 
             # login() already landed us on manager.propertyme.com after redirect —
             # wait for the reports menu to appear without navigating again.
