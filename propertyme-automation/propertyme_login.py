@@ -25,12 +25,14 @@ LOADING_OVERLAY_SELECTOR = "#loading-bar-spinner"
 
 MAX_ATTEMPTS = 3
 RETRY_WAIT_RANGE_SECONDS = (60, 90)
+STUCK_2FA_RETRY_WAIT_SECONDS = (5, 10)
 
 RESULT_LABELS = {
     "success": "SUCCESS",
     "turnstile": "TURNSTILE",
     "failed": "FAILED",
     "stuck": "STUCK_LOADING",
+    "2fa_stuck": "2FA_STUCK",
 }
 
 
@@ -105,8 +107,20 @@ def login(page):
 
         otp_boxes = page.locator("input[type='text']")
         otp_boxes.first.click()
-        page.keyboard.type(code)
+        page.keyboard.type(code, delay=120)
         page.wait_for_timeout(500)
+
+        try:
+            page.wait_for_function(
+                """() => {
+                    const btns = [...document.querySelectorAll("button[aria-label='Log in']")];
+                    return btns.some(b => !b.disabled);
+                }""",
+                timeout=8000,
+            )
+        except Exception:
+            print("  2FA Log in button never enabled within timeout — treating as retryable race.")
+            return "2fa_stuck"
 
         page.get_by_role("button", name="Log in").click()
         print(f"  URL immediately after 2FA submit: {page.url}")
@@ -178,16 +192,20 @@ def login(page):
 def login_with_retry(page, screenshot_dir=None):
     """
     Run login() up to MAX_ATTEMPTS times, retrying only on confirmed
-    Turnstile hits (fresh navigation + fresh TOTP each retry, 60-90s wait
-    between attempts). Non-Turnstile failures ("failed"/"stuck") are not
-    retried, since they indicate a script/selector bug rather than a
-    transient block.
+    Turnstile hits and on "2fa_stuck" (fresh navigation + fresh TOTP each
+    retry). Turnstile retries wait 60-90s (Cloudflare cooldown); "2fa_stuck"
+    retries wait only 5-10s, since it's a transient client-side race where
+    the TOTP field's focus-advance JS loses to fast keystroke typing and
+    leaves the submit button disabled, not a Cloudflare block. Non-retryable
+    failures ("failed"/"stuck") are not retried, since they indicate a
+    script/selector bug rather than a transient block.
 
     If screenshot_dir is provided, saves a screenshot after each attempt
     (and a confirmation screenshot on success) — used by the standalone
     test script for diagnostics. Left as None in production use.
 
-    Returns the final result: "success", "turnstile", "failed", or "stuck".
+    Returns the final result: "success", "turnstile", "failed", "stuck", or
+    "2fa_stuck".
     """
     result = "failed"
     for attempt in range(1, MAX_ATTEMPTS + 1):
@@ -212,23 +230,29 @@ def login_with_retry(page, screenshot_dir=None):
                 print(f"Confirmation screenshot saved: {confirm_path}")
             return result
 
-        if result != "turnstile":
+        if result not in ("turnstile", "2fa_stuck"):
             # "stuck" or generic "failed" indicate a script/selector bug,
             # not a transient block — retrying would hide a real problem.
             print(
                 f"FAILED after attempt {attempt} of {MAX_ATTEMPTS}, "
                 f"final result: {RESULT_LABELS.get(result, result.upper())} "
-                "— not a Turnstile block, not retrying."
+                "— not retryable, not retrying."
             )
             return result
 
         if attempt == MAX_ATTEMPTS:
-            print(f"FAILED after {MAX_ATTEMPTS} attempts, final result: TURNSTILE")
+            print(
+                f"FAILED after {MAX_ATTEMPTS} attempts, final result: "
+                f"{RESULT_LABELS.get(result, result.upper())}"
+            )
             return result
 
-        wait_s = random.uniform(*RETRY_WAIT_RANGE_SECONDS)
+        wait_range = (
+            RETRY_WAIT_RANGE_SECONDS if result == "turnstile" else STUCK_2FA_RETRY_WAIT_SECONDS
+        )
+        wait_s = random.uniform(*wait_range)
         print(
-            f"TURNSTILE on attempt {attempt} of {MAX_ATTEMPTS} — "
+            f"{RESULT_LABELS.get(result, result.upper())} on attempt {attempt} of {MAX_ATTEMPTS} — "
             f"waiting {wait_s:.0f}s, then retrying from scratch "
             "(fresh navigation, fresh TOTP code)..."
         )
