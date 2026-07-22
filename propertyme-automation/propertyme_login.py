@@ -107,6 +107,7 @@ def login(page):
 
         otp_boxes = page.locator("input[type='text']")
         otp_boxes.first.click()
+        page.wait_for_timeout(400)
         page.keyboard.type(code, delay=120)
         page.wait_for_timeout(500)
 
