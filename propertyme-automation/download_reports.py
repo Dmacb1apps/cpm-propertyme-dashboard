@@ -70,6 +70,45 @@ def login(page):
     print(f"  Login succeeded — current URL: {page.url}")
 
 
+def dismiss_feature_popup(page):
+    """
+    PropertyMe occasionally shows a Product Fruits "New Features" promo
+    modal right after login (e.g. "Switching to MePay Fast"), overlaying
+    the page and intercepting clicks on report links/buttons underneath it
+    (element seen blocking clicks: <div class="productfruits--container">).
+    Dismiss it if present, using multiple strategies since its close-button
+    markup isn't pinned down.
+    """
+    popup = page.locator("[class*='productfruits']")
+    try:
+        popup.first.wait_for(state="visible", timeout=3000)
+    except Exception:
+        return  # no popup — nothing to do
+
+    print("  Feature announcement popup detected — dismissing...")
+    for selector in [
+        "[class*='productfruits'] button[aria-label='Close']",
+        "[class*='productfruits'] [class*='close']",
+        "[class*='productfruits'] svg",
+    ]:
+        try:
+            page.locator(selector).first.click(timeout=3000)
+            print(f"  Dismissed popup via: {selector}")
+            page.wait_for_timeout(500)
+            return
+        except Exception:
+            continue
+
+    print("  No close button matched — falling back to Escape key.")
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(500)
+
+    if popup.count() > 0 and popup.first.is_visible():
+        print("  Popup still visible after Escape — clicking outside it.")
+        page.mouse.click(10, 10)
+        page.wait_for_timeout(500)
+
+
 def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
     print("  Opening Folio Ledger report...")
     with page.expect_popup() as popup_info:
@@ -278,6 +317,7 @@ def main():
             page.locator("[data-test-id='reports-menu']").wait_for(state="visible", timeout=15000)
             page.locator("[data-test-id='reports-menu']").click()
             page.wait_for_timeout(500)
+            dismiss_feature_popup(page)
 
             download_folio_ledger(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
             download_monthly_rent(page, start_date, end_date, iso_date, DOWNLOADS_DIR)
