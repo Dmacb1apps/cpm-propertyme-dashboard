@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-23T00:13:04+00:00",
+  "updated": "2026-07-23T22:06:25+00:00",
   "month": "July 2026",
   "complexes": [
     {
@@ -7,10 +7,10 @@
       "name": "Everton Ridge",
       "owners": 26,
       "flagged": 2,
-      "avgRent": 720,
-      "totalRent": 57505.8,
+      "avgRent": 721,
+      "totalRent": 63283.27,
       "totalBills": 21182.1,
-      "rentChangePct": 0.2
+      "rentChangePct": 0.4
     },
     {
       "code": "02",
@@ -18,7 +18,7 @@
       "owners": 11,
       "flagged": 0,
       "avgRent": 769,
-      "totalRent": 24105.0,
+      "totalRent": 30285.0,
       "totalBills": 4360.92,
       "rentChangePct": 0.4
     },
@@ -28,7 +28,7 @@
       "owners": 19,
       "flagged": 1,
       "avgRent": 776,
-      "totalRent": 46470.36,
+      "totalRent": 51950.36,
       "totalBills": 5850.79,
       "rentChangePct": 0.6
     },
@@ -38,7 +38,7 @@
       "owners": 50,
       "flagged": 2,
       "avgRent": 672,
-      "totalRent": 108411.63,
+      "totalRent": 114411.63,
       "totalBills": 24806.83,
       "rentChangePct": 1.9
     },
@@ -48,7 +48,7 @@
       "owners": 15,
       "flagged": 3,
       "avgRent": 705,
-      "totalRent": 31640.0,
+      "totalRent": 34490.0,
       "totalBills": 14950.15,
       "rentChangePct": 0.6
     },
@@ -57,10 +57,10 @@
       "name": "Treetops at Everton",
       "owners": 24,
       "flagged": 1,
-      "avgRent": 742,
-      "totalRent": 52515.0,
+      "avgRent": 745,
+      "totalRent": 54900.0,
       "totalBills": 16589.71,
-      "rentChangePct": 0.4
+      "rentChangePct": 0.8
     },
     {
       "code": "13",
@@ -68,7 +68,7 @@
       "owners": 25,
       "flagged": 1,
       "avgRent": 713,
-      "totalRent": 57582.85,
+      "totalRent": 58827.94,
       "totalBills": 26659.88,
       "rentChangePct": 0.5
     },
@@ -78,7 +78,7 @@
       "owners": 22,
       "flagged": 1,
       "avgRent": 770,
-      "totalRent": 53124.69,
+      "totalRent": 59234.69,
       "totalBills": 11226.38,
       "rentChangePct": 0.8
     },
@@ -88,8 +88,8 @@
       "owners": 26,
       "flagged": 2,
       "avgRent": 730,
-      "totalRent": 60061.01,
-      "totalBills": 23140.25,
+      "totalRent": 63213.41,
+      "totalBills": 24005.25,
       "rentChangePct": 2.0
     },
     {
@@ -230,9 +230,9 @@
       "code": "01.04",
       "complex": "Everton Ridge",
       "name": "Harmeet BALI & Stanny SIDANA",
-      "rent": 2100.0,
+      "rent": 2800.0,
       "bills": 365.2,
-      "net": 1734.8
+      "net": 2434.8
     },
     {
       "code": "01.05",
@@ -254,9 +254,9 @@
       "code": "01.08",
       "complex": "Everton Ridge",
       "name": "Bryan Baskara Panji CHITRA",
-      "rent": 2070.0,
+      "rent": 2837.47,
       "bills": 1146.52,
-      "net": 923.48
+      "net": 1690.95
     },
     {
       "code": "01.09",
@@ -334,9 +334,9 @@
       "code": "01.26",
       "complex": "Everton Ridge",
       "name": "Julia Karen MORRIS",
-      "rent": 2070.0,
+      "rent": 2760.0,
       "bills": 300.96,
-      "net": 1769.04
+      "net": 2459.04
     },
     {
       "code": "01.27",
@@ -358,17 +358,17 @@
       "code": "01.29",
       "complex": "Everton Ridge",
       "name": "Jamie & Lisa PARRY",
-      "rent": 2160.0,
+      "rent": 2880.0,
       "bills": 372.2,
-      "net": 1787.8
+      "net": 2507.8
     },
     {
       "code": "01.30",
       "complex": "Everton Ridge",
       "name": "V & T Scarso Pty Ltd ABN 23 462 061 377 as Trustee",
-      "rent": 2190.0,
+      "rent": 2920.0,
       "bills": 964.26,
-      "net": 1225.74
+      "net": 1955.74
     },
     {
       "code": "01.32",
@@ -390,9 +390,9 @@
       "code": "01.35",
       "complex": "Everton Ridge",
       "name": "Olga KURIANSKI",
-      "rent": 1440.0,
+      "rent": 2880.0,
       "bills": 790.22,
-      "net": 649.78
+      "net": 2089.78
     },
     {
       "code": "01.36",
@@ -406,9 +406,9 @@
       "code": "01.37",
       "complex": "Everton Ridge",
       "name": "Rodney FROST & Nicole FROST",
-      "rent": 2190.0,
+      "rent": 2920.0,
       "bills": 1199.76,
-      "net": 990.24
+      "net": 1720.24
     },
     {
       "code": "01.39",
@@ -446,17 +446,17 @@
       "code": "02.06",
       "complex": "Upper West Arana Hills",
       "name": "Arana Hills QLD Pty Ltd ATF Arana Hills QLD Trust",
-      "rent": 2400.0,
+      "rent": 3200.0,
       "bills": 400.36,
-      "net": 1999.64
+      "net": 2799.64
     },
     {
       "code": "02.13",
       "complex": "Upper West Arana Hills",
       "name": "The Trustee for C & N BURNESS SMSF",
-      "rent": 2400.0,
+      "rent": 3200.0,
       "bills": 399.6,
-      "net": 2000.4
+      "net": 2800.4
     },
     {
       "code": "02.15",
@@ -470,17 +470,17 @@
       "code": "02.16",
       "complex": "Upper West Arana Hills",
       "name": "Craig & Gail THOMPSON",
-      "rent": 2250.0,
+      "rent": 3000.0,
       "bills": 382.8,
-      "net": 1867.2
+      "net": 2617.2
     },
     {
       "code": "02.17",
       "complex": "Upper West Arana Hills",
       "name": "Maisa Zumot",
-      "rent": 1540.0,
+      "rent": 3080.0,
       "bills": 389.84,
-      "net": 1150.16
+      "net": 2690.16
     },
     {
       "code": "02.21",
@@ -494,17 +494,17 @@
       "code": "02.22",
       "complex": "Upper West Arana Hills",
       "name": "Christopher Sawyer & Mikaela Duffy",
-      "rent": 2250.0,
+      "rent": 3000.0,
       "bills": 335.0,
-      "net": 1915.0
+      "net": 2665.0
     },
     {
       "code": "02.25",
       "complex": "Upper West Arana Hills",
       "name": "Neil Subramany Chetty & 02.25 Charuna Chetty",
-      "rent": 1540.0,
+      "rent": 3080.0,
       "bills": 389.84,
-      "net": 1150.16
+      "net": 2690.16
     },
     {
       "code": "03.04",
@@ -526,9 +526,9 @@
       "code": "03.06",
       "complex": "Greystone Terraces",
       "name": "Jeffrey Tanoto & Jimmy Tonoto",
-      "rent": 2370.0,
+      "rent": 3160.0,
       "bills": 214.8,
-      "net": 2155.2
+      "net": 2945.2
     },
     {
       "code": "03.11",
@@ -550,9 +550,9 @@
       "code": "03.19",
       "complex": "Greystone Terraces",
       "name": "Andrew Cambell",
-      "rent": 1560.0,
+      "rent": 3120.0,
       "bills": 281.14,
-      "net": 1278.86
+      "net": 2838.86
     },
     {
       "code": "03.21",
@@ -582,9 +582,9 @@
       "code": "03.29",
       "complex": "Greystone Terraces",
       "name": "Venchilli Leung & Andrew Lai",
-      "rent": 1739.43,
+      "rent": 3339.43,
       "bills": 286.68,
-      "net": 1452.75
+      "net": 3052.75
     },
     {
       "code": "03.30",
@@ -630,9 +630,9 @@
       "code": "03.47",
       "complex": "Greystone Terraces",
       "name": "CBMC Holdings Pty Ltd ATF CBMC Family Trust",
-      "rent": 2310.0,
+      "rent": 3080.0,
       "bills": 184.8,
-      "net": 2125.2
+      "net": 2895.2
     },
     {
       "code": "03.48",
@@ -646,9 +646,9 @@
       "code": "03.49",
       "complex": "Greystone Terraces",
       "name": "Ivana Algeri",
-      "rent": 2347.46,
+      "rent": 3107.46,
       "bills": 212.8,
-      "net": 2134.66
+      "net": 2894.66
     },
     {
       "code": "03.51",
@@ -702,9 +702,9 @@
       "code": "09.10",
       "complex": "Kingsbury Estate",
       "name": "Sarah Wagstaff Property Nominees P/L",
-      "rent": 1625.71,
+      "rent": 2275.71,
       "bills": 329.39,
-      "net": 1296.32
+      "net": 1946.32
     },
     {
       "code": "09.18",
@@ -718,9 +718,9 @@
       "code": "09.20",
       "complex": "Kingsbury Estate",
       "name": "Alexander Marriott",
-      "rent": 1950.0,
+      "rent": 2600.0,
       "bills": 275.81,
-      "net": 1674.19
+      "net": 2324.19
     },
     {
       "code": "09.21",
@@ -750,9 +750,9 @@
       "code": "09.25",
       "complex": "Kingsbury Estate",
       "name": "Samantha Poullos & Chiara Capurso",
-      "rent": 2100.0,
+      "rent": 2800.0,
       "bills": 333.52,
-      "net": 1766.48
+      "net": 2466.48
     },
     {
       "code": "09.26",
@@ -806,9 +806,9 @@
       "code": "09.34",
       "complex": "Kingsbury Estate",
       "name": "Melo Super Investments (Aust) Pty Ltd",
-      "rent": 1770.0,
+      "rent": 2360.0,
       "bills": 874.63,
-      "net": 895.37
+      "net": 1485.37
     },
     {
       "code": "09.36",
@@ -886,9 +886,9 @@
       "code": "09.52",
       "complex": "Kingsbury Estate",
       "name": "09.52Scott Michael Bailey & Natalie Margaret Bailey",
-      "rent": 1485.93,
+      "rent": 2165.93,
       "bills": 395.45,
-      "net": 1090.48
+      "net": 1770.48
     },
     {
       "code": "09.54",
@@ -926,9 +926,9 @@
       "code": "09.59",
       "complex": "Kingsbury Estate",
       "name": "Micallef Property Nominee Pty Ltd",
-      "rent": 1950.0,
+      "rent": 2600.0,
       "bills": 1179.43,
-      "net": 770.57
+      "net": 1420.57
     },
     {
       "code": "09.62",
@@ -958,9 +958,9 @@
       "code": "09.70",
       "complex": "Kingsbury Estate",
       "name": "Phillip Combe Pty Ltd",
-      "rent": 2100.0,
+      "rent": 2800.0,
       "bills": 345.95,
-      "net": 1754.05
+      "net": 2454.05
     },
     {
       "code": "09.72",
@@ -974,9 +974,9 @@
       "code": "09.75",
       "complex": "Kingsbury Estate",
       "name": "Lewthwaite Property Nominee Pty Ltd",
-      "rent": 2070.0,
+      "rent": 2760.0,
       "bills": 1218.11,
-      "net": 851.89
+      "net": 1541.89
     },
     {
       "code": "09.76",
@@ -1014,9 +1014,9 @@
       "code": "09.80",
       "complex": "Kingsbury Estate",
       "name": "Pearly Ling",
-      "rent": 2070.0,
+      "rent": 2760.0,
       "bills": 342.63,
-      "net": 1727.37
+      "net": 2417.37
     },
     {
       "code": "09.82",
@@ -1086,9 +1086,9 @@
       "code": "11.07",
       "complex": "Bunya Heights",
       "name": "Matt WALTERS & Agnieszka BINIEK",
-      "rent": 1460.0,
+      "rent": 2920.0,
       "bills": 334.82,
-      "net": 1125.18
+      "net": 2585.18
     },
     {
       "code": "11.10",
@@ -1118,17 +1118,17 @@
       "code": "11.14",
       "complex": "Bunya Heights",
       "name": "Peter John GAUL",
-      "rent": 1380.0,
+      "rent": 2070.0,
       "bills": 361.65,
-      "net": 1018.35
+      "net": 1708.35
     },
     {
       "code": "11.15",
       "complex": "Bunya Heights",
       "name": "Andrew & Sharon KEMP",
-      "rent": 2100.0,
+      "rent": 2800.0,
       "bills": 365.16,
-      "net": 1734.84
+      "net": 2434.84
     },
     {
       "code": "11.18",
@@ -1182,9 +1182,9 @@
       "code": "12.01",
       "complex": "Treetops at Everton",
       "name": "Jarrod EGGINS",
-      "rent": 2640.0,
+      "rent": 3520.0,
       "bills": 285.96,
-      "net": 2354.04
+      "net": 3234.04
     },
     {
       "code": "12.02",
@@ -1214,9 +1214,9 @@
       "code": "12.08",
       "complex": "Treetops at Everton",
       "name": "Raymond BEGG & Carmen ARVELO",
-      "rent": 2160.0,
+      "rent": 2880.0,
       "bills": 368.9,
-      "net": 1791.1
+      "net": 2511.1
     },
     {
       "code": "12.12",
@@ -1230,9 +1230,9 @@
       "code": "12.14",
       "complex": "Treetops at Everton",
       "name": "Jake Alexander BADIOR & Holly BADIOR",
-      "rent": 2205.0,
+      "rent": 2990.0,
       "bills": 779.55,
-      "net": 1425.45
+      "net": 2210.45
     },
     {
       "code": "12.16",
@@ -1382,9 +1382,9 @@
       "code": "13.02",
       "complex": "Everton Breeze",
       "name": "David BAUSCH & Jessica WAITE",
-      "rent": 2160.0,
+      "rent": 2880.0,
       "bills": 1369.56,
-      "net": 790.44
+      "net": 1510.44
     },
     {
       "code": "13.03",
@@ -1406,17 +1406,17 @@
       "code": "13.06",
       "complex": "Everton Breeze",
       "name": "PJ Briscoe SF Property Pty Ltd",
-      "rent": 2250.0,
+      "rent": 2383.43,
       "bills": 1490.53,
-      "net": 759.47
+      "net": 892.9
     },
     {
       "code": "13.08",
       "complex": "Everton Breeze",
       "name": "Oakstar Investments Pty Ltd TTE",
-      "rent": 2130.0,
+      "rent": 2435.58,
       "bills": 1342.35,
-      "net": 787.65
+      "net": 1093.23
     },
     {
       "code": "13.09",
@@ -1534,9 +1534,9 @@
       "code": "13.28",
       "complex": "Everton Breeze",
       "name": "Sueneta PATEL & Mitesh PATEL",
-      "rent": 2920.0,
+      "rent": 3006.08,
       "bills": 375.76,
-      "net": 2544.24
+      "net": 2630.32
     },
     {
       "code": "13.30",
@@ -1614,9 +1614,9 @@
       "code": "14.07",
       "complex": "Trend Everton Park",
       "name": "Paul Gabrielli & Sarah Derry",
-      "rent": 2411.92,
+      "rent": 3161.92,
       "bills": 382.76,
-      "net": 2029.16
+      "net": 2779.16
     },
     {
       "code": "14.10",
@@ -1638,9 +1638,9 @@
       "code": "14.16",
       "complex": "Trend Everton Park",
       "name": "Bandaly Hussary & William Hussary",
-      "rent": 2340.0,
+      "rent": 3120.0,
       "bills": 393.36,
-      "net": 1946.64
+      "net": 2726.64
     },
     {
       "code": "14.19",
@@ -1654,17 +1654,17 @@
       "code": "14.20",
       "complex": "Trend Everton Park",
       "name": "RICHARDS & WAMSLEY INV P/L ATF RICHARDS & WAMSLEY",
-      "rent": 2340.0,
+      "rent": 3120.0,
       "bills": 364.0,
-      "net": 1976.0
+      "net": 2756.0
     },
     {
       "code": "14.21",
       "complex": "Trend Everton Park",
       "name": "Vincent Lee",
-      "rent": 2227.46,
+      "rent": 2947.46,
       "bills": 372.24,
-      "net": 1855.22
+      "net": 2575.22
     },
     {
       "code": "14.23",
@@ -1678,9 +1678,9 @@
       "code": "14.26",
       "complex": "Trend Everton Park",
       "name": "Ngoc Ha Pham & Phuong Thao Pham",
-      "rent": 1875.0,
+      "rent": 2625.0,
       "bills": 428.1,
-      "net": 1446.9
+      "net": 2196.9
     },
     {
       "code": "14.27",
@@ -1710,9 +1710,9 @@
       "code": "14.30",
       "complex": "Trend Everton Park",
       "name": "Super Scott Investments",
-      "rent": 2190.0,
+      "rent": 2920.0,
       "bills": 375.76,
-      "net": 1814.24
+      "net": 2544.24
     },
     {
       "code": "14.32",
@@ -1726,17 +1726,17 @@
       "code": "14.33",
       "complex": "Trend Everton Park",
       "name": "Niraj Haresh Aswani",
-      "rent": 2310.0,
+      "rent": 3080.0,
       "bills": 347.12,
-      "net": 1962.88
+      "net": 2732.88
     },
     {
       "code": "14.34",
       "complex": "Trend Everton Park",
       "name": "L & L Hope Pty Ltd",
-      "rent": 2490.0,
+      "rent": 3320.0,
       "bills": 1555.1,
-      "net": 934.9
+      "net": 1764.9
     },
     {
       "code": "14.36",
@@ -1774,9 +1774,9 @@
       "code": "15.05",
       "complex": "Vue Taigum",
       "name": "James McCallum & Emma Colhoun",
-      "rent": 2570.87,
+      "rent": 3340.87,
       "bills": 763.82,
-      "net": 1807.05
+      "net": 2577.05
     },
     {
       "code": "15.08",
@@ -1790,9 +1790,9 @@
       "code": "15.09",
       "complex": "Vue Taigum",
       "name": "Chun Ma",
-      "rent": 2325.0,
-      "bills": 788.56,
-      "net": 1536.44
+      "rent": 3025.0,
+      "bills": 1653.56,
+      "net": 1371.44
     },
     {
       "code": "15.11",
@@ -1814,17 +1814,17 @@
       "code": "15.15",
       "complex": "Vue Taigum",
       "name": "Albert & Bona Lee",
-      "rent": 2374.45,
+      "rent": 3134.45,
       "bills": 885.82,
-      "net": 1488.63
+      "net": 2248.63
     },
     {
       "code": "15.19",
       "complex": "Vue Taigum",
       "name": "Chmobbie Property Nominee Pty Ltd",
-      "rent": 2170.0,
+      "rent": 2372.4,
       "bills": 1952.64,
-      "net": 217.36
+      "net": 419.76
     },
     {
       "code": "15.20",
@@ -1894,9 +1894,9 @@
       "code": "15.37",
       "complex": "Vue Taigum",
       "name": "Justin Rego",
-      "rent": 2160.0,
+      "rent": 2880.0,
       "bills": 800.06,
-      "net": 1359.94
+      "net": 2079.94
     },
     {
       "code": "15.38",
@@ -2037,13 +2037,6 @@
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-06-15",
         "days_overdue": 38
-      },
-      {
-        "unit_code": "03.19",
-        "property": "03.19 19/8 Russell Str Everton Park QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-06-16",
-        "days_overdue": 37
       },
       {
         "unit_code": "09.47",
@@ -2319,48 +2312,6 @@
         "days_overdue": 10
       },
       {
-        "unit_code": "03.04",
-        "property": "03.04 4/8 Russell Str Everton Park QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-07-14",
-        "days_overdue": 9
-      },
-      {
-        "unit_code": "03.06",
-        "property": "03.06 6/8 Russell Str Everton Park QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-07-14",
-        "days_overdue": 9
-      },
-      {
-        "unit_code": "03.12",
-        "property": "03.12 12/8 Russell Str Everton Park QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-07-14",
-        "days_overdue": 9
-      },
-      {
-        "unit_code": "03.25",
-        "property": "03.25 25/8 Russell Str Everton Park QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-07-14",
-        "days_overdue": 9
-      },
-      {
-        "unit_code": "03.29",
-        "property": "03.29 29/8 Russell Str Everton Park QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-07-14",
-        "days_overdue": 9
-      },
-      {
-        "unit_code": "03.34",
-        "property": "03.34 34/8 Russell Str Everton Park QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-07-14",
-        "days_overdue": 9
-      },
-      {
         "unit_code": "15.23",
         "property": "15.23 23 / 47 Abbeywood Street, Taigum Q 4018",
         "manager": "Tammy-lee Barritt",
@@ -2483,14 +2434,6 @@
         "booked_date": "2026-07-30"
       },
       {
-        "unit_code": "01.04",
-        "property": "01.04 04/40 Bunya Rd, Everton Hills QLD 4053",
-        "manager": "Lorelei Lipczynski",
-        "due_date": "2026-07-02",
-        "days_overdue": 21,
-        "booked_date": "2026-07-30"
-      },
-      {
         "unit_code": "01.05",
         "property": "01.05 05/40 Bunya Rd, Everton Hills QLD 4053",
         "manager": "Lorelei Lipczynski",
@@ -2587,12 +2530,76 @@
         "booked_date": "2026-08-04"
       },
       {
+        "unit_code": "03.04",
+        "property": "03.04 4/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-07-14",
+        "days_overdue": 9,
+        "booked_date": "2026-08-05"
+      },
+      {
+        "unit_code": "03.06",
+        "property": "03.06 6/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-07-14",
+        "days_overdue": 9,
+        "booked_date": "2026-08-05"
+      },
+      {
+        "unit_code": "03.12",
+        "property": "03.12 12/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-07-14",
+        "days_overdue": 9,
+        "booked_date": "2026-08-05"
+      },
+      {
+        "unit_code": "03.25",
+        "property": "03.25 25/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-07-14",
+        "days_overdue": 9,
+        "booked_date": "2026-08-05"
+      },
+      {
+        "unit_code": "03.29",
+        "property": "03.29 29/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-07-14",
+        "days_overdue": 9,
+        "booked_date": "2026-08-05"
+      },
+      {
+        "unit_code": "03.34",
+        "property": "03.34 34/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-07-14",
+        "days_overdue": 9,
+        "booked_date": "2026-08-05"
+      },
+      {
+        "unit_code": "03.19",
+        "property": "03.19 19/8 Russell Str Everton Park QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-06-16",
+        "days_overdue": 37,
+        "booked_date": "2026-08-06"
+      },
+      {
         "unit_code": "03.05",
         "property": "03.05 5/8 Russell Str Everton Park QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-07-14",
         "days_overdue": 9,
         "booked_date": "2026-08-12"
+      },
+      {
+        "unit_code": "01.04",
+        "property": "01.04 04/40 Bunya Rd, Everton Hills QLD 4053",
+        "manager": "Lorelei Lipczynski",
+        "due_date": "2026-07-02",
+        "days_overdue": 21,
+        "booked_date": "2026-09-15"
       },
       {
         "unit_code": "13.01",
@@ -3101,13 +3108,13 @@
       }
     ],
     "summary": {
-      "total_overdue": 64,
-      "total_scheduled": 16,
+      "total_overdue": 57,
+      "total_scheduled": 23,
       "total_frequency_flags": 55,
       "by_manager": {
         "Lorelei Lipczynski": {
-          "overdue": 14,
-          "scheduled": 16,
+          "overdue": 7,
+          "scheduled": 23,
           "frequency_flags": 23
         },
         "Tammy-lee Barritt": {
