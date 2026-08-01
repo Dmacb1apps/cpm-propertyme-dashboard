@@ -273,5 +273,10 @@
     "month": "2026-07",
     "units": 226,
     "avg_weekly_rent": 729.53
+  },
+  {
+    "month": "2026-08",
+    "units": 220,
+    "avg_weekly_rent": 724.55
   }
 ]
