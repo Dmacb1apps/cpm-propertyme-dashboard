@@ -132,7 +132,7 @@ def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
     save_path = downloads_dir / filename
 
     with report.expect_download() as dl_info:
-        report.get_by_text("PDF").click()
+        report.locator("a.btn-print").click()
     dl_info.value.save_as(save_path)
 
     print(f"  Saved: {save_path}")
