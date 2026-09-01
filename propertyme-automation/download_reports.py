@@ -131,8 +131,12 @@ def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
     filename  = f"folio_ledger_{iso_date}.pdf"
     save_path = downloads_dir / filename
 
+    # PropertyMe now renders more than one a.btn-print in the DOM (likely
+    # duplicate copies for different responsive breakpoints — only one is
+    # ever visible at a time). Scope to the visible one instead of taking
+    # a blind first-in-DOM match, since this feeds a financial report.
     with report.expect_download() as dl_info:
-        report.locator("a.btn-print").click()
+        report.locator("a.btn-print:visible").first.click()
     dl_info.value.save_as(save_path)
 
     print(f"  Saved: {save_path}")
