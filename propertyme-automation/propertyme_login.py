@@ -163,6 +163,9 @@ def login(page):
     try:
         page.wait_for_selector(DASHBOARD_READY_SELECTOR, state="visible", timeout=15000)
     except Exception:
+        if looks_like_turnstile(page):
+            print("TURNSTILE DETECTED — Cloudflare challenge shown on manager.propertyme.com post-login.")
+            return "turnstile"
         print(
             f"STUCK LOADING — URL left id.propertyme.com but "
             f"'{DASHBOARD_READY_SELECTOR}' never appeared within timeout. "
@@ -179,6 +182,9 @@ def login(page):
     try:
         page.wait_for_selector(LOADING_OVERLAY_SELECTOR, state="hidden", timeout=15000)
     except Exception:
+        if looks_like_turnstile(page):
+            print("TURNSTILE DETECTED — Cloudflare challenge shown while waiting for loading overlay to clear.")
+            return "turnstile"
         print(
             f"STUCK LOADING — '{DASHBOARD_READY_SELECTOR}' is visible but "
             f"'{LOADING_OVERLAY_SELECTOR}' never disappeared within timeout. "
