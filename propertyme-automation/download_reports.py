@@ -109,6 +109,34 @@ def dismiss_feature_popup(page):
         page.wait_for_timeout(500)
 
 
+def click_pdf_button(report):
+    """Try multiple strategies to click the PDF export button (distinct
+    from Print, which just opens a print dialog and never fires a
+    download event)."""
+    try:
+        report.get_by_role("link", name="PDF", exact=True).click(timeout=8000)
+        print("  Found PDF button via get_by_role.")
+        return
+    except Exception:
+        pass
+
+    for selector in [
+        "a:has-text('PDF')",
+        "button:has-text('PDF')",
+        "[class*='pdf']",
+    ]:
+        try:
+            el = report.locator(selector)
+            el.first.wait_for(state="visible", timeout=5000)
+            print(f"  Found PDF button via: {selector}")
+            el.first.click()
+            return
+        except Exception:
+            continue
+
+    raise RuntimeError("Could not find or click the PDF button after all strategies.")
+
+
 def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
     print("  Opening Folio Ledger report...")
     with page.expect_popup() as popup_info:
@@ -131,12 +159,15 @@ def download_folio_ledger(page, start_date, end_date, iso_date, downloads_dir):
     filename  = f"folio_ledger_{iso_date}.pdf"
     save_path = downloads_dir / filename
 
-    # PropertyMe now renders more than one a.btn-print in the DOM (likely
-    # duplicate copies for different responsive breakpoints — only one is
-    # ever visible at a time). Scope to the visible one instead of taking
-    # a blind first-in-DOM match, since this feeds a financial report.
-    with report.expect_download() as dl_info:
-        report.locator("a.btn-print:visible").first.click()
+    # The "Print" button (a.btn-print) opens a print dialog and never fires
+    # a download event — confirmed by a live run timing out waiting for one.
+    # The "PDF" button next to it is the one that actually generates and
+    # downloads a file (confirmed by Duncan clicking it manually — takes a
+    # couple of seconds to fire). Target that instead, with multiple
+    # selector strategies since its exact markup isn't pinned down (same
+    # defensive pattern as click_export_button/click_export_excel below).
+    with report.expect_download(timeout=30000) as dl_info:
+        click_pdf_button(report)
     dl_info.value.save_as(save_path)
 
     print(f"  Saved: {save_path}")
