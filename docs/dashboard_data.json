@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-04T22:51:10+00:00",
+  "updated": "2026-09-05T22:41:35+00:00",
   "month": "September 2026",
   "complexes": [
     {
@@ -2690,7 +2690,7 @@
     "credit_card_don": 458.64,
     "credit_card_duncan": 433.4,
     "payables_total": 10400.05,
-    "payables_overdue": 0,
+    "payables_overdue": 208.6,
     "payables_count": 5,
     "top_payables": [
       {
@@ -2766,189 +2766,189 @@
         "property": "99. 8Sundew",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-06-22",
-        "days_overdue": 74
+        "days_overdue": 75
       },
       {
         "unit_code": "09.43",
         "property": "09.43 43 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 64
+        "days_overdue": 65
       },
       {
         "unit_code": "09.45",
         "property": "09.45 45 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 64
+        "days_overdue": 65
       },
       {
         "unit_code": "09.49",
         "property": "09.49 49 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 64
+        "days_overdue": 65
       },
       {
         "unit_code": "09.50",
         "property": "09.50 50 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 64
+        "days_overdue": 65
       },
       {
         "unit_code": "09.52",
         "property": "09.52 52 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 64
+        "days_overdue": 65
       },
       {
         "unit_code": "09.54",
         "property": "09.54 54 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 64
+        "days_overdue": 65
       },
       {
         "unit_code": "09.56",
         "property": "09.56 56 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 58
+        "days_overdue": 59
       },
       {
         "unit_code": "09.72",
         "property": "09.72 72 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 58
+        "days_overdue": 59
       },
       {
         "unit_code": "09.82",
         "property": "09.82 82 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 58
+        "days_overdue": 59
       },
       {
         "unit_code": "09.87",
         "property": "09.87 87 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 58
+        "days_overdue": 59
       },
       {
         "unit_code": "09.41",
         "property": "09.41 41 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 53
+        "days_overdue": 54
       },
       {
         "unit_code": "09.57",
         "property": "09.57 57 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 53
+        "days_overdue": 54
       },
       {
         "unit_code": "09.59",
         "property": "09.59 59 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 53
+        "days_overdue": 54
       },
       {
         "unit_code": "09.63",
         "property": "09.63 63 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 53
+        "days_overdue": 54
       },
       {
         "unit_code": "09.76",
         "property": "09.76 76 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 53
+        "days_overdue": 54
       },
       {
         "unit_code": "09.44",
         "property": "09.44 44 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-17",
-        "days_overdue": 49
+        "days_overdue": 50
       },
       {
         "unit_code": "09.77",
         "property": "09.77 77 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-17",
-        "days_overdue": 49
+        "days_overdue": 50
       },
       {
         "unit_code": "09.05",
         "property": "09.05 05 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-21",
-        "days_overdue": 45
+        "days_overdue": 46
       },
       {
         "unit_code": "09.75",
         "property": "09.75 75 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-21",
-        "days_overdue": 45
+        "days_overdue": 46
       },
       {
         "unit_code": "09.78",
         "property": "09.78 78 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-21",
-        "days_overdue": 45
+        "days_overdue": 46
       },
       {
         "unit_code": "09.62",
         "property": "09.62 62 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-28",
-        "days_overdue": 38
+        "days_overdue": 39
       },
       {
         "unit_code": "09.79",
         "property": "09.79 79 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-03",
-        "days_overdue": 32
+        "days_overdue": 33
       },
       {
         "unit_code": "09.67",
         "property": "09.67 67 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-19",
-        "days_overdue": 16
+        "days_overdue": 17
       },
       {
         "unit_code": "99.",
         "property": "99. 51 Steuart Street, Bundaberg North",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-08-24",
-        "days_overdue": 11
+        "days_overdue": 12
       },
       {
         "unit_code": "04.05",
         "property": "04.05 5/1 Binnies Rd, Ripley, QLD 4306",
         "manager": "Lisa Dib",
         "due_date": "2026-09-02",
-        "days_overdue": 2
+        "days_overdue": 3
       },
       {
         "unit_code": "04.10",
         "property": "04.10 10/1 Binnies Rd, Ripley, QLD 4306",
         "manager": "Lisa Dib",
         "due_date": "2026-09-02",
-        "days_overdue": 2
+        "days_overdue": 3
       }
     ],
     "scheduled": [
@@ -2957,7 +2957,7 @@
         "property": "01.33 33/40 Bunya Rd, Everton Hills QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-08-11",
-        "days_overdue": 24,
+        "days_overdue": 25,
         "booked_date": "2026-09-08"
       },
       {
@@ -2965,7 +2965,7 @@
         "property": "02.03 03/1141 South Pine Rd, Arana Hills, Q 4054",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-08-11",
-        "days_overdue": 24,
+        "days_overdue": 25,
         "booked_date": "2026-09-08"
       },
       {
@@ -2973,7 +2973,7 @@
         "property": "14.01 01 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 43,
+        "days_overdue": 44,
         "booked_date": "2026-09-08"
       },
       {
@@ -2981,7 +2981,7 @@
         "property": "14.03 03 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 43,
+        "days_overdue": 44,
         "booked_date": "2026-09-08"
       },
       {
@@ -2989,7 +2989,7 @@
         "property": "14.07 07 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 43,
+        "days_overdue": 44,
         "booked_date": "2026-09-08"
       },
       {
@@ -2997,7 +2997,7 @@
         "property": "14.10 10 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 43,
+        "days_overdue": 44,
         "booked_date": "2026-09-08"
       },
       {
@@ -3005,7 +3005,7 @@
         "property": "14.11 11 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-15",
-        "days_overdue": 20,
+        "days_overdue": 21,
         "booked_date": "2026-09-08"
       },
       {
@@ -3013,7 +3013,7 @@
         "property": "14.21 21 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 43,
+        "days_overdue": 44,
         "booked_date": "2026-09-09"
       },
       {
@@ -3021,7 +3021,7 @@
         "property": "14.19 19 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 43,
+        "days_overdue": 44,
         "booked_date": "2026-09-10"
       },
       {
@@ -3029,7 +3029,7 @@
         "property": "14.36 36 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-14",
-        "days_overdue": 21,
+        "days_overdue": 22,
         "booked_date": "2026-09-10"
       },
       {
@@ -3037,7 +3037,7 @@
         "property": "01.04 04/40 Bunya Rd, Everton Hills QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-07-02",
-        "days_overdue": 64,
+        "days_overdue": 65,
         "booked_date": "2026-09-15"
       },
       {
@@ -3045,7 +3045,7 @@
         "property": "11.07 07/114 Bunya Road, Everton Hills. QLD 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-10",
-        "days_overdue": 56,
+        "days_overdue": 57,
         "booked_date": "2026-09-15"
       },
       {
@@ -3053,7 +3053,7 @@
         "property": "11.15 15 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-27",
-        "days_overdue": 39,
+        "days_overdue": 40,
         "booked_date": "2026-09-15"
       },
       {
@@ -3061,7 +3061,7 @@
         "property": "99.OXL25.  25/719 Oxley Road, Corinda",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-15",
-        "days_overdue": 51,
+        "days_overdue": 52,
         "booked_date": "2026-09-15"
       },
       {
@@ -3069,7 +3069,7 @@
         "property": "09.36 36 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 53,
+        "days_overdue": 54,
         "booked_date": "2026-09-29"
       }
     ],
@@ -3078,9 +3078,9 @@
         "unit_code": "12.06",
         "property": "12.06 06 / 36 Bunya Road, Everton Hills Q 4053",
         "manager": "Lorelei Lipczynski",
-        "tenancy_months": 40.1,
+        "tenancy_months": 40.2,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 212,
+        "days_since_last_routine": 213,
         "flag": "LONG GAP"
       },
       {
@@ -3089,7 +3089,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 27.5,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 193,
+        "days_since_last_routine": 194,
         "flag": "LONG GAP"
       },
       {
@@ -3098,7 +3098,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 18.2,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 183,
+        "days_since_last_routine": 184,
         "flag": "LONG GAP"
       },
       {
@@ -3107,7 +3107,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 14.6,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 183,
+        "days_since_last_routine": 184,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
@@ -3116,7 +3116,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 64.2,
         "routine_inspections_done": 14,
-        "days_since_last_routine": 183,
+        "days_since_last_routine": 184,
         "flag": "LONG GAP"
       },
       {
@@ -3125,16 +3125,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 61.4,
         "routine_inspections_done": 13,
-        "days_since_last_routine": 183,
+        "days_since_last_routine": 184,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "01.16",
         "property": "01.16 16/40 Bunya Rd, Everton Hills QLD 4053",
         "manager": "Lorelei Lipczynski",
-        "tenancy_months": 26.5,
+        "tenancy_months": 26.6,
         "routine_inspections_done": 5,
-        "days_since_last_routine": 178,
+        "days_since_last_routine": 179,
         "flag": "LONG GAP"
       },
       {
@@ -3143,7 +3143,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 14.6,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 177,
+        "days_since_last_routine": 178,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
@@ -3152,7 +3152,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 22.1,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 177,
+        "days_since_last_routine": 178,
         "flag": "LONG GAP"
       },
       {
@@ -3161,16 +3161,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 12.5,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 177,
+        "days_since_last_routine": 178,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
         "unit_code": "11.07",
         "property": "11.07 07/114 Bunya Road, Everton Hills. QLD 4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 35.7,
+        "tenancy_months": 35.8,
         "routine_inspections_done": 7,
-        "days_since_last_routine": 175,
+        "days_since_last_routine": 176,
         "flag": "LONG GAP"
       },
       {
@@ -3179,7 +3179,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 15.9,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 172,
+        "days_since_last_routine": 173,
         "flag": "LONG GAP"
       },
       {
@@ -3188,7 +3188,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 67.4,
         "routine_inspections_done": 15,
-        "days_since_last_routine": 172,
+        "days_since_last_routine": 173,
         "flag": "LONG GAP"
       },
       {
@@ -3197,7 +3197,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 44.4,
         "routine_inspections_done": 9,
-        "days_since_last_routine": 172,
+        "days_since_last_routine": 173,
         "flag": "LONG GAP"
       },
       {
@@ -3206,7 +3206,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 46.6,
         "routine_inspections_done": 11,
-        "days_since_last_routine": 172,
+        "days_since_last_routine": 173,
         "flag": "LONG GAP"
       },
       {
@@ -3215,16 +3215,16 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 17.3,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 171,
+        "days_since_last_routine": 172,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "99.OXL25.",
         "property": "99.OXL25.  25/719 Oxley Road, Corinda",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 26.2,
+        "tenancy_months": 26.3,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 170,
+        "days_since_last_routine": 171,
         "flag": "LONG GAP"
       },
       {
@@ -3233,7 +3233,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 67.9,
         "routine_inspections_done": 17,
-        "days_since_last_routine": 168,
+        "days_since_last_routine": 169,
         "flag": "LONG GAP"
       },
       {
@@ -3242,25 +3242,25 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 70.2,
         "routine_inspections_done": 15,
-        "days_since_last_routine": 168,
+        "days_since_last_routine": 169,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "99.MAJ7",
         "property": "99.MAJ7 7 Majestic St, Bridgeman Downs QLD 4035",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 23.9,
+        "tenancy_months": 24.0,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 168,
+        "days_since_last_routine": 169,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "09.78",
         "property": "09.78 78 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 27.9,
+        "tenancy_months": 28.0,
         "routine_inspections_done": 6,
-        "days_since_last_routine": 164,
+        "days_since_last_routine": 165,
         "flag": "LONG GAP"
       },
       {
@@ -3269,43 +3269,43 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 35.9,
         "routine_inspections_done": 7,
-        "days_since_last_routine": 164,
+        "days_since_last_routine": 165,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "14.01",
         "property": "14.01 01 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 39.2,
+        "tenancy_months": 39.3,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 162,
+        "days_since_last_routine": 163,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "14.07",
         "property": "14.07 07 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 40.2,
+        "tenancy_months": 40.3,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 162,
+        "days_since_last_routine": 163,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "14.10",
         "property": "14.10 10 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 54.3,
+        "tenancy_months": 54.4,
         "routine_inspections_done": 10,
-        "days_since_last_routine": 162,
+        "days_since_last_routine": 163,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "14.19",
         "property": "14.19 19 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 12.7,
+        "tenancy_months": 12.8,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 162,
+        "days_since_last_routine": 163,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
@@ -3314,7 +3314,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 18.2,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 158,
+        "days_since_last_routine": 159,
         "flag": "LONG GAP"
       },
       {
@@ -3323,16 +3323,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 21.6,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 157,
+        "days_since_last_routine": 158,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "01.33",
         "property": "01.33 33/40 Bunya Rd, Everton Hills QLD 4053",
         "manager": "Lorelei Lipczynski",
-        "tenancy_months": 12.3,
+        "tenancy_months": 12.4,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 143,
+        "days_since_last_routine": 144,
         "flag": "LOW COUNT + LONG GAP"
       }
     ],
