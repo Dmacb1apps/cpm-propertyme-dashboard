@@ -1,14 +1,14 @@
 {
-  "updated": "2026-09-05T22:41:35+00:00",
+  "updated": "2026-09-06T22:45:38+00:00",
   "month": "September 2026",
   "complexes": [
     {
       "code": "01",
       "name": "Everton Ridge",
       "owners": 25,
-      "flagged": 14,
+      "flagged": 12,
       "avgRent": 726,
-      "totalRent": 10251.43,
+      "totalRent": 11822.86,
       "totalBills": 12153.03,
       "rentChangePct": null
     },
@@ -28,7 +28,7 @@
       "owners": 18,
       "flagged": 15,
       "avgRent": 779,
-      "totalRent": 7880.0,
+      "totalRent": 8620.0,
       "totalBills": 23941.72,
       "rentChangePct": null
     },
@@ -46,9 +46,9 @@
       "code": "09",
       "name": "Kingsbury Estate",
       "owners": 48,
-      "flagged": 21,
+      "flagged": 19,
       "avgRent": 675,
-      "totalRent": 21378.42,
+      "totalRent": 23258.42,
       "totalBills": 18230.2,
       "rentChangePct": null
     },
@@ -56,9 +56,9 @@
       "code": "11",
       "name": "Bunya Heights",
       "owners": 15,
-      "flagged": 6,
+      "flagged": 4,
       "avgRent": 712,
-      "totalRent": 8781.43,
+      "totalRent": 10921.43,
       "totalBills": 7419.69,
       "rentChangePct": null
     },
@@ -66,9 +66,9 @@
       "code": "12",
       "name": "Treetops at Everton",
       "owners": 24,
-      "flagged": 10,
+      "flagged": 9,
       "avgRent": 753,
-      "totalRent": 13003.57,
+      "totalRent": 13916.43,
       "totalBills": 9705.81,
       "rentChangePct": null
     },
@@ -76,9 +76,9 @@
       "code": "13",
       "name": "Everton Breeze",
       "owners": 25,
-      "flagged": 13,
+      "flagged": 12,
       "avgRent": 719,
-      "totalRent": 10771.0,
+      "totalRent": 11491.0,
       "totalBills": 9921.25,
       "rentChangePct": null
     },
@@ -86,9 +86,9 @@
       "code": "14",
       "name": "Trend Everton Park",
       "owners": 22,
-      "flagged": 11,
+      "flagged": 9,
       "avgRent": 782,
-      "totalRent": 16032.92,
+      "totalRent": 18332.92,
       "totalBills": 14968.24,
       "rentChangePct": null
     },
@@ -96,9 +96,9 @@
       "code": "15",
       "name": "Vue Taigum",
       "owners": 24,
-      "flagged": 15,
+      "flagged": 12,
       "avgRent": 739,
-      "totalRent": 12850.0,
+      "totalRent": 15860.0,
       "totalBills": 19557.13,
       "rentChangePct": null
     },
@@ -155,14 +155,6 @@
       "net": -1860.85
     },
     {
-      "code": "03.34",
-      "complex": "Greystone Terraces",
-      "name": "Nicola Savino",
-      "rent": 0.0,
-      "bills": 1792.17,
-      "net": -1792.17
-    },
-    {
       "code": "03.19",
       "complex": "Greystone Terraces",
       "name": "Andrew Cambell",
@@ -211,14 +203,6 @@
       "net": -1620.37
     },
     {
-      "code": "14.26",
-      "complex": "Trend Everton Park",
-      "name": "Ngoc Ha Pham & Phuong Thao Pham",
-      "rent": 902.92,
-      "bills": 2454.08,
-      "net": -1551.16
-    },
-    {
       "code": "03.48",
       "complex": "Greystone Terraces",
       "name": "Firoz Akbar",
@@ -241,14 +225,6 @@
       "rent": 0.0,
       "bills": 1248.35,
       "net": -1248.35
-    },
-    {
-      "code": "09.58",
-      "complex": "Kingsbury Estate",
-      "name": "Keina McCormack",
-      "rent": 0.0,
-      "bills": 1223.09,
-      "net": -1223.09
     },
     {
       "code": "15.44",
@@ -275,14 +251,6 @@
       "net": -1167.39
     },
     {
-      "code": "15.30",
-      "complex": "Vue Taigum",
-      "name": "SR Ferns Property Nominee Pty Ltd",
-      "rent": 0.0,
-      "bills": 1159.47,
-      "net": -1159.47
-    },
-    {
       "code": "13.08",
       "complex": "Everton Breeze",
       "name": "Oakstar Investments Pty Ltd TTE",
@@ -297,6 +265,14 @@
       "rent": 0.0,
       "bills": 1059.92,
       "net": -1059.92
+    },
+    {
+      "code": "03.34",
+      "complex": "Greystone Terraces",
+      "name": "Nicola Savino",
+      "rent": 740.0,
+      "bills": 1792.17,
+      "net": -1052.17
     },
     {
       "code": "03.47",
@@ -403,6 +379,14 @@
       "net": -846.28
     },
     {
+      "code": "14.26",
+      "complex": "Trend Everton Park",
+      "name": "Ngoc Ha Pham & Phuong Thao Pham",
+      "rent": 1652.92,
+      "bills": 2454.08,
+      "net": -801.16
+    },
+    {
       "code": "14.32",
       "complex": "Trend Everton Park",
       "name": "Joelle & Michael Maguire",
@@ -425,14 +409,6 @@
       "rent": 0.0,
       "bills": 741.4,
       "net": -741.4
-    },
-    {
-      "code": "15.21",
-      "complex": "Vue Taigum",
-      "name": "Mi Lu & Lijue Ma",
-      "rent": 0.0,
-      "bills": 711.0,
-      "net": -711.0
     },
     {
       "code": "01.33",
@@ -473,6 +449,14 @@
       "rent": 0.0,
       "bills": 571.12,
       "net": -571.12
+    },
+    {
+      "code": "09.58",
+      "complex": "Kingsbury Estate",
+      "name": "Keina McCormack",
+      "rent": 700.0,
+      "bills": 1223.09,
+      "net": -523.09
     },
     {
       "code": "03.25",
@@ -531,30 +515,6 @@
       "net": -347.76
     },
     {
-      "code": "12.05",
-      "complex": "Treetops at Everton",
-      "name": "Brayden Anthony STURM",
-      "rent": 0.0,
-      "bills": 336.28,
-      "net": -336.28
-    },
-    {
-      "code": "01.23",
-      "complex": "Everton Ridge",
-      "name": "Nicholas Wayne THIELE",
-      "rent": 0.0,
-      "bills": 334.4,
-      "net": -334.4
-    },
-    {
-      "code": "01.10",
-      "complex": "Everton Ridge",
-      "name": "Christopher SERGENT & Juvanka ROBERTS",
-      "rent": 0.0,
-      "bills": 325.6,
-      "net": -325.6
-    },
-    {
       "code": "01.39",
       "complex": "Everton Ridge",
       "name": "Superannuation",
@@ -566,14 +526,6 @@
       "code": "01.09",
       "complex": "Everton Ridge",
       "name": "Samuel CARTER",
-      "rent": 0.0,
-      "bills": 325.55,
-      "net": -325.55
-    },
-    {
-      "code": "13.04",
-      "complex": "Everton Breeze",
-      "name": "Brendan Pfanner",
       "rent": 0.0,
       "bills": 325.55,
       "net": -325.55
@@ -603,28 +555,12 @@
       "net": -311.85
     },
     {
-      "code": "01.26",
-      "complex": "Everton Ridge",
-      "name": "Julia Karen MORRIS",
-      "rent": 780.0,
-      "bills": 1072.72,
-      "net": -292.72
-    },
-    {
       "code": "03.42",
       "complex": "Greystone Terraces",
       "name": "Nathan Robert Eltis & Sarah Joy Eltis",
       "rent": 0.0,
       "bills": 290.4,
       "net": -290.4
-    },
-    {
-      "code": "09.52",
-      "complex": "Kingsbury Estate",
-      "name": "09.52Scott Michael Bailey & Natalie Margaret Bailey",
-      "rent": 0.0,
-      "bills": 285.45,
-      "net": -285.45
     },
     {
       "code": "12.22",
@@ -723,14 +659,6 @@
       "net": -262.22
     },
     {
-      "code": "12.16",
-      "complex": "Treetops at Everton",
-      "name": "AM DRAGAR CUSTODIAN PTY LTD & Anna",
-      "rent": 0.0,
-      "bills": 258.94,
-      "net": -258.94
-    },
-    {
       "code": "12.31",
       "complex": "Treetops at Everton",
       "name": "Jeanne & Jolandie GERBER",
@@ -747,28 +675,12 @@
       "net": -256.28
     },
     {
-      "code": "11.15",
-      "complex": "Bunya Heights",
-      "name": "Andrew & Sharon KEMP",
-      "rent": 0.0,
-      "bills": 255.16,
-      "net": -255.16
-    },
-    {
       "code": "01.28",
       "complex": "Everton Ridge",
       "name": "Brian JAMBA & Shelyce DEUTROM & Annah JAMBA",
       "rent": 0.0,
       "bills": 251.9,
       "net": -251.9
-    },
-    {
-      "code": "11.18",
-      "complex": "Bunya Heights",
-      "name": "Jennifer Helen ST.QUINTIN",
-      "rent": 0.0,
-      "bills": 249.88,
-      "net": -249.88
     },
     {
       "code": "13.21",
@@ -867,14 +779,6 @@
       "net": -220.01
     },
     {
-      "code": "14.19",
-      "complex": "Trend Everton Park",
-      "name": "Edmund Cook",
-      "rent": 0.0,
-      "bills": 211.2,
-      "net": -211.2
-    },
-    {
       "code": "09.50",
       "complex": "Kingsbury Estate",
       "name": "Naveen Magadi Nataraj",
@@ -899,12 +803,12 @@
       "net": -198.0
     },
     {
-      "code": "14.27",
-      "complex": "Trend Everton Park",
-      "name": "Paul Alabach",
-      "rent": 0.0,
-      "bills": 197.98,
-      "net": -197.98
+      "code": "01.26",
+      "complex": "Everton Ridge",
+      "name": "Julia Karen MORRIS",
+      "rent": 891.43,
+      "bills": 1072.72,
+      "net": -181.29
     },
     {
       "code": "12.14",
@@ -947,20 +851,12 @@
       "net": -136.12
     },
     {
-      "code": "09.21",
-      "complex": "Kingsbury Estate",
-      "name": "Wairau Investments Pty Ltd",
-      "rent": 140.0,
-      "bills": 235.92,
-      "net": -95.92
-    },
-    {
-      "code": "15.53",
-      "complex": "Vue Taigum",
-      "name": "Nikki Brownlie",
-      "rent": 700.0,
-      "bills": 721.6,
-      "net": -21.6
+      "code": "12.16",
+      "complex": "Treetops at Everton",
+      "name": "AM DRAGAR CUSTODIAN PTY LTD & Anna",
+      "rent": 167.86,
+      "bills": 258.94,
+      "net": -91.08
     },
     {
       "code": "03.05",
@@ -1032,9 +928,9 @@
       "code": "01.10",
       "complex": "Everton Ridge",
       "name": "Christopher SERGENT & Juvanka ROBERTS",
-      "rent": 0.0,
+      "rent": 720.0,
       "bills": 325.6,
-      "net": -325.6
+      "net": 394.4
     },
     {
       "code": "01.12",
@@ -1080,17 +976,17 @@
       "code": "01.23",
       "complex": "Everton Ridge",
       "name": "Nicholas Wayne THIELE",
-      "rent": 0.0,
+      "rent": 740.0,
       "bills": 334.4,
-      "net": -334.4
+      "net": 405.6
     },
     {
       "code": "01.26",
       "complex": "Everton Ridge",
       "name": "Julia Karen MORRIS",
-      "rent": 780.0,
+      "rent": 891.43,
       "bills": 1072.72,
-      "net": -292.72
+      "net": -181.29
     },
     {
       "code": "01.27",
@@ -1352,9 +1248,9 @@
       "code": "03.34",
       "complex": "Greystone Terraces",
       "name": "Nicola Savino",
-      "rent": 0.0,
+      "rent": 740.0,
       "bills": 1792.17,
-      "net": -1792.17
+      "net": -1052.17
     },
     {
       "code": "03.36",
@@ -1472,9 +1368,9 @@
       "code": "09.21",
       "complex": "Kingsbury Estate",
       "name": "Wairau Investments Pty Ltd",
-      "rent": 140.0,
+      "rent": 640.0,
       "bills": 235.92,
-      "net": -95.92
+      "net": 404.08
     },
     {
       "code": "09.23",
@@ -1624,9 +1520,9 @@
       "code": "09.52",
       "complex": "Kingsbury Estate",
       "name": "09.52Scott Michael Bailey & Natalie Margaret Bailey",
-      "rent": 0.0,
+      "rent": 680.0,
       "bills": 285.45,
-      "net": -285.45
+      "net": 394.55
     },
     {
       "code": "09.54",
@@ -1656,9 +1552,9 @@
       "code": "09.58",
       "complex": "Kingsbury Estate",
       "name": "Keina McCormack",
-      "rent": 0.0,
+      "rent": 700.0,
       "bills": 1223.09,
-      "net": -1223.09
+      "net": -523.09
     },
     {
       "code": "09.59",
@@ -1856,25 +1752,25 @@
       "code": "11.15",
       "complex": "Bunya Heights",
       "name": "Andrew & Sharon KEMP",
-      "rent": 0.0,
+      "rent": 700.0,
       "bills": 255.16,
-      "net": -255.16
+      "net": 444.84
     },
     {
       "code": "11.18",
       "complex": "Bunya Heights",
       "name": "Jennifer Helen ST.QUINTIN",
-      "rent": 0.0,
+      "rent": 690.0,
       "bills": 249.88,
-      "net": -249.88
+      "net": 440.12
     },
     {
       "code": "11.19",
       "complex": "Bunya Heights",
       "name": "H. Langdon SF Property Pty Ltd",
-      "rent": 690.0,
+      "rent": 1440.0,
       "bills": 251.68,
-      "net": 438.32
+      "net": 1188.32
     },
     {
       "code": "11.20",
@@ -1936,9 +1832,9 @@
       "code": "12.05",
       "complex": "Treetops at Everton",
       "name": "Brayden Anthony STURM",
-      "rent": 0.0,
+      "rent": 745.0,
       "bills": 336.28,
-      "net": -336.28
+      "net": 408.72
     },
     {
       "code": "12.08",
@@ -1968,9 +1864,9 @@
       "code": "12.16",
       "complex": "Treetops at Everton",
       "name": "AM DRAGAR CUSTODIAN PTY LTD & Anna",
-      "rent": 0.0,
+      "rent": 167.86,
       "bills": 258.94,
-      "net": -258.94
+      "net": -91.08
     },
     {
       "code": "12.20",
@@ -2128,9 +2024,9 @@
       "code": "13.04",
       "complex": "Everton Breeze",
       "name": "Brendan Pfanner",
-      "rent": 0.0,
+      "rent": 720.0,
       "bills": 325.55,
-      "net": -325.55
+      "net": 394.45
     },
     {
       "code": "13.06",
@@ -2376,9 +2272,9 @@
       "code": "14.19",
       "complex": "Trend Everton Park",
       "name": "Edmund Cook",
-      "rent": 0.0,
+      "rent": 800.0,
       "bills": 211.2,
-      "net": -211.2
+      "net": 588.8
     },
     {
       "code": "14.20",
@@ -2408,17 +2304,17 @@
       "code": "14.26",
       "complex": "Trend Everton Park",
       "name": "Ngoc Ha Pham & Phuong Thao Pham",
-      "rent": 902.92,
+      "rent": 1652.92,
       "bills": 2454.08,
-      "net": -1551.16
+      "net": -801.16
     },
     {
       "code": "14.27",
       "complex": "Trend Everton Park",
       "name": "Paul Alabach",
-      "rent": 0.0,
+      "rent": 750.0,
       "bills": 197.98,
-      "net": -197.98
+      "net": 552.02
     },
     {
       "code": "14.28",
@@ -2568,9 +2464,9 @@
       "code": "15.21",
       "complex": "Vue Taigum",
       "name": "Mi Lu & Lijue Ma",
-      "rent": 0.0,
+      "rent": 770.0,
       "bills": 711.0,
-      "net": -711.0
+      "net": 59.0
     },
     {
       "code": "15.22",
@@ -2608,9 +2504,9 @@
       "code": "15.30",
       "complex": "Vue Taigum",
       "name": "SR Ferns Property Nominee Pty Ltd",
-      "rent": 0.0,
+      "rent": 1540.0,
       "bills": 1159.47,
-      "net": -1159.47
+      "net": 380.53
     },
     {
       "code": "15.33",
@@ -2664,9 +2560,9 @@
       "code": "15.53",
       "complex": "Vue Taigum",
       "name": "Nikki Brownlie",
-      "rent": 700.0,
+      "rent": 1400.0,
       "bills": 721.6,
-      "net": -21.6
+      "net": 678.4
     },
     {
       "code": "99.18",
@@ -2766,189 +2662,189 @@
         "property": "99. 8Sundew",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-06-22",
-        "days_overdue": 75
+        "days_overdue": 76
       },
       {
         "unit_code": "09.43",
         "property": "09.43 43 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 65
+        "days_overdue": 66
       },
       {
         "unit_code": "09.45",
         "property": "09.45 45 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 65
+        "days_overdue": 66
       },
       {
         "unit_code": "09.49",
         "property": "09.49 49 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 65
+        "days_overdue": 66
       },
       {
         "unit_code": "09.50",
         "property": "09.50 50 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 65
+        "days_overdue": 66
       },
       {
         "unit_code": "09.52",
         "property": "09.52 52 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 65
+        "days_overdue": 66
       },
       {
         "unit_code": "09.54",
         "property": "09.54 54 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-02",
-        "days_overdue": 65
+        "days_overdue": 66
       },
       {
         "unit_code": "09.56",
         "property": "09.56 56 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 59
+        "days_overdue": 60
       },
       {
         "unit_code": "09.72",
         "property": "09.72 72 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 59
+        "days_overdue": 60
       },
       {
         "unit_code": "09.82",
         "property": "09.82 82 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 59
+        "days_overdue": 60
       },
       {
         "unit_code": "09.87",
         "property": "09.87 87 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-08",
-        "days_overdue": 59
+        "days_overdue": 60
       },
       {
         "unit_code": "09.41",
         "property": "09.41 41 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 54
+        "days_overdue": 55
       },
       {
         "unit_code": "09.57",
         "property": "09.57 57 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 54
+        "days_overdue": 55
       },
       {
         "unit_code": "09.59",
         "property": "09.59 59 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 54
+        "days_overdue": 55
       },
       {
         "unit_code": "09.63",
         "property": "09.63 63 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 54
+        "days_overdue": 55
       },
       {
         "unit_code": "09.76",
         "property": "09.76 76 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 54
+        "days_overdue": 55
       },
       {
         "unit_code": "09.44",
         "property": "09.44 44 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-17",
-        "days_overdue": 50
+        "days_overdue": 51
       },
       {
         "unit_code": "09.77",
         "property": "09.77 77 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-17",
-        "days_overdue": 50
+        "days_overdue": 51
       },
       {
         "unit_code": "09.05",
         "property": "09.05 05 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-21",
-        "days_overdue": 46
+        "days_overdue": 47
       },
       {
         "unit_code": "09.75",
         "property": "09.75 75 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-21",
-        "days_overdue": 46
+        "days_overdue": 47
       },
       {
         "unit_code": "09.78",
         "property": "09.78 78 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-21",
-        "days_overdue": 46
+        "days_overdue": 47
       },
       {
         "unit_code": "09.62",
         "property": "09.62 62 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-28",
-        "days_overdue": 39
+        "days_overdue": 40
       },
       {
         "unit_code": "09.79",
         "property": "09.79 79 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-03",
-        "days_overdue": 33
+        "days_overdue": 34
       },
       {
         "unit_code": "09.67",
         "property": "09.67 67 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-19",
-        "days_overdue": 17
+        "days_overdue": 18
       },
       {
         "unit_code": "99.",
         "property": "99. 51 Steuart Street, Bundaberg North",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-08-24",
-        "days_overdue": 12
+        "days_overdue": 13
       },
       {
         "unit_code": "04.05",
         "property": "04.05 5/1 Binnies Rd, Ripley, QLD 4306",
         "manager": "Lisa Dib",
         "due_date": "2026-09-02",
-        "days_overdue": 3
+        "days_overdue": 4
       },
       {
         "unit_code": "04.10",
         "property": "04.10 10/1 Binnies Rd, Ripley, QLD 4306",
         "manager": "Lisa Dib",
         "due_date": "2026-09-02",
-        "days_overdue": 3
+        "days_overdue": 4
       }
     ],
     "scheduled": [
@@ -2957,7 +2853,7 @@
         "property": "01.33 33/40 Bunya Rd, Everton Hills QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-08-11",
-        "days_overdue": 25,
+        "days_overdue": 26,
         "booked_date": "2026-09-08"
       },
       {
@@ -2965,7 +2861,7 @@
         "property": "02.03 03/1141 South Pine Rd, Arana Hills, Q 4054",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-08-11",
-        "days_overdue": 25,
+        "days_overdue": 26,
         "booked_date": "2026-09-08"
       },
       {
@@ -2973,7 +2869,7 @@
         "property": "14.01 01 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 44,
+        "days_overdue": 45,
         "booked_date": "2026-09-08"
       },
       {
@@ -2981,7 +2877,7 @@
         "property": "14.03 03 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 44,
+        "days_overdue": 45,
         "booked_date": "2026-09-08"
       },
       {
@@ -2989,7 +2885,7 @@
         "property": "14.07 07 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 44,
+        "days_overdue": 45,
         "booked_date": "2026-09-08"
       },
       {
@@ -2997,7 +2893,7 @@
         "property": "14.10 10 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 44,
+        "days_overdue": 45,
         "booked_date": "2026-09-08"
       },
       {
@@ -3005,7 +2901,7 @@
         "property": "14.11 11 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-15",
-        "days_overdue": 21,
+        "days_overdue": 22,
         "booked_date": "2026-09-08"
       },
       {
@@ -3013,7 +2909,7 @@
         "property": "14.21 21 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 44,
+        "days_overdue": 45,
         "booked_date": "2026-09-09"
       },
       {
@@ -3021,7 +2917,7 @@
         "property": "14.19 19 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-23",
-        "days_overdue": 44,
+        "days_overdue": 45,
         "booked_date": "2026-09-10"
       },
       {
@@ -3029,7 +2925,7 @@
         "property": "14.36 36 / 122 Soames St, Everton Park Q 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-08-14",
-        "days_overdue": 22,
+        "days_overdue": 23,
         "booked_date": "2026-09-10"
       },
       {
@@ -3037,7 +2933,7 @@
         "property": "01.04 04/40 Bunya Rd, Everton Hills QLD 4053",
         "manager": "Lorelei Lipczynski",
         "due_date": "2026-07-02",
-        "days_overdue": 65,
+        "days_overdue": 66,
         "booked_date": "2026-09-15"
       },
       {
@@ -3045,7 +2941,7 @@
         "property": "11.07 07/114 Bunya Road, Everton Hills. QLD 4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-10",
-        "days_overdue": 57,
+        "days_overdue": 58,
         "booked_date": "2026-09-15"
       },
       {
@@ -3053,7 +2949,7 @@
         "property": "11.15 15 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-27",
-        "days_overdue": 40,
+        "days_overdue": 41,
         "booked_date": "2026-09-15"
       },
       {
@@ -3061,7 +2957,7 @@
         "property": "99.OXL25.  25/719 Oxley Road, Corinda",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-15",
-        "days_overdue": 52,
+        "days_overdue": 53,
         "booked_date": "2026-09-15"
       },
       {
@@ -3069,7 +2965,7 @@
         "property": "09.36 36 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
         "due_date": "2026-07-13",
-        "days_overdue": 54,
+        "days_overdue": 55,
         "booked_date": "2026-09-29"
       }
     ],
@@ -3080,16 +2976,16 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 40.2,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 213,
+        "days_since_last_routine": 214,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "09.86",
         "property": "09.86 86 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 27.5,
+        "tenancy_months": 27.6,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 194,
+        "days_since_last_routine": 195,
         "flag": "LONG GAP"
       },
       {
@@ -3098,7 +2994,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 18.2,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 184,
+        "days_since_last_routine": 185,
         "flag": "LONG GAP"
       },
       {
@@ -3107,25 +3003,25 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 14.6,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 184,
+        "days_since_last_routine": 185,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
         "unit_code": "09.50",
         "property": "09.50 50 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 64.2,
+        "tenancy_months": 64.3,
         "routine_inspections_done": 14,
-        "days_since_last_routine": 184,
+        "days_since_last_routine": 185,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "09.52",
         "property": "09.52 52 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 61.4,
+        "tenancy_months": 61.5,
         "routine_inspections_done": 13,
-        "days_since_last_routine": 184,
+        "days_since_last_routine": 185,
         "flag": "LONG GAP"
       },
       {
@@ -3134,7 +3030,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 26.6,
         "routine_inspections_done": 5,
-        "days_since_last_routine": 179,
+        "days_since_last_routine": 180,
         "flag": "LONG GAP"
       },
       {
@@ -3143,7 +3039,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 14.6,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 178,
+        "days_since_last_routine": 179,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
@@ -3152,16 +3048,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 22.1,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 178,
+        "days_since_last_routine": 179,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "09.87",
         "property": "09.87 87 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 12.5,
+        "tenancy_months": 12.6,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 178,
+        "days_since_last_routine": 179,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
@@ -3170,16 +3066,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 35.8,
         "routine_inspections_done": 7,
-        "days_since_last_routine": 176,
+        "days_since_last_routine": 177,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "09.41",
         "property": "09.41 41 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 15.9,
+        "tenancy_months": 16.0,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 173,
+        "days_since_last_routine": 174,
         "flag": "LONG GAP"
       },
       {
@@ -3188,16 +3084,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 67.4,
         "routine_inspections_done": 15,
-        "days_since_last_routine": 173,
+        "days_since_last_routine": 174,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "09.63",
         "property": "09.63 63 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 44.4,
+        "tenancy_months": 44.5,
         "routine_inspections_done": 9,
-        "days_since_last_routine": 173,
+        "days_since_last_routine": 174,
         "flag": "LONG GAP"
       },
       {
@@ -3206,7 +3102,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 46.6,
         "routine_inspections_done": 11,
-        "days_since_last_routine": 173,
+        "days_since_last_routine": 174,
         "flag": "LONG GAP"
       },
       {
@@ -3215,7 +3111,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 17.3,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 172,
+        "days_since_last_routine": 173,
         "flag": "LONG GAP"
       },
       {
@@ -3224,16 +3120,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 26.3,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 171,
+        "days_since_last_routine": 172,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "09.44",
         "property": "09.44 44 / 79 Cartwright St, Taigum Q4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 67.9,
+        "tenancy_months": 68.0,
         "routine_inspections_done": 17,
-        "days_since_last_routine": 169,
+        "days_since_last_routine": 170,
         "flag": "LONG GAP"
       },
       {
@@ -3242,7 +3138,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 70.2,
         "routine_inspections_done": 15,
-        "days_since_last_routine": 169,
+        "days_since_last_routine": 170,
         "flag": "LONG GAP"
       },
       {
@@ -3251,7 +3147,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 24.0,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 169,
+        "days_since_last_routine": 170,
         "flag": "LONG GAP"
       },
       {
@@ -3260,16 +3156,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 28.0,
         "routine_inspections_done": 6,
-        "days_since_last_routine": 165,
+        "days_since_last_routine": 166,
         "flag": "LONG GAP"
       },
       {
         "unit_code": "15.52",
         "property": "15.52 52 / 42 Abbeywood Street, Taigum Q 4018",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 35.9,
+        "tenancy_months": 36.0,
         "routine_inspections_done": 7,
-        "days_since_last_routine": 165,
+        "days_since_last_routine": 166,
         "flag": "LONG GAP"
       },
       {
@@ -3278,7 +3174,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 39.3,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 163,
+        "days_since_last_routine": 164,
         "flag": "LONG GAP"
       },
       {
@@ -3287,7 +3183,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 40.3,
         "routine_inspections_done": 8,
-        "days_since_last_routine": 163,
+        "days_since_last_routine": 164,
         "flag": "LONG GAP"
       },
       {
@@ -3296,7 +3192,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 54.4,
         "routine_inspections_done": 10,
-        "days_since_last_routine": 163,
+        "days_since_last_routine": 164,
         "flag": "LONG GAP"
       },
       {
@@ -3305,16 +3201,16 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 12.8,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 163,
+        "days_since_last_routine": 164,
         "flag": "LOW COUNT + LONG GAP"
       },
       {
         "unit_code": "11.15",
         "property": "11.15 15 / 114 Bunya Road, Everton Hills Q4053",
         "manager": "Tammy-lee Barritt",
-        "tenancy_months": 18.2,
+        "tenancy_months": 18.3,
         "routine_inspections_done": 3,
-        "days_since_last_routine": 159,
+        "days_since_last_routine": 160,
         "flag": "LONG GAP"
       },
       {
@@ -3323,7 +3219,7 @@
         "manager": "Tammy-lee Barritt",
         "tenancy_months": 21.6,
         "routine_inspections_done": 4,
-        "days_since_last_routine": 158,
+        "days_since_last_routine": 159,
         "flag": "LONG GAP"
       },
       {
@@ -3332,7 +3228,7 @@
         "manager": "Lorelei Lipczynski",
         "tenancy_months": 12.4,
         "routine_inspections_done": 2,
-        "days_since_last_routine": 144,
+        "days_since_last_routine": 145,
         "flag": "LOW COUNT + LONG GAP"
       }
     ],
